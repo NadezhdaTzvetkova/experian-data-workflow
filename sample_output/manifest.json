@@ -1,0 +1,83 @@
+{
+  "run_id": "20260925T104338777640Z",
+  "status": "SUCCESS_WITH_QUARANTINE",
+  "started_at_utc": "2026-09-25T10:43:38.777640+00:00",
+  "completed_at_utc": "2026-09-25T10:43:38.985692+00:00",
+  "policy_version": "2026-09-v1",
+  "source_inventory": {
+    "expenses": {
+      "path": "data/source/expenses.csv",
+      "sha256": "7b2b0456426c9aa45d14cbc29ca2a444bf49979badc306ddc7b5f3ee040cb0b8",
+      "row_count": 120
+    },
+    "vendors": {
+      "path": "data/source/vendors.db",
+      "sha256": "adbc566fff85a402cfe0887005d092d16eca13a48170b744500f183f8d9fa345",
+      "row_count": 10
+    },
+    "policy": {
+      "path": "config/expense_policy.yaml",
+      "sha256": "399182287f888330cbdb4e4ffabeb12e541934b4947f1b8c59f37f78d3908f99"
+    }
+  },
+  "analytics_definition": {
+    "sql_path": "sql/audit_summary.sql",
+    "sql_sha256": "ba4930b1d49b349a1f5e236b5e353ecd84a1f79a49fc63da5807e280fbf120e0"
+  },
+  "analytics_validation": {
+    "python_totals": {
+      "transaction_count": 115,
+      "spend_minor": 4660577,
+      "policy_exception_count": 36,
+      "high_risk_vendor_count": 24,
+      "inactive_vendor_count": 4,
+      "audit_exception_count": 57
+    },
+    "sql_totals": {
+      "transaction_count": 115,
+      "spend_minor": 4660577,
+      "policy_exception_count": 36,
+      "high_risk_vendor_count": 24,
+      "inactive_vendor_count": 4,
+      "audit_exception_count": 57
+    },
+    "match": true
+  },
+  "code_identity": {
+    "git_commit": "9038d3e2c9616966eb949a5dda2de01f1a1f1ed1",
+    "git_dirty": false
+  },
+  "counts": {
+    "source": 120,
+    "accepted": 115,
+    "quarantined": 5,
+    "curated": 115
+  },
+  "controls": {
+    "structural_contract": "PASS",
+    "record_validation": {
+      "DQ002_missing_transaction_id": 1,
+      "DQ003_duplicate_transaction_id": 1,
+      "DQ004_invalid_amount": 1,
+      "DQ005_invalid_or_future_date": 1,
+      "DQ006_unknown_vendor": 1
+    }
+  },
+  "reconciliation": {
+    "source_equals_accepted_plus_quarantined": true,
+    "accepted_equals_curated_after_enrichment": true
+  },
+  "audit_flags": {
+    "policy_exception_count": 36,
+    "high_risk_vendor_count": 24,
+    "inactive_vendor_count": 4,
+    "any_audit_exception_count": 57
+  },
+  "outputs": {
+    "quarantine": "output/runs/20260925T104338777640Z/quarantine.csv",
+    "curated": "output/runs/20260925T104338777640Z/curated_expenses.parquet",
+    "manifest": "output/runs/20260925T104338777640Z/manifest.json",
+    "audit_summary": "output/runs/20260925T104338777640Z/audit_summary.csv",
+    "audit_report": "output/runs/20260925T104338777640Z/audit_report.html"
+  }
+}
