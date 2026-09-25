@@ -141,6 +141,24 @@ audit_report.html
 
 The pipeline also generates a self-contained audit-facing `audit_report.html` as part of the same manifested run. No separate report-generation step is required.
 
+## Representative sample output
+
+A representative completed run is available in [`sample_output/`](sample_output/).
+
+It contains:
+
+```text
+manifest.json
+quarantine.csv
+curated_expenses.parquet
+audit_summary.csv
+audit_report.html
+```
+
+The sample output is generated entirely from deterministic synthetic data and is included so the workflow result can be reviewed without requiring local execution.
+
+The representative sample is generated from a clean committed revision. Its manifest records the exact producer commit and `git_dirty=false`; the sample artifacts are committed separately so their provenance remains truthful.
+
 ## Testing and code quality
 
 ```powershell
@@ -163,6 +181,28 @@ The dataset is intentionally synthetic and seeded with examples. Observed except
 
 For a production-scale implementation I would preserve the same contracts while replacing local components according to volume and operational needs, for example object storage for immutable source evidence, scheduled orchestration, managed compute, catalogued curated datasets, central monitoring, alerting, retained manifests and control history, and role-based access. The exercise intentionally avoids building that infrastructure because it would add complexity without improving the evidence required for this task.
 
-## AI-assisted development
+## AI-assisted engineering
 
-AI was used as a development assistant during the exercise. Design choices, implementation, validation, tests, reconciliation logic, analytical interpretation, and final responsibility for correctness remain human-owned. The solution includes independent checks specifically so generated or suggested implementation details are not accepted solely on trust.
+AI was used as an engineering assistant and structured review layer throughout the exercise, not as an authority for correctness.
+
+The workflow used specialist review roles covering requirement fidelity, ingestion and modelling, data contracts and quality, audit lineage and reconciliation, analytics and presentation, engineering quality, operationalisation, AI oversight, and adversarial red-team review.
+
+The operating principle was:
+
+> **AI proposes and challenges; independent evidence validates; the human accepts or rejects.**
+
+AI-generated suggestions were evaluated against the original requirements and independently checked through deterministic tests, source-to-output reconciliation, schema and cardinality controls, SHA-256 provenance, DuckDB/Pandas analytical reconciliation, Ruff, pytest, Git review, and explicit human judgement.
+
+Several suggestions were changed or rejected after review. Examples include correcting ground-truth assumptions, replacing current-state vendor logic with historical effective-date reasoning, making reporting tests hermetic, fixing a misleading CDN test, and changing manifest publication order so a manifest represents a genuinely complete run.
+
+The public AI methodology is documented separately from the implementation:
+
+- [AI-assisted engineering overview](ai/README.md)
+- [Agentic orchestration model](ai/ORCHESTRATION.md)
+- [Public AI role catalog](ai/ROLE_CATALOG.md)
+- [Human oversight and challenged AI suggestions](ai/HUMAN_OVERSIGHT.md)
+- [Public specialist skill cards](ai/skills/)
+- [Design decisions and trade-offs](docs/DESIGN_DECISIONS.md)
+- [Changed-requirement scenarios](docs/CHANGE_SCENARIOS.md)
+
+The repository includes the task-specific canonical AI framework used during development, including roles, skills, orchestration, source-of-truth controls and oversight guidance. Raw conversation transcripts and unrelated personal context are not included because the exercise explicitly does not require them.
