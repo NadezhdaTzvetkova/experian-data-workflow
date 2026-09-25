@@ -1,0 +1,6 @@
+transaction_id,employee_id,vendor_id,transaction_date,category,currency,amount_minor,cost_center,receipt_present,failed_control_ids,failure_reasons
+TX0001,EMP002,V007,2026-05-11,travel,EUR,79885,CC_SALES,True,DQ003,duplicate transaction_id
+,EMP019,V010,2026-08-25,travel,EUR,31505,CC_FINANCE,True,DQ002,missing transaction_id
+TX0118,EMP016,V009,2026-04-06,travel,EUR,-2500,CC_HR,True,DQ004,amount_minor must be a positive integer
+TX0119,EMP016,V002,2026-09-05,office,EUR,84702,CC_HR,True,DQ005,transaction_date must be valid and not after as_of_date
+TX0120,EMP004,V999,2026-05-19,accommodation,EUR,43581,CC_SALES,False,DQ006,vendor_id must resolve to the vendor reference

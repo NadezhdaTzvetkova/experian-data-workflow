@@ -1,0 +1,5 @@
+category,transaction_count,spend_minor,policy_exception_count,high_risk_vendor_count,inactive_vendor_count,audit_exception_count
+travel,34,1433508,1,8,3,11
+office,28,1316022,0,8,0,8
+meals,32,1021143,28,4,1,28
+accommodation,21,889904,7,4,0,10
