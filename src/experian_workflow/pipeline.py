@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
+from experian_workflow.analytics import build_audit_summary, verify_headline_kpis
 from experian_workflow.evidence import git_commit, git_is_dirty, sha256_file
 from experian_workflow.ingestion import load_expenses, load_policy, load_vendors
 from experian_workflow.quality import validate_records, validate_source_structure
@@ -16,7 +17,7 @@ def run_pipeline(root: Path | str = ".") -> dict[str, object]:
     expenses_path = root / "data" / "source" / "expenses.csv"
     vendors_path = root / "data" / "source" / "vendors.db"
 
-    started_at = datetime.now(timezone.utc)
+    started_at = datetime.now(UTC)
     run_id = started_at.strftime("%Y%m%dT%H%M%S%fZ")
     run_dir = root / "output" / "runs" / run_id
     run_dir.mkdir(parents=True, exist_ok=False)
@@ -41,12 +42,20 @@ def run_pipeline(root: Path | str = ".") -> dict[str, object]:
 
     quarantine_path = run_dir / "quarantine.csv"
     curated_path = run_dir / "curated_expenses.parquet"
+    audit_summary_path = run_dir / "audit_summary.csv"
     manifest_path = run_dir / "manifest.json"
+    audit_sql_path = root / "sql" / "audit_summary.sql"
 
     quarantine.to_csv(quarantine_path, index=False, lineterminator="\n")
     curated.to_parquet(curated_path, index=False)
 
-    completed_at = datetime.now(timezone.utc)
+    audit_summary = build_audit_summary(curated_path, audit_sql_path)
+    analytics_check = verify_headline_kpis(curated_path, audit_summary)
+    if not analytics_check["match"]:
+        raise RuntimeError("Independent SQL/Python KPI reconciliation failed")
+    audit_summary.to_csv(audit_summary_path, index=False, lineterminator="\n")
+
+    completed_at = datetime.now(UTC)
     final_status = "SUCCESS_WITH_QUARANTINE" if quarantined_count else "SUCCESS"
 
     manifest: dict[str, object] = {
@@ -71,6 +80,11 @@ def run_pipeline(root: Path | str = ".") -> dict[str, object]:
                 "sha256": sha256_file(policy_path),
             },
         },
+        "analytics_definition": {
+            "sql_path": audit_sql_path.relative_to(root).as_posix(),
+            "sql_sha256": sha256_file(audit_sql_path),
+        },
+        "analytics_validation": analytics_check,
         "code_identity": {
             "git_commit": git_commit(root),
             "git_dirty": git_is_dirty(root),
@@ -105,6 +119,7 @@ def run_pipeline(root: Path | str = ".") -> dict[str, object]:
             "quarantine": quarantine_path.relative_to(root).as_posix(),
             "curated": curated_path.relative_to(root).as_posix(),
             "manifest": manifest_path.relative_to(root).as_posix(),
+            "audit_summary": audit_summary_path.relative_to(root).as_posix(),
         },
     }
 

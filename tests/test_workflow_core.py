@@ -1,10 +1,15 @@
 import json
+from pathlib import Path
 
 import pandas as pd
 import pytest
 
 from experian_workflow.ingestion import load_expenses, load_policy, load_vendors
-from experian_workflow.quality import StructuralValidationError, validate_records, validate_source_structure
+from experian_workflow.quality import (
+    StructuralValidationError,
+    validate_records,
+    validate_source_structure,
+)
 from experian_workflow.transformation import enrich_audit_flags
 
 
@@ -26,7 +31,7 @@ def test_injected_defects_are_quarantined_and_rows_reconcile():
     policy, expenses, vendors = load_inputs()
     validate_source_structure(expenses, vendors, policy)
     accepted, quarantine = validate_records(expenses, vendors, policy)
-    oracle = json.loads(open("data/source/ground_truth.json", encoding="utf-8").read())["injected_data_defects"]
+    oracle = json.loads(Path("data/source/ground_truth.json").read_text(encoding="utf-8"))["injected_data_defects"]
     actual = {
         "duplicate_transaction_id": int((quarantine["failed_control_ids"] == "DQ003").sum()),
         "missing_transaction_id": int((quarantine["failed_control_ids"] == "DQ002").sum()),
@@ -44,7 +49,7 @@ def test_valid_audit_examples_remain_trusted_and_are_flagged():
     validate_source_structure(expenses, vendors, policy)
     accepted, quarantine = validate_records(expenses, vendors, policy)
     curated = enrich_audit_flags(accepted, vendors, policy)
-    oracle = json.loads(open("data/source/ground_truth.json", encoding="utf-8").read())["injected_valid_audit_examples"]
+    oracle = json.loads(Path("data/source/ground_truth.json").read_text(encoding="utf-8"))["injected_valid_audit_examples"]
     assert len(curated) == len(accepted)
     assert not set(oracle["policy_limit_breach_transaction_ids"]).intersection(set(quarantine["transaction_id"].dropna()))
     assert not set(oracle["high_risk_vendor_transaction_ids"]).intersection(set(quarantine["transaction_id"].dropna()))

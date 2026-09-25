@@ -34,7 +34,7 @@ def load_policy(path: Path | str) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as handle:
         policy = yaml.safe_load(handle)
     if not isinstance(policy, dict):
-        raise ValueError(f"Policy must deserialize to a mapping: {path}")
+        raise TypeError(f"Policy must deserialize to a mapping: {path}")
     return policy
 
 

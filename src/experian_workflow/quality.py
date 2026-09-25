@@ -5,7 +5,10 @@ from typing import Any
 
 import pandas as pd
 
-from experian_workflow.ingestion import REQUIRED_EXPENSE_COLUMNS, REQUIRED_VENDOR_COLUMNS
+from experian_workflow.ingestion import (
+    REQUIRED_EXPENSE_COLUMNS,
+    REQUIRED_VENDOR_COLUMNS,
+)
 
 
 class StructuralValidationError(ValueError):
