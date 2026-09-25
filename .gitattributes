@@ -1,8 +1,24 @@
-﻿* text=auto
+* text=auto eol=lf
+
 *.py text eol=lf
 *.toml text eol=lf
 *.md text eol=lf
 *.yaml text eol=lf
 *.yml text eol=lf
-*.sql text eol=lf
 *.json text eol=lf
+*.csv text eol=lf
+*.sql text eol=lf
+*.txt text eol=lf
+*.gitignore text eol=lf
+*.gitattributes text eol=lf
+*.editorconfig text eol=lf
+
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+*.parquet binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary

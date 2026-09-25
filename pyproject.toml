@@ -28,3 +28,5 @@ dev = [
     "ruff>=0.16.9",
 ]
 
+[tool.uv.build-backend]
+module-name = "experian_workflow"
