@@ -1,0 +1,30 @@
+[project]
+name = "experian-data-workflow"
+version = "0.1.0"
+description = "Reproducible audit-oriented data workflow for the Experian technical exercise"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "duckdb>=1.5.5",
+    "numpy>=2.5.3",
+    "pandas>=3.0.6",
+    "plotly>=7.1.0",
+    "pyarrow>=25.0.1",
+    "pyyaml>=6.0.3",
+    "sqlalchemy>=2.1.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.19,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+link-mode = "copy"
+
+[dependency-groups]
+dev = [
+    "jupyter>=1.1.1",
+    "pytest>=9.1.1",
+    "ruff>=0.16.9",
+]
+

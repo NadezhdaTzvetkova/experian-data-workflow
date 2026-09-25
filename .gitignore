@@ -1,0 +1,13 @@
+﻿.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.idea/
+.vscode/
+output/runs/
+data/raw/
+data/quarantine/
+data/curated/
+data/marts/
