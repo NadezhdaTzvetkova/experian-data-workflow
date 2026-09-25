@@ -8,6 +8,7 @@ from experian_workflow.analytics import build_audit_summary, verify_headline_kpi
 from experian_workflow.evidence import git_commit, git_is_dirty, sha256_file
 from experian_workflow.ingestion import load_expenses, load_policy, load_vendors
 from experian_workflow.quality import validate_records, validate_source_structure
+from experian_workflow.reporting import build_audit_report
 from experian_workflow.transformation import enrich_audit_flags
 
 
@@ -120,9 +121,12 @@ def run_pipeline(root: Path | str = ".") -> dict[str, object]:
             "curated": curated_path.relative_to(root).as_posix(),
             "manifest": manifest_path.relative_to(root).as_posix(),
             "audit_summary": audit_summary_path.relative_to(root).as_posix(),
+            "audit_report": (run_dir / "audit_report.html").relative_to(root).as_posix(),
         },
     }
 
+    report_path = run_dir / "audit_report.html"
+    build_audit_report(run_dir, report_path, manifest)
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="\n")
     return manifest
 
