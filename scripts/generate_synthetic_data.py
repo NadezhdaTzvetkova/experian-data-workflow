@@ -67,6 +67,7 @@ def generate_expenses() -> list[dict[str, object]]:
     rows[112]["category"], rows[112]["amount_minor"] = "accommodation", 68000
     rows[113]["vendor_id"] = "V005"
     rows[114]["vendor_id"] = "V008"
+    rows[114]["transaction_date"] = "2026-07-15"
     rows[115]["transaction_id"] = rows[0]["transaction_id"]
     rows[116]["transaction_id"] = ""
     rows[117]["amount_minor"] = -2500
@@ -104,10 +105,10 @@ def write_ground_truth() -> None:
             "future_transaction_date": 1,
             "unknown_vendor": 1,
         },
-        "known_valid_audit_exceptions": {
-            "policy_limit_breaches": 3,
-            "high_risk_vendor_examples": 1,
-            "inactive_vendor_examples": 1,
+        "injected_valid_audit_examples": {
+            "policy_limit_breach_transaction_ids": ["TX0111", "TX0112", "TX0113"],
+            "high_risk_vendor_transaction_ids": ["TX0114"],
+            "inactive_vendor_transaction_ids": ["TX0115"],
         },
     }
     GROUND_TRUTH_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
@@ -128,3 +129,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
