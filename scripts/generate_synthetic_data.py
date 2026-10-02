@@ -79,7 +79,7 @@ def generate_expenses() -> list[dict[str, object]]:
 def write_expenses(rows: list[dict[str, object]]) -> None:
     fieldnames = ["transaction_id", "employee_id", "vendor_id", "transaction_date", "category", "currency", "amount_minor", "cost_center", "receipt_present"]
     with EXPENSES_PATH.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer = csv.DictWriter(handle, fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -111,7 +111,7 @@ def write_ground_truth() -> None:
             "inactive_vendor_transaction_ids": ["TX0115"],
         },
     }
-    GROUND_TRUTH_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    GROUND_TRUTH_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8", newline="\n")
 
 
 def main() -> None:
