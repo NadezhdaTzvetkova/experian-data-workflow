@@ -1,0 +1,119 @@
+schema_version: "1.0"
+
+methodology:
+  name: synthetic_enterprise_assurance_demo
+  version: "2026-09-v1"
+  status: illustrative
+  disclaimer: "Synthetic demonstration methodology; not Experian internal methodology."
+
+reporting:
+  as_of_date: "2026-09-30"
+
+status_vocabulary:
+  quality:
+    - PASS
+    - FAIL
+    - WARN
+    - NOT_EVALUABLE
+    - QUARANTINED
+    - UNMAPPED
+  testing:
+    - TESTED
+    - NOT_TESTED
+    - NOT_APPLICABLE
+  evidence_sufficiency:
+    - SUFFICIENT
+    - PARTIAL
+    - INSUFFICIENT
+    - NOT_EVALUABLE
+    - NOT_APPLICABLE
+  control_effectiveness:
+    - EFFECTIVE
+    - PARTIALLY_EFFECTIVE
+    - INEFFECTIVE
+    - NOT_EVALUABLE
+    - NOT_APPLICABLE
+  risk:
+    - LOW
+    - MODERATE
+    - HIGH
+    - CRITICAL
+    - NOT_EVALUABLE
+
+rules:
+  coverage:
+    rule_id: ASR_COV_001
+    version: "1.0"
+    numerator: tested_population
+    denominator: expected_population
+    sufficient_ratio: 1.0
+    zero_denominator_state: NOT_EVALUABLE
+
+  evidence_freshness:
+    rule_id: ASR_EVD_001
+    version: "1.0"
+    max_age_days: 90
+    boundary_inclusive: true
+    stale_reason_code: STALE_EVIDENCE
+
+  evidence_sufficiency:
+    rule_id: ASR_EVD_002
+    version: "1.0"
+    mapped_identity_required: true
+    current_evidence_required: true
+    full_coverage_required_for_sufficient: true
+    partial_coverage_state: PARTIAL
+    zero_tested_state: INSUFFICIENT
+    unresolved_mapping_state: NOT_EVALUABLE
+
+  control_effectiveness:
+    rule_id: ASR_CTL_001
+    version: "1.0"
+    requires_test_performed: true
+    missing_evidence_is_ineffective: false
+    insufficient_evidence_state: NOT_EVALUABLE
+    source_result_mapping:
+      PASS: EFFECTIVE
+      PARTIAL: PARTIALLY_EFFECTIVE
+      FAIL: INEFFECTIVE
+
+  residual_risk:
+    rule_id: ASR_RSK_001
+    version: "1.0"
+    requires_evidence_sufficiency: SUFFICIENT
+    non_evaluable_input_state: NOT_EVALUABLE
+    matrix:
+      LOW:
+        EFFECTIVE: LOW
+        PARTIALLY_EFFECTIVE: MODERATE
+        INEFFECTIVE: HIGH
+      MODERATE:
+        EFFECTIVE: LOW
+        PARTIALLY_EFFECTIVE: MODERATE
+        INEFFECTIVE: HIGH
+      HIGH:
+        EFFECTIVE: MODERATE
+        PARTIALLY_EFFECTIVE: HIGH
+        INEFFECTIVE: CRITICAL
+      CRITICAL:
+        EFFECTIVE: HIGH
+        PARTIALLY_EFFECTIVE: CRITICAL
+        INEFFECTIVE: CRITICAL
+
+  remediation_overdue:
+    rule_id: ASR_REM_001
+    version: "1.0"
+    open_statuses:
+      - OPEN
+      - IN_PROGRESS
+    closed_statuses:
+      - CLOSED
+    overdue_when: "target_date < as_of_date"
+    due_on_as_of_date_is_overdue: false
+
+  repeat_finding:
+    rule_id: ASR_FIND_001
+    version: "1.0"
+    recurrence_key_required: true
+    prior_closed_before_current_required: true
+    fuzzy_title_matching: false
