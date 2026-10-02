@@ -1,0 +1,514 @@
+schema_version: '1.0'
+spec_role: synthetic_generator_input_only
+spec_version: 2026-09-v1
+methodology_version: 2026-09-v1
+reporting_period: 2026-09
+as_of_date: '2026-09-30'
+generation:
+  deterministic: true
+  random_generation_allowed: false
+  encoding: utf-8
+  newline: lf
+  sqlite_output: data/source/assurance/enterprise.db
+  control_evidence_output: data/source/assurance/control_evidence.json
+  findings_output: data/source/assurance/findings.csv
+  management_actions_output: data/source/assurance/management_actions.csv
+  adversarial_directory: data/source/assurance/adversarial
+  breaking_schema_output: data/source/assurance/adversarial/control_evidence_breaking.json
+  additive_schema_output: data/source/assurance/adversarial/control_evidence_additive.json
+entities:
+- entity_id: ENT_CORE_UK
+  entity_name: Core Services UK
+  region: EMEA
+  country: United Kingdom
+  business_unit: Core Platforms
+  acquired_status: CORE
+  effective_from: '2024-01-01'
+  effective_to: null
+- entity_id: ENT_CORE_BG
+  entity_name: Analytics Services Bulgaria
+  region: EMEA
+  country: Bulgaria
+  business_unit: Data & Analytics
+  acquired_status: CORE
+  effective_from: '2024-01-01'
+  effective_to: null
+- entity_id: ENT_ACQ_01
+  entity_name: Acquired Services One
+  region: EMEA
+  country: Germany
+  business_unit: Acquired Platforms
+  acquired_status: ACQUIRED
+  acquisition_cohort: 2026-H1
+  effective_from: '2026-04-01'
+  effective_to: null
+systems:
+- system_id: SYS_CORE_01
+  entity_id: ENT_CORE_UK
+  system_name: Payments Hub
+  system_owner: Finance Technology
+  criticality: HIGH
+  data_classification: CONFIDENTIAL
+  contains_sensitive_data: true
+  core_acquired_status: CORE
+  third_party_dependency_flag: false
+  effective_from: '2026-01-01'
+  effective_to: null
+- system_id: SYS_CORE_02
+  entity_id: ENT_CORE_BG
+  system_name: Customer Insights
+  system_owner: Data Analytics
+  criticality: MODERATE
+  data_classification: CONFIDENTIAL
+  contains_sensitive_data: true
+  core_acquired_status: CORE
+  third_party_dependency_flag: false
+  effective_from: '2026-01-01'
+  effective_to: null
+- system_id: SYS_CORE_03
+  entity_id: ENT_CORE_UK
+  system_name: Partner Gateway
+  system_owner: Integration Services
+  criticality: HIGH
+  data_classification: CONFIDENTIAL
+  contains_sensitive_data: true
+  core_acquired_status: CORE
+  third_party_dependency_flag: true
+  effective_from: '2026-01-01'
+  effective_to: null
+- system_id: SYS_SEC_01
+  entity_id: ENT_CORE_UK
+  system_name: Identity Vault
+  system_owner: Identity Engineering
+  criticality: CRITICAL
+  data_classification: RESTRICTED
+  contains_sensitive_data: true
+  core_acquired_status: CORE
+  third_party_dependency_flag: false
+  effective_from: '2026-01-01'
+  effective_to: null
+- system_id: SYS_ACQ_01
+  entity_id: ENT_ACQ_01
+  system_name: Acquired Ledger
+  system_owner: Acquired Platforms
+  criticality: HIGH
+  data_classification: CONFIDENTIAL
+  contains_sensitive_data: true
+  core_acquired_status: ACQUIRED
+  acquisition_cohort: 2026-H1
+  third_party_dependency_flag: false
+  effective_from: '2026-04-01'
+  effective_to: null
+- system_id: SYS_CORE_04
+  entity_id: ENT_CORE_BG
+  system_name: Reporting Hub
+  system_owner: Reporting Services
+  criticality: MODERATE
+  data_classification: INTERNAL
+  contains_sensitive_data: false
+  core_acquired_status: CORE
+  third_party_dependency_flag: true
+  effective_from: '2026-01-01'
+  effective_to: null
+system_mappings:
+- source_system: enterprise_inventory
+  raw_system_id: CORE_PAY_01
+  canonical_system_id: SYS_CORE_01
+  mapping_status: MAPPED
+- source_system: enterprise_inventory
+  raw_system_id: CORE_INS_02
+  canonical_system_id: SYS_CORE_02
+  mapping_status: MAPPED
+- source_system: enterprise_inventory
+  raw_system_id: CORE_PGW_03
+  canonical_system_id: SYS_CORE_03
+  mapping_status: MAPPED
+- source_system: enterprise_inventory
+  raw_system_id: CORE_IAM_01
+  canonical_system_id: SYS_SEC_01
+  mapping_status: MAPPED
+- source_system: enterprise_inventory
+  raw_system_id: ACQ_SYS_LEGACY_42
+  canonical_system_id: SYS_ACQ_01
+  mapping_status: MAPPED
+- source_system: enterprise_inventory
+  raw_system_id: ACQ_SYS_LEGACY_77
+  canonical_system_id: null
+  mapping_status: UNMAPPED
+risk_taxonomy:
+- risk_id: RSK_ACCESS
+  risk_domain: Access Management
+  risk_name: Inappropriate access
+  risk_description: Access may not be appropriately authorised or reviewed.
+- risk_id: RSK_DATA
+  risk_domain: Data Governance
+  risk_name: Sensitive data handling
+  risk_description: Sensitive data may not be governed or protected as intended.
+- risk_id: RSK_TP
+  risk_domain: Third Party
+  risk_name: Third-party dependency
+  risk_description: Third-party dependencies may create assurance or remediation exposure.
+- risk_id: RSK_CHANGE
+  risk_domain: Change & Integration
+  risk_name: Integration change risk
+  risk_description: Integration or acquisition change may create control or data-assurance gaps.
+risk_assignments:
+- system_id: SYS_CORE_01
+  risk_id: RSK_ACCESS
+  reporting_period: 2026-09
+  inherent_risk: HIGH
+- system_id: SYS_CORE_02
+  risk_id: RSK_ACCESS
+  reporting_period: 2026-09
+  inherent_risk: MODERATE
+- system_id: SYS_CORE_03
+  risk_id: RSK_TP
+  reporting_period: 2026-09
+  inherent_risk: HIGH
+- system_id: SYS_SEC_01
+  risk_id: RSK_ACCESS
+  reporting_period: 2026-09
+  inherent_risk: CRITICAL
+- system_id: SYS_ACQ_01
+  risk_id: RSK_CHANGE
+  reporting_period: 2026-09
+  inherent_risk: HIGH
+- system_id: SYS_CORE_04
+  risk_id: RSK_DATA
+  reporting_period: 2026-09
+  inherent_risk: LOW
+controls:
+- control_id: CTRL_ACCESS_01
+  risk_id: RSK_ACCESS
+  control_name: Periodic access review
+  control_objective: Verify that user access remains appropriate.
+  control_type: DETECTIVE
+  expected_frequency: QUARTERLY
+  expected_evidence_type: ACCESS_REVIEW
+  effective_from: '2026-01-01'
+  effective_to: null
+- control_id: CTRL_IAM_01
+  risk_id: RSK_ACCESS
+  control_name: Privileged access review
+  control_objective: Verify privileged access is authorised and periodically reviewed.
+  control_type: DETECTIVE
+  expected_frequency: QUARTERLY
+  expected_evidence_type: IAM_REVIEW
+  effective_from: '2026-01-01'
+  effective_to: null
+- control_id: CTRL_TP_01
+  risk_id: RSK_TP
+  control_name: Third-party assurance review
+  control_objective: Verify material third-party assurance remains current.
+  control_type: DETECTIVE
+  expected_frequency: ANNUAL
+  expected_evidence_type: THIRD_PARTY_ASSURANCE
+  effective_from: '2026-01-01'
+  effective_to: null
+- control_id: CTRL_CHANGE_01
+  risk_id: RSK_CHANGE
+  control_name: Integration control review
+  control_objective: Verify acquired-system integration controls and mappings are governed.
+  control_type: PREVENTIVE
+  expected_frequency: EVENT_DRIVEN
+  expected_evidence_type: INTEGRATION_REVIEW
+  effective_from: '2026-01-01'
+  effective_to: null
+source_registry:
+- source_id: enterprise_inventory
+  source_name: Enterprise inventory and reference data
+  source_type: SQLITE
+  source_owner: Synthetic Enterprise Reference
+  expected_grain: governed_reference_rows
+  expected_frequency: MONTHLY
+  schema_version: '1.0'
+  classification: SYNTHETIC
+  known_limitation: Demonstration reference source only.
+- source_id: control_evidence
+  source_name: Control evidence API-style payload
+  source_type: JSON
+  source_owner: Synthetic Assurance Evidence
+  expected_grain: one_test_event
+  expected_frequency: MONTHLY
+  schema_version: '1.0'
+  classification: SYNTHETIC
+  known_limitation: Local JSON representation of an API-style source.
+- source_id: findings
+  source_name: Findings export
+  source_type: CSV
+  source_owner: Synthetic Audit Findings
+  expected_grain: one_finding
+  expected_frequency: MONTHLY
+  schema_version: '1.0'
+  classification: SYNTHETIC
+  known_limitation: Demonstration export only.
+- source_id: management_actions
+  source_name: Management actions export
+  source_type: CSV
+  source_owner: Synthetic Remediation Tracking
+  expected_grain: one_management_action
+  expected_frequency: MONTHLY
+  schema_version: '1.0'
+  classification: SYNTHETIC
+  known_limitation: Demonstration export only.
+source_expectations:
+- source_id: control_evidence
+  reporting_period: 2026-09
+  expected_record_count: 9
+- source_id: findings
+  reporting_period: 2026-09
+  expected_record_count: 5
+- source_id: management_actions
+  reporting_period: 2026-09
+  expected_record_count: 6
+third_parties:
+- third_party_id: TP_001
+  third_party_name: Critical Integration Partner
+  tier: HIGH
+  sensitive_access_flag: true
+  assurance_status: CURRENT
+  last_assurance_date: '2026-06-15'
+- third_party_id: TP_002
+  third_party_name: Low Risk Data Supplier
+  tier: LOW
+  sensitive_access_flag: false
+  assurance_status: CURRENT
+  last_assurance_date: '2026-08-20'
+system_third_parties:
+- system_id: SYS_CORE_03
+  third_party_id: TP_001
+- system_id: SYS_CORE_04
+  third_party_id: TP_002
+control_evidence_records:
+- test_id: TEST_COV_001
+  scenario_id: SCN_INCOMPLETE_COVERAGE
+  raw_system_id: CORE_PAY_01
+  control_id: CTRL_ACCESS_01
+  reporting_period: 2026-09
+  expected_population: 100
+  received_population: 100
+  mapped_population: 100
+  tested_population: 72
+  exception_count: 0
+  source_result: PASS
+  evidence_id: EVD_COV_001
+  evidence_date: '2026-09-15'
+- test_id: TEST_COV_002
+  scenario_id: SCN_INCOMPLETE_COVERAGE
+  raw_system_id: CORE_INS_02
+  control_id: CTRL_ACCESS_01
+  reporting_period: 2026-09
+  expected_population: 100
+  received_population: 100
+  mapped_population: 100
+  tested_population: 100
+  exception_count: 0
+  source_result: PASS
+  evidence_id: EVD_COV_002
+  evidence_date: '2026-09-15'
+- test_id: TEST_IAM_FRESH
+  scenario_id: SCN_STALE_IAM_EVIDENCE
+  raw_system_id: CORE_IAM_01
+  control_id: CTRL_IAM_01
+  reporting_period: 2026-09
+  expected_population: 20
+  received_population: 20
+  mapped_population: 20
+  tested_population: 20
+  exception_count: 0
+  source_result: PASS
+  evidence_id: EVD_IAM_FRESH
+  evidence_date: '2026-07-03'
+- test_id: TEST_IAM_BOUNDARY
+  scenario_id: SCN_STALE_IAM_EVIDENCE
+  raw_system_id: CORE_IAM_01
+  control_id: CTRL_IAM_01
+  reporting_period: 2026-09
+  expected_population: 20
+  received_population: 20
+  mapped_population: 20
+  tested_population: 20
+  exception_count: 0
+  source_result: PASS
+  evidence_id: EVD_IAM_BOUNDARY
+  evidence_date: '2026-07-02'
+- test_id: TEST_IAM_STALE
+  scenario_id: SCN_STALE_IAM_EVIDENCE
+  raw_system_id: CORE_IAM_01
+  control_id: CTRL_IAM_01
+  reporting_period: 2026-09
+  expected_population: 20
+  received_population: 20
+  mapped_population: 20
+  tested_population: 20
+  exception_count: 0
+  source_result: PASS
+  evidence_id: EVD_IAM_STALE
+  evidence_date: '2026-07-01'
+- test_id: TEST_IAM_NEGATIVE
+  scenario_id: SCN_STALE_IAM_EVIDENCE
+  raw_system_id: CORE_INS_02
+  control_id: CTRL_IAM_01
+  reporting_period: 2026-09
+  expected_population: 10
+  received_population: 10
+  mapped_population: 10
+  tested_population: 10
+  exception_count: 0
+  source_result: PASS
+  evidence_id: EVD_IAM_NEGATIVE
+  evidence_date: '2026-09-15'
+- test_id: TEST_MAP_001
+  scenario_id: SCN_ACQ_MAPPING_GAP
+  raw_system_id: ACQ_SYS_LEGACY_77
+  control_id: CTRL_CHANGE_01
+  reporting_period: 2026-09
+  expected_population: 10
+  received_population: 10
+  mapped_population: 0
+  tested_population: 0
+  exception_count: 0
+  source_result: PASS
+  evidence_id: EVD_MAP_001
+  evidence_date: '2026-09-20'
+- test_id: TEST_MAP_002
+  scenario_id: SCN_ACQ_MAPPING_GAP
+  raw_system_id: ACQ_SYS_LEGACY_42
+  control_id: CTRL_CHANGE_01
+  reporting_period: 2026-09
+  expected_population: 10
+  received_population: 10
+  mapped_population: 10
+  tested_population: 10
+  exception_count: 0
+  source_result: PASS
+  evidence_id: EVD_MAP_002
+  evidence_date: '2026-09-20'
+- test_id: TEST_TP_001
+  scenario_id: SCN_THIRD_PARTY_OVERDUE
+  raw_system_id: CORE_PGW_03
+  control_id: CTRL_TP_01
+  reporting_period: 2026-09
+  expected_population: 1
+  received_population: 1
+  mapped_population: 1
+  tested_population: 1
+  exception_count: 0
+  source_result: PASS
+  evidence_id: EVD_TP_001
+  evidence_date: '2026-06-15'
+findings:
+- finding_id: FND_IAM_001
+  scenario_id: SCN_REPEAT_FINDING
+  system_id: SYS_SEC_01
+  control_id: CTRL_IAM_01
+  recurrence_key: IAM_PRIVILEGED_ACCESS
+  finding_theme: Privileged access review
+  severity: HIGH
+  identified_date: '2026-02-10'
+  status: CLOSED
+  closed_date: '2026-03-31'
+- finding_id: FND_IAM_006
+  scenario_id: SCN_REPEAT_FINDING
+  system_id: SYS_SEC_01
+  control_id: CTRL_IAM_01
+  recurrence_key: IAM_PRIVILEGED_ACCESS
+  finding_theme: Privileged access review
+  severity: HIGH
+  identified_date: '2026-08-15'
+  status: OPEN
+  closed_date: null
+- finding_id: FND_IAM_007
+  scenario_id: SCN_REPEAT_FINDING
+  system_id: SYS_SEC_01
+  control_id: CTRL_IAM_01
+  recurrence_key: IAM_SERVICE_ACCOUNT
+  finding_theme: Privileged access review - service accounts
+  severity: MODERATE
+  identified_date: '2026-08-20'
+  status: OPEN
+  closed_date: null
+- finding_id: FND_TP_001
+  scenario_id: SCN_THIRD_PARTY_OVERDUE
+  system_id: SYS_CORE_03
+  control_id: CTRL_TP_01
+  recurrence_key: THIRD_PARTY_ASSURANCE
+  finding_theme: Third-party assurance follow-up
+  severity: HIGH
+  identified_date: '2026-07-10'
+  status: OPEN
+  closed_date: null
+- finding_id: FND_DATA_001
+  scenario_id: null
+  system_id: SYS_CORE_04
+  control_id: null
+  recurrence_key: DATA_GOVERNANCE
+  finding_theme: Data governance documentation
+  severity: LOW
+  identified_date: '2026-09-01'
+  status: OPEN
+  closed_date: null
+management_actions:
+- action_id: ACT_TP_OVERDUE
+  scenario_id: SCN_THIRD_PARTY_OVERDUE
+  finding_id: FND_TP_001
+  action_owner: Third Party Management
+  target_date: '2026-09-29'
+  status: OPEN
+  closed_date: null
+  closure_validation_status: NOT_APPLICABLE
+- action_id: ACT_TP_DUE_TODAY
+  scenario_id: SCN_THIRD_PARTY_OVERDUE
+  finding_id: FND_TP_001
+  action_owner: Third Party Management
+  target_date: '2026-09-30'
+  status: OPEN
+  closed_date: null
+  closure_validation_status: NOT_APPLICABLE
+- action_id: ACT_TP_FUTURE
+  scenario_id: SCN_THIRD_PARTY_OVERDUE
+  finding_id: FND_TP_001
+  action_owner: Integration Services
+  target_date: '2026-10-01'
+  status: IN_PROGRESS
+  closed_date: null
+  closure_validation_status: NOT_APPLICABLE
+- action_id: ACT_TP_CLOSED
+  scenario_id: SCN_THIRD_PARTY_OVERDUE
+  finding_id: FND_TP_001
+  action_owner: Third Party Management
+  target_date: '2026-09-20'
+  status: CLOSED
+  closed_date: '2026-09-19'
+  closure_validation_status: VALIDATED
+- action_id: ACT_IAM_001
+  scenario_id: SCN_REPEAT_FINDING
+  finding_id: FND_IAM_001
+  action_owner: Identity Engineering
+  target_date: '2026-03-31'
+  status: CLOSED
+  closed_date: '2026-03-30'
+  closure_validation_status: VALIDATED
+- action_id: ACT_DATA_001
+  scenario_id: null
+  finding_id: FND_DATA_001
+  action_owner: Data Governance
+  target_date: '2026-10-15'
+  status: OPEN
+  closed_date: null
+  closure_validation_status: NOT_APPLICABLE
+adversarial_control_evidence:
+  breaking_variant:
+    fixture_id: CONTROL_EVIDENCE_BREAKING_V2
+    schema_version: 2.0-broken
+    mutation:
+      remove_required_field: tested_population
+    base_test_id: TEST_COV_002
+  additive_variant:
+    fixture_id: CONTROL_EVIDENCE_ADDITIVE_V1
+    schema_version: '1.0'
+    mutation:
+      add_optional_field:
+        name: review_note
+        value: Optional additive field for schema compatibility test.
+    base_test_id: TEST_COV_002
