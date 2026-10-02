@@ -1,0 +1,52 @@
+schema_version: "1.0"
+
+reconciliation_model:
+  name: assurance_population_accounting
+  version: "1.0"
+  status: illustrative
+  disclaimer: "Synthetic demonstration reconciliation model; not Experian internal methodology."
+  grain: "one control-evidence test_id x reporting_period"
+  conserved_unit: applicable_population_unit
+
+  stages:
+    expected:
+      source_field: expected_population
+    received:
+      source_field: received_population
+    structurally_valid:
+      derivation: "received_population when the control-evidence dataset structural contract passes"
+      structural_failure_behavior: NOT_EVALUABLE
+    mapped:
+      source_field: mapped_population
+    testable:
+      derivation: mapped_population
+      assumption: "All structurally valid mapped population units in the current synthetic fixture are applicable and testable; NOT_APPLICABLE is not represented in this fixture."
+    evaluated:
+      source_field: tested_population
+      interpretation: "tested_population is the evaluated population for this synthetic fixture"
+
+  derived_populations:
+    not_received: "expected_population - received_population"
+    structurally_rejected: "received_population - structurally_valid_population"
+    unmapped: "structurally_valid_population - mapped_population"
+    not_testable: "mapped_population - testable_population"
+    not_tested: "testable_population - evaluated_population"
+
+  equations:
+    - "expected_population = received_population + not_received_population"
+    - "received_population = structurally_valid_population + structurally_rejected_population"
+    - "structurally_valid_population = mapped_population + unmapped_population"
+    - "mapped_population = testable_population + not_testable_population"
+    - "testable_population = evaluated_population + not_tested_population"
+
+  blocking_conditions:
+    - negative_stage_population
+    - downstream_stage_exceeds_upstream_stage
+    - unexplained_population_imbalance
+    - blocking_structural_contract_failure
+
+  semantic_protections:
+    unmapped_is_invalid_data: false
+    not_tested_is_control_failure: false
+    missing_prerequisite_is_control_failure: false
+    source_result_overrides_population_accounting: false
