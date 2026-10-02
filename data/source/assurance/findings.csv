@@ -1,0 +1,6 @@
+finding_id,scenario_id,system_id,control_id,recurrence_key,finding_theme,severity,identified_date,status,closed_date
+FND_IAM_001,SCN_REPEAT_FINDING,SYS_SEC_01,CTRL_IAM_01,IAM_PRIVILEGED_ACCESS,Privileged access review,HIGH,2026-02-10,CLOSED,2026-03-31
+FND_IAM_006,SCN_REPEAT_FINDING,SYS_SEC_01,CTRL_IAM_01,IAM_PRIVILEGED_ACCESS,Privileged access review,HIGH,2026-08-15,OPEN,
+FND_IAM_007,SCN_REPEAT_FINDING,SYS_SEC_01,CTRL_IAM_01,IAM_SERVICE_ACCOUNT,Privileged access review - service accounts,MODERATE,2026-08-20,OPEN,
+FND_TP_001,SCN_THIRD_PARTY_OVERDUE,SYS_CORE_03,CTRL_TP_01,THIRD_PARTY_ASSURANCE,Third-party assurance follow-up,HIGH,2026-07-10,OPEN,
+FND_DATA_001,,SYS_CORE_04,,DATA_GOVERNANCE,Data governance documentation,LOW,2026-09-01,OPEN,
