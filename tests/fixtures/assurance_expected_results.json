@@ -1,0 +1,283 @@
+{
+  "schema_version": "1.0",
+  "oracle_role": "test_and_review_only",
+  "methodology_version": "2026-09-v1",
+  "as_of_date": "2026-09-30",
+  "production_runtime_dependency_allowed": false,
+  "scenarios": {
+    "SCN_ACQ_MAPPING_GAP": {
+      "expected_records": {
+        "unmapped_raw_system_ids": [
+          "ACQ_SYS_LEGACY_77"
+        ],
+        "mapped_raw_system_ids": [
+          "ACQ_SYS_LEGACY_42"
+        ],
+        "mapped_canonical_system_ids": [
+          "SYS_ACQ_01"
+        ]
+      },
+      "expected_states": {
+        "ACQ_SYS_LEGACY_77": {
+          "mapping_status": "UNMAPPED",
+          "downstream_assurance_state": "NOT_EVALUABLE",
+          "reason_code": "UNRESOLVED_MAPPING",
+          "raw_record_preserved": true
+        },
+        "ACQ_SYS_LEGACY_42": {
+          "mapping_status": "MAPPED",
+          "canonical_system_id": "SYS_ACQ_01"
+        }
+      },
+      "detector_truth": {
+        "unresolved_mapping": {
+          "true_positive_ids": [
+            "ACQ_SYS_LEGACY_77"
+          ],
+          "true_negative_ids": [
+            "ACQ_SYS_LEGACY_42"
+          ],
+          "expected_false_positive_count": 0,
+          "expected_false_negative_count": 0
+        }
+      },
+      "expected_population_effect": {
+        "unmapped_count_delta": 1,
+        "unmapped_may_count_as_tested": false
+      },
+      "expected_publication_effect": {
+        "global_candidate_must_fail": false,
+        "limitation_must_remain_visible": true
+      }
+    },
+    "SCN_INCOMPLETE_COVERAGE": {
+      "expected_records": {
+        "partial_coverage_test_ids": [
+          "TEST_COV_001"
+        ],
+        "full_coverage_test_ids": [
+          "TEST_COV_002"
+        ]
+      },
+      "expected_states": {
+        "TEST_COV_001": {
+          "expected_population": 100,
+          "tested_population": 72,
+          "coverage_ratio": 0.72,
+          "coverage_state": "PARTIAL",
+          "evidence_sufficiency": "PARTIAL",
+          "control_effectiveness": "EFFECTIVE",
+          "residual_risk": "NOT_EVALUABLE",
+          "residual_risk_reason": "INSUFFICIENT_ASSURANCE_BASIS"
+        },
+        "TEST_COV_002": {
+          "expected_population": 100,
+          "tested_population": 100,
+          "coverage_ratio": 1.0,
+          "coverage_state": "SUFFICIENT",
+          "evidence_sufficiency": "SUFFICIENT",
+          "control_effectiveness": "EFFECTIVE"
+        }
+      },
+      "detector_truth": {
+        "partial_coverage": {
+          "true_positive_ids": [
+            "TEST_COV_001"
+          ],
+          "true_negative_ids": [
+            "TEST_COV_002"
+          ],
+          "expected_false_positive_count": 0,
+          "expected_false_negative_count": 0
+        }
+      },
+      "expected_population_effect": {
+        "partial_coverage_count_delta": 1,
+        "effectiveness_failure_count_delta": 0
+      },
+      "expected_claim_constraints": {
+        "fully_assured_claim_allowed_for_TEST_COV_001": false
+      }
+    },
+    "SCN_STALE_IAM_EVIDENCE": {
+      "expected_records": {
+        "current_evidence_ids": [
+          "EVD_IAM_FRESH",
+          "EVD_IAM_BOUNDARY",
+          "EVD_IAM_NEGATIVE"
+        ],
+        "stale_evidence_ids": [
+          "EVD_IAM_STALE"
+        ]
+      },
+      "expected_states": {
+        "EVD_IAM_FRESH": {
+          "age_days": 89,
+          "freshness": "CURRENT"
+        },
+        "EVD_IAM_BOUNDARY": {
+          "age_days": 90,
+          "freshness": "CURRENT"
+        },
+        "EVD_IAM_STALE": {
+          "age_days": 91,
+          "freshness": "STALE",
+          "evidence_sufficiency": "INSUFFICIENT",
+          "control_effectiveness": "NOT_EVALUABLE",
+          "reason_code": "STALE_EVIDENCE"
+        },
+        "EVD_IAM_NEGATIVE": {
+          "freshness": "CURRENT"
+        }
+      },
+      "detector_truth": {
+        "stale_evidence": {
+          "true_positive_ids": [
+            "EVD_IAM_STALE"
+          ],
+          "true_negative_ids": [
+            "EVD_IAM_FRESH",
+            "EVD_IAM_BOUNDARY",
+            "EVD_IAM_NEGATIVE"
+          ],
+          "expected_false_positive_count": 0,
+          "expected_false_negative_count": 0
+        }
+      },
+      "expected_population_effect": {
+        "stale_count_delta": 1,
+        "fabricated_control_failure_count_delta": 0
+      }
+    },
+    "SCN_THIRD_PARTY_OVERDUE": {
+      "expected_records": {
+        "overdue_action_ids": [
+          "ACT_TP_OVERDUE"
+        ],
+        "not_overdue_action_ids": [
+          "ACT_TP_DUE_TODAY",
+          "ACT_TP_FUTURE",
+          "ACT_TP_CLOSED"
+        ],
+        "unaffected_third_party_ids": [
+          "TP_002"
+        ]
+      },
+      "expected_states": {
+        "ACT_TP_OVERDUE": {
+          "overdue": true,
+          "days_overdue": 1
+        },
+        "ACT_TP_DUE_TODAY": {
+          "overdue": false,
+          "days_overdue": 0
+        },
+        "ACT_TP_FUTURE": {
+          "overdue": false,
+          "days_overdue": 0
+        },
+        "ACT_TP_CLOSED": {
+          "overdue": false,
+          "days_overdue": 0
+        }
+      },
+      "detector_truth": {
+        "overdue_remediation": {
+          "true_positive_ids": [
+            "ACT_TP_OVERDUE"
+          ],
+          "true_negative_ids": [
+            "ACT_TP_DUE_TODAY",
+            "ACT_TP_FUTURE",
+            "ACT_TP_CLOSED"
+          ],
+          "expected_false_positive_count": 0,
+          "expected_false_negative_count": 0
+        }
+      },
+      "expected_population_effect": {
+        "overdue_open_action_count_delta": 1,
+        "high_tier_sensitive_third_party_overdue_count_delta": 1
+      }
+    },
+    "SCN_SCHEMA_DRIFT": {
+      "expected_records": {
+        "breaking_fixture_ids": [
+          "CONTROL_EVIDENCE_BREAKING_V2"
+        ],
+        "compatible_fixture_ids": [
+          "CONTROL_EVIDENCE_ADDITIVE_V1"
+        ]
+      },
+      "expected_states": {
+        "CONTROL_EVIDENCE_BREAKING_V2": {
+          "structural_status": "FAIL",
+          "missing_required_field": "tested_population",
+          "downstream_state": "NOT_EVALUABLE",
+          "candidate_publishable": false
+        },
+        "CONTROL_EVIDENCE_ADDITIVE_V1": {
+          "structural_status": "PASS",
+          "added_optional_field": "review_note",
+          "candidate_publishable_if_other_gates_pass": true
+        }
+      },
+      "detector_truth": {
+        "breaking_schema_drift": {
+          "true_positive_ids": [
+            "CONTROL_EVIDENCE_BREAKING_V2"
+          ],
+          "true_negative_ids": [
+            "CONTROL_EVIDENCE_ADDITIVE_V1"
+          ],
+          "expected_false_positive_count": 0,
+          "expected_false_negative_count": 0
+        }
+      },
+      "expected_publication_effect": {
+        "breaking_candidate_blocks_trusted_publication": true,
+        "last_known_good_must_remain_unchanged": true,
+        "default_trusted_run_contaminated": false
+      }
+    },
+    "SCN_REPEAT_FINDING": {
+      "expected_records": {
+        "repeat_finding_ids": [
+          "FND_IAM_006"
+        ],
+        "non_repeat_finding_ids": [
+          "FND_IAM_007"
+        ],
+        "prior_finding_ids": [
+          "FND_IAM_001"
+        ]
+      },
+      "expected_states": {
+        "FND_IAM_006": {
+          "repeat": true,
+          "recurrence_key": "IAM_PRIVILEGED_ACCESS",
+          "prior_finding_id": "FND_IAM_001"
+        },
+        "FND_IAM_007": {
+          "repeat": false,
+          "recurrence_key": "IAM_SERVICE_ACCOUNT"
+        }
+      },
+      "detector_truth": {
+        "repeat_finding": {
+          "true_positive_ids": [
+            "FND_IAM_006"
+          ],
+          "true_negative_ids": [
+            "FND_IAM_007"
+          ],
+          "expected_false_positive_count": 0,
+          "expected_false_negative_count": 0
+        }
+      },
+      "expected_population_effect": {
+        "repeat_finding_count_delta": 1
+      }
+    }
+  }
+}

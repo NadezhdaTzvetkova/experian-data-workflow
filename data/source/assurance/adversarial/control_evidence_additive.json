@@ -1,0 +1,23 @@
+{
+  "fixture_id": "CONTROL_EVIDENCE_ADDITIVE_V1",
+  "schema_version": "1.0",
+  "reporting_period": "2026-09",
+  "records": [
+    {
+      "test_id": "TEST_COV_002",
+      "scenario_id": "SCN_INCOMPLETE_COVERAGE",
+      "raw_system_id": "CORE_INS_02",
+      "control_id": "CTRL_ACCESS_01",
+      "reporting_period": "2026-09",
+      "expected_population": 100,
+      "received_population": 100,
+      "mapped_population": 100,
+      "tested_population": 100,
+      "exception_count": 0,
+      "source_result": "PASS",
+      "evidence_id": "EVD_COV_002",
+      "evidence_date": "2026-09-15",
+      "review_note": "Optional additive field for schema compatibility test."
+    }
+  ]
+}
