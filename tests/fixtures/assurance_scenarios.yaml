@@ -1,0 +1,268 @@
+schema_version: "1.0"
+methodology_version: "2026-09-v1"
+as_of_date: "2026-09-30"
+
+scenarios:
+  - scenario_id: SCN_ACQ_MAPPING_GAP
+    purpose: Prove that a structurally valid acquired-system identifier that cannot be resolved to a canonical system remains visible as UNMAPPED rather than being dropped or guessed.
+    authoritative_risk: unresolved canonical identity can create silent population loss and false assurance coverage.
+    affected_sources:
+      - enterprise_inventory
+      - control_evidence
+    affected_objects:
+      - system
+      - canonical_mapping
+      - test_result
+    injected_condition:
+      raw_system_id: ACQ_SYS_LEGACY_77
+      canonical_system_id: null
+      mapping_status: UNMAPPED
+      acquired_entity_id: ENT_ACQ_01
+    positive_case:
+      raw_system_id: ACQ_SYS_LEGACY_77
+      expected_mapping_status: UNMAPPED
+    negative_control:
+      raw_system_id: ACQ_SYS_LEGACY_42
+      canonical_system_id: SYS_ACQ_01
+      expected_mapping_status: MAPPED
+    expected_stage_outcomes:
+      structural_validation: PASS
+      raw_record_preserved: true
+      unresolved_record_preserved: true
+      unmapped_count_delta: 1
+      silent_drop_allowed: false
+      downstream_assurance_state: NOT_EVALUABLE
+      reason_code: UNRESOLVED_MAPPING
+    expected_analytical_effect:
+      acquisition_gap_visible: true
+      assurance_coverage_must_not_treat_unmapped_as_tested: true
+    expected_visual_story:
+      - acquisition integration gap
+      - drill from entity to unresolved system identity
+    limitation: Demonstrates deterministic mapping-gap handling only; it does not model Experian acquisition integration processes.
+
+  - scenario_id: SCN_INCOMPLETE_COVERAGE
+    purpose: Prove that strong observed test results do not imply complete assurance when only part of the expected population was tested.
+    authoritative_risk: a high pass rate can hide incomplete assurance coverage.
+    affected_sources:
+      - control_evidence
+    affected_objects:
+      - test_result
+      - coverage
+      - evidence_sufficiency
+      - control_effectiveness
+      - residual_risk
+    injected_condition:
+      test_id: TEST_COV_001
+      system_id: SYS_CORE_01
+      control_id: CTRL_ACCESS_01
+      expected_population: 100
+      received_population: 100
+      mapped_population: 100
+      tested_population: 72
+      exception_count: 0
+      source_result: PASS
+    expected_stage_outcomes:
+      structural_validation: PASS
+      mapping_status: MAPPED
+      testing_state: TESTED
+      coverage_ratio: 0.72
+      coverage_state: PARTIAL
+      evidence_sufficiency: PARTIAL
+      control_effectiveness: EFFECTIVE
+      residual_risk: NOT_EVALUABLE
+      residual_risk_reason: INSUFFICIENT_ASSURANCE_BASIS
+    negative_control:
+      test_id: TEST_COV_002
+      expected_population: 100
+      received_population: 100
+      mapped_population: 100
+      tested_population: 100
+      exception_count: 0
+      source_result: PASS
+      expected_coverage_state: SUFFICIENT
+      expected_evidence_sufficiency: SUFFICIENT
+    expected_analytical_effect:
+      partial_coverage_count_delta: 1
+      effectiveness_failure_count_delta: 0
+      fully_assured_claim_allowed: false
+    expected_visual_story:
+      - effectiveness beside coverage
+      - executive warning that observed performance is strong but assurance is incomplete
+    limitation: Coverage threshold is an illustrative synthetic methodology, not an Experian assurance threshold.
+
+  - scenario_id: SCN_STALE_IAM_EVIDENCE
+    purpose: Prove deterministic freshness boundaries for assurance evidence on a critical sensitive system.
+    authoritative_risk: stale evidence can be incorrectly treated as current or incorrectly converted into control failure.
+    affected_sources:
+      - control_evidence
+    affected_objects:
+      - system
+      - test_result
+      - evidence_sufficiency
+    injected_condition:
+      system_id: SYS_SEC_01
+      criticality: CRITICAL
+      contains_sensitive_data: true
+      control_id: CTRL_IAM_01
+      freshness_rule_id: ASR_EVD_001
+    boundary_cases:
+      - evidence_id: EVD_IAM_FRESH
+        evidence_date: "2026-07-03"
+        age_days: 89
+        expected_freshness: CURRENT
+      - evidence_id: EVD_IAM_BOUNDARY
+        evidence_date: "2026-07-02"
+        age_days: 90
+        expected_freshness: CURRENT
+      - evidence_id: EVD_IAM_STALE
+        evidence_date: "2026-07-01"
+        age_days: 91
+        expected_freshness: STALE
+    negative_control:
+      evidence_id: EVD_IAM_NEGATIVE
+      system_id: SYS_CORE_02
+      evidence_date: "2026-09-15"
+      expected_freshness: CURRENT
+    expected_stage_outcomes:
+      stale_count_delta: 1
+      boundary_is_current: true
+      stale_evidence_sufficiency: INSUFFICIENT
+      stale_control_effectiveness: NOT_EVALUABLE
+      stale_reason_code: STALE_EVIDENCE
+      stale_means_ineffective: false
+    expected_analytical_effect:
+      sensitive_system_evidence_gap_visible: true
+      fabricated_control_failure_allowed: false
+    expected_visual_story:
+      - critical sensitive systems with stale assurance evidence
+      - evidence-age drill-down
+    limitation: The 90-day freshness threshold is explicitly illustrative.
+
+  - scenario_id: SCN_THIRD_PARTY_OVERDUE
+    purpose: Prove deterministic overdue-remediation semantics for a material third-party assurance context.
+    authoritative_risk: remediation aging can be misstated at the due-date boundary or inherited by unrelated third parties.
+    affected_sources:
+      - enterprise_inventory
+      - findings_actions
+    affected_objects:
+      - third_party
+      - finding
+      - management_action
+    injected_condition:
+      third_party_id: TP_001
+      system_id: SYS_CORE_03
+      tier: HIGH
+      sensitive_access_flag: true
+    boundary_cases:
+      - action_id: ACT_TP_OVERDUE
+        status: OPEN
+        target_date: "2026-09-29"
+        expected_overdue: true
+        expected_days_overdue: 1
+      - action_id: ACT_TP_DUE_TODAY
+        status: OPEN
+        target_date: "2026-09-30"
+        expected_overdue: false
+        expected_days_overdue: 0
+      - action_id: ACT_TP_FUTURE
+        status: IN_PROGRESS
+        target_date: "2026-10-01"
+        expected_overdue: false
+        expected_days_overdue: 0
+      - action_id: ACT_TP_CLOSED
+        status: CLOSED
+        target_date: "2026-09-20"
+        closed_date: "2026-09-19"
+        expected_overdue: false
+        expected_days_overdue: 0
+    negative_control:
+      third_party_id: TP_002
+      tier: LOW
+      sensitive_access_flag: false
+      action_overdue: false
+    expected_stage_outcomes:
+      overdue_open_action_count_delta: 1
+      due_today_is_overdue: false
+      closed_on_time_is_overdue: false
+      unrelated_third_party_affected: false
+    expected_analytical_effect:
+      high_tier_sensitive_third_party_overdue_count_delta: 1
+    expected_visual_story:
+      - third-party assurance attention
+      - remediation aging and due-date drill-down
+    limitation: Third-party tiering and assurance context are synthetic and do not represent Experian TPRM methodology.
+
+  - scenario_id: SCN_SCHEMA_DRIFT
+    purpose: Prove that breaking physical schema drift blocks trusted use while permitted additive drift does not create a false failure.
+    authoritative_risk: schema changes can silently corrupt population or make downstream conclusions invalid.
+    affected_sources:
+      - control_evidence
+    affected_objects:
+      - source_contract
+      - test_result
+      - publication_gate
+    execution_mode: dedicated_adversarial_fixture
+    breaking_variant:
+      fixture_id: CONTROL_EVIDENCE_BREAKING_V2
+      schema_version: "2.0-broken"
+      removed_required_field: tested_population
+      expected_structural_status: FAIL
+      downstream_state: NOT_EVALUABLE
+      candidate_publishable: false
+    negative_control:
+      fixture_id: CONTROL_EVIDENCE_ADDITIVE_V1
+      schema_version: "1.0"
+      added_optional_field: review_note
+      expected_structural_status: PASS
+      candidate_publishable_if_other_gates_pass: true
+    expected_stage_outcomes:
+      breaking_change_silently_coerced: false
+      breaking_candidate_blocks_trusted_publication: true
+      last_known_good_must_remain_unchanged: true
+      additive_optional_field_causes_failure: false
+    expected_analytical_effect:
+      default_trusted_run_contaminated: false
+    expected_visual_story:
+      - data-trust source health
+      - schema-contract failure shown as unavailable assurance rather than adverse control result
+    limitation: Demonstrates one physical breaking change and one additive change; it is not a full schema-registry implementation.
+
+  - scenario_id: SCN_REPEAT_FINDING
+    purpose: Prove deterministic recurrence detection using a governed stable recurrence key and chronology rather than fuzzy title similarity.
+    authoritative_risk: repeat findings can be overstated through vague text similarity or missed after prior closure.
+    affected_sources:
+      - findings_actions
+    affected_objects:
+      - finding
+      - management_action
+    injected_condition:
+      prior_finding:
+        finding_id: FND_IAM_001
+        recurrence_key: IAM_PRIVILEGED_ACCESS
+        identified_date: "2026-02-10"
+        status: CLOSED
+        closed_date: "2026-03-31"
+      current_finding:
+        finding_id: FND_IAM_006
+        recurrence_key: IAM_PRIVILEGED_ACCESS
+        identified_date: "2026-08-15"
+        status: OPEN
+        expected_repeat: true
+    negative_control:
+      finding_id: FND_IAM_007
+      recurrence_key: IAM_SERVICE_ACCOUNT
+      title_similarity_intentional: true
+      expected_repeat: false
+    expected_stage_outcomes:
+      repeat_finding_count_delta: 1
+      chronology_valid: true
+      fuzzy_title_matching_used: false
+      similar_unrelated_finding_marked_repeat: false
+    expected_analytical_effect:
+      repeat_finding_count_delta: 1
+      repeat_theme_visible: true
+    expected_visual_story:
+      - recurring finding theme
+      - prior-to-current finding trace
+    limitation: Recurrence semantics are synthetic and deliberately key-based; they do not claim to reproduce Experian finding-taxonomy rules.
