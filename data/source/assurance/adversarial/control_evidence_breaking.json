@@ -1,0 +1,21 @@
+{
+  "fixture_id": "CONTROL_EVIDENCE_BREAKING_V2",
+  "schema_version": "2.0-broken",
+  "reporting_period": "2026-09",
+  "records": [
+    {
+      "test_id": "TEST_COV_002",
+      "scenario_id": "SCN_INCOMPLETE_COVERAGE",
+      "raw_system_id": "CORE_INS_02",
+      "control_id": "CTRL_ACCESS_01",
+      "reporting_period": "2026-09",
+      "expected_population": 100,
+      "received_population": 100,
+      "mapped_population": 100,
+      "exception_count": 0,
+      "source_result": "PASS",
+      "evidence_id": "EVD_COV_002",
+      "evidence_date": "2026-09-15"
+    }
+  ]
+}
