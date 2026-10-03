@@ -124,10 +124,10 @@ Map the same logical contracts to managed storage, orchestration, compute, monit
 ## 11. Curated public AI methodology
 
 **Decision**
-Publish both the reviewer-facing AI methodology and the task-specific canonical AI framework, while excluding raw conversations and unrelated personal context.
+Publish the concise reviewer-facing AI methodology while keeping the richer task-specific working framework, raw conversations and unrelated personal context outside the submission.
 
 **Why**
 The exercise asks how AI was used, evaluated and challenged, but explicitly does not require prompt transcripts.
 
 **Trade-off**
-The private working framework is richer than the public documentation.
+The public documentation is intentionally narrower than the working framework so reviewer attention stays on the implemented solution, concrete evidence and human engineering decisions.
