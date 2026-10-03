@@ -205,4 +205,4 @@ The public AI methodology is documented separately from the implementation:
 - [Design decisions and trade-offs](docs/DESIGN_DECISIONS.md)
 - [Changed-requirement scenarios](docs/CHANGE_SCENARIOS.md)
 
-The repository includes the task-specific canonical AI framework used during development, including roles, skills, orchestration, source-of-truth controls and oversight guidance. Raw conversation transcripts and unrelated personal context are not included because the exercise explicitly does not require them.
+The repository includes a concise reviewer-facing description of the AI-assisted engineering process, including orchestration, specialist review roles and concrete examples of human oversight. The richer internal working framework, raw conversation transcripts and unrelated personal context are intentionally excluded so the submission remains focused on the implemented solution and its evidence.

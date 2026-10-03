@@ -12,7 +12,7 @@ The final implementation remained human-owned. AI suggestions were evaluated aga
 
 ## Public agentic model
 
-The repository contains two complementary AI layers: a concise reviewer-facing methodology and the task-specific canonical framework actually used during development. Raw conversation transcripts and unrelated personal context are not included.
+The repository contains a concise reviewer-facing AI methodology. A richer task-specific working framework was used during development, but it is intentionally kept outside the submission so the repository remains focused on the implemented data workflow and the evidence needed to review it. Raw conversation transcripts and unrelated personal context are not included.
 
 The review roles are:
 
@@ -61,7 +61,7 @@ AI-generated changes were not accepted solely because they looked plausible. Acc
 
 ## What is included
 
-The repository includes the task-specific canonical AI system under `ai/canonical/`, including the master role, orchestration, source-of-truth specification, acceptance matrix and specialist skills. The exercise explicitly does not require prompt transcripts, so raw conversations are not included.
+The repository includes only the reviewer-facing AI methodology and concrete human-oversight evidence needed to explain how AI was used, challenged and validated. The richer internal working framework and raw conversation transcripts are intentionally excluded from the submission.
 
 This keeps the submission focused on the question that matters: **how AI-assisted work was made trustworthy and explainable.**
 
