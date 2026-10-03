@@ -141,6 +141,39 @@ audit_report.html
 
 The pipeline also generates a self-contained audit-facing `audit_report.html` as part of the same manifested run. No separate report-generation step is required.
 
+## Role-aligned assurance extension
+
+Alongside the core expense workflow, the repository includes a compact synthetic control-assurance example aligned to the audit and data-assurance aspects of the role. It is a role-aligned extension of the same engineering principles, not an additional requirement of the exercise.
+
+Run it with:
+
+```powershell
+cd experian-data-workflow
+uv run python -m experian_workflow.assurance.pipeline
+```
+
+Each successful assurance run is published under:
+
+```text
+output/assurance_runs/<run_id>/
+```
+
+Typical outputs are:
+
+```text
+manifest.json
+control_assurance.parquet
+assurance_reporting_mart.parquet
+remediation_actions.csv
+findings.csv
+evidence_summary.json
+assurance_report.html
+```
+
+The assurance example demonstrates governed metric definitions, evidence freshness and sufficiency, residual-risk interpretation, remediation tracking, repeat-finding detection, reconciliation, independent validation of published KPIs, and a self-contained stakeholder report.
+
+All assurance data is synthetic. The methodology is explicitly labelled as demonstration logic and is not presented as Experian internal methodology.
+
 ## Representative sample output
 
 A representative completed run is available in [`sample_output/`](sample_output/).
@@ -205,4 +238,4 @@ The public AI methodology is documented separately from the implementation:
 - [Design decisions and trade-offs](docs/DESIGN_DECISIONS.md)
 - [Changed-requirement scenarios](docs/CHANGE_SCENARIOS.md)
 
-The repository includes the task-specific canonical AI framework used during development, including roles, skills, orchestration, source-of-truth controls and oversight guidance. Raw conversation transcripts and unrelated personal context are not included because the exercise explicitly does not require them.
+The repository includes a concise reviewer-facing description of the AI-assisted engineering process, including orchestration, specialist review roles and concrete examples of human oversight. The richer internal working framework, raw conversation transcripts and unrelated personal context are intentionally excluded so the submission remains focused on the implemented solution and its evidence.

@@ -1,0 +1,140 @@
+schema_version: "1.0"
+
+methodology:
+  name: synthetic_enterprise_assurance_demo
+  version: "2026-09-v1"
+  status: illustrative
+  disclaimer: "Synthetic demonstration methodology; not Experian internal methodology."
+
+metrics:
+  assurance_tests:
+    trusted_population: control_assurance
+    numerator: all assurance test rows
+    denominator: not_applicable_count_metric
+    units: count
+    filter_semantics: filter-responsive within the governed assurance test population
+    business_question: How many assurance tests are in scope?
+    limitation: Count reflects only the trusted assurance population for the selected scope.
+    empty_scope_state: 0
+    aggregation: count
+
+  sufficient_evidence:
+    trusted_population: control_assurance
+    numerator: rows where evidence_sufficiency = SUFFICIENT
+    denominator: all assurance test rows
+    units: count
+    filter_semantics: filter-responsive within the governed assurance test population
+    business_question: How many assurance tests have sufficient evidence?
+    limitation: Sufficiency follows the configured synthetic assurance methodology and does not imply control effectiveness.
+    empty_scope_state: 0
+    aggregation: count
+
+  partial_evidence:
+    trusted_population: control_assurance
+    numerator: rows where evidence_sufficiency = PARTIAL
+    denominator: all assurance test rows
+    units: count
+    filter_semantics: filter-responsive within the governed assurance test population
+    business_question: How many assurance tests have only partial evidence?
+    limitation: Partial evidence reflects configured coverage and evidence rules, not a control-failure conclusion.
+    empty_scope_state: 0
+    aggregation: count
+
+  insufficient_evidence:
+    trusted_population: control_assurance
+    numerator: rows where evidence_sufficiency = INSUFFICIENT
+    denominator: all assurance test rows
+    units: count
+    filter_semantics: filter-responsive within the governed assurance test population
+    business_question: How many assurance tests have insufficient evidence?
+    limitation: Insufficient evidence means the available basis is inadequate for the configured assurance conclusion.
+    empty_scope_state: 0
+    aggregation: count
+
+  not_evaluable_evidence:
+    trusted_population: control_assurance
+    numerator: rows where evidence_sufficiency = NOT_EVALUABLE
+    denominator: all assurance test rows
+    units: count
+    filter_semantics: filter-responsive within the governed assurance test population
+    business_question: How many assurance tests cannot be evaluated for evidence sufficiency?
+    limitation: NOT_EVALUABLE must remain distinct from failure and must not be interpreted as ineffective control performance.
+    empty_scope_state: 0
+    aggregation: count
+
+  stale_evidence:
+    trusted_population: control_assurance
+    numerator: rows where freshness_state = STALE
+    denominator: all assurance test rows
+    units: count
+    filter_semantics: filter-responsive within the governed assurance test population
+    business_question: How many assurance tests rely on stale evidence?
+    limitation: Staleness is determined from the configured as-of date and evidence-freshness rule.
+    empty_scope_state: 0
+    aggregation: count
+
+  unmapped_tests:
+    trusted_population: control_assurance
+    numerator: rows where identity_status = UNMAPPED
+    denominator: all assurance test rows
+    units: count
+    filter_semantics: filter-responsive within the governed assurance test population
+    business_question: How many assurance tests lack a resolved enterprise system identity?
+    limitation: Unmapped tests are retained explicitly and must not be assigned unsupported enterprise context.
+    empty_scope_state: 0
+    aggregation: count
+
+  high_or_critical_residual_risk:
+    trusted_population: control_assurance
+    numerator: rows where residual_risk is HIGH or CRITICAL
+    denominator: all assurance test rows
+    units: count
+    filter_semantics: filter-responsive within the governed assurance test population
+    business_question: How many assurance tests result in high or critical residual risk?
+    limitation: Residual risk is illustrative and only evaluable where the configured evidence basis is sufficient.
+    empty_scope_state: 0
+    aggregation: count
+
+  not_evaluable_residual_risk:
+    trusted_population: control_assurance
+    numerator: rows where residual_risk = NOT_EVALUABLE
+    denominator: all assurance test rows
+    units: count
+    filter_semantics: filter-responsive within the governed assurance test population
+    business_question: How many assurance tests do not support a residual-risk conclusion?
+    limitation: NOT_EVALUABLE represents insufficient decision basis and must not be converted into an assumed risk rating.
+    empty_scope_state: 0
+    aggregation: count
+
+  overdue_actions:
+    trusted_population: remediation_actions
+    numerator: rows where overdue = true
+    denominator: all trusted remediation action rows
+    units: count
+    filter_semantics: filter-responsive within the governed remediation-action population
+    business_question: How many remediation actions are overdue?
+    limitation: Overdue status follows the configured as-of date, open-status vocabulary, and target-date rule.
+    empty_scope_state: 0
+    aggregation: count
+
+  repeat_findings:
+    trusted_population: findings
+    numerator: rows where repeat_finding = true
+    denominator: all trusted finding rows
+    units: count
+    filter_semantics: filter-responsive within the governed findings population
+    business_question: How many findings are confirmed repeats under the recurrence rule?
+    limitation: Repeat classification uses the configured stable recurrence key and chronology requirements; fuzzy title matching is not used.
+    empty_scope_state: 0
+    aggregation: count
+
+  open_findings:
+    trusted_population: findings
+    numerator: rows where status is OPEN or IN_PROGRESS
+    denominator: all trusted finding rows
+    units: count
+    filter_semantics: filter-responsive within the governed findings population
+    business_question: How many findings remain open or in progress?
+    limitation: This metric reflects finding workflow status only and does not measure severity or remediation effectiveness.
+    empty_scope_state: 0
+    aggregation: count
