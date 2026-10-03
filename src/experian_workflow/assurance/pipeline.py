@@ -266,3 +266,12 @@ def run_assurance_pipeline(root: Path | str = ".") -> dict[str, object]:
         newline="\n",
     )
     return manifest
+
+
+def main() -> None:
+    manifest = run_assurance_pipeline()
+    print(json.dumps(manifest, indent=2))
+
+
+if __name__ == "__main__":
+    main()
