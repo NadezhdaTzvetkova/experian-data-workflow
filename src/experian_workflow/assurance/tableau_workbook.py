@@ -268,7 +268,7 @@ def _build_workbook_xml(
         dashboard = ET.SubElement(
             dashboards,
             "dashboard",
-            {"name": str(dashboard_spec["id"])},
+            {"name": str(dashboard_spec["id"]), "caption": str(dashboard_spec["title"])},
         )
         zones = ET.SubElement(dashboard, "zones")
         for index, worksheet_spec in enumerate(

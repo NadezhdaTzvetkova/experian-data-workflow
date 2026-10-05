@@ -13,6 +13,7 @@ from experian_workflow.assurance.calculations import (
     enrich_remediation_actions,
     load_assurance_rules,
 )
+from experian_workflow.assurance.explainability import write_explainability
 from experian_workflow.assurance.html_dashboard import build_assurance_report
 from experian_workflow.assurance.ingestion import (
     load_control_evidence,
@@ -342,6 +343,10 @@ def run_assurance_pipeline(root: Path | str = ".") -> dict[str, object]:
         findings=findings,
         remediation=remediation,
     )
+    publication_paths["explainability"] = write_explainability(
+        run_dir=run_dir, manifest=manifest, metric_contract=metric_contract,
+        metrics=pandas_metrics, rules=load_assurance_rules(root / "config/assurance/rules.yaml"),
+    )
     manifest["outputs"]["publication"] = {
         name: path.relative_to(root).as_posix()
         for name, path in publication_paths.items()
@@ -614,6 +619,12 @@ def run_assurance_pipeline(root: Path | str = ".") -> dict[str, object]:
             "validation_scope": "microsoft_powerpoint_desktop_client",
             "required_for_pipeline_success": False,
         },
+    }
+
+    validation_summary["artifacts"]["explainability"] = {
+        "path": "publication/explainability.json",
+        "sha256": sha256_file(publication_paths["explainability"]),
+        "status": "PASS",
     }
 
     validation_summary_path.write_text(

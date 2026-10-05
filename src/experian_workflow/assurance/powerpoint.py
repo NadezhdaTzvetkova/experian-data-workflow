@@ -13,6 +13,8 @@ from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.util import Inches, Pt
 
+from experian_workflow.assurance.explainability import load_explainability
+
 FONT = "Arial"
 BG = RGBColor(247, 249, 252)
 WHITE = RGBColor(255, 255, 255)
@@ -96,6 +98,7 @@ def build_slide_data(*, run_dir: Path) -> dict[str, Any]:
         "validation_status": str(metrics["validation_status"]),
         "metrics": metrics["metrics"],
         "reconciliation": evidence_summary["reconciliation"],
+        "explainability": load_explainability(run_dir=run_dir, expected_run_id=str(metrics["run_id"])),
         "metric_validation_status": str(metric_validation["status"]),
         "publication_validation_status": str(validation_summary["status"]),
         "risk_domain_summary": _read_table(tables_dir / "risk_domain_summary.csv"),
@@ -610,26 +613,20 @@ def _build_deck(slide_data: dict[str, Any]) -> Presentation:
 
     # Slide 6 — Traceability
     s = slides[5]
-    _text(s, "CLAIM-TO-EVIDENCE PATH", 0.72, 1.82, 3.1, 0.20, size=8, bold=True, color=MUTED)
-    nodes = [
-        ("Executive claim", "What the stakeholder sees", BLUE_SOFT, BLUE_DARK),
-        ("Published metric/table", "Canonical presentation value", CYAN_SOFT, CYAN),
-        ("Independent validation", "Pandas / DuckDB / metric contract", PURPLE_SOFT, PURPLE),
-        ("Governed analytical input", "Validated mart / population", GREEN_SOFT, GREEN),
-        ("Source & configuration", "Reproducible lineage evidence", SLATE_SOFT, NAVY),
-    ]
-    x = 0.72
-    for idx, (heading, body, fill, accent) in enumerate(nodes):
-        _rect(s, x, 2.25, 2.18, 1.35, fill=fill, line=fill, radius=True)
-        _pill(s, str(idx + 1), x + 0.15, 2.40, 0.34, fill=accent, color=WHITE)
-        _text(s, heading, x + 0.15, 2.80, 1.88, 0.30, size=9.4, bold=True, color=NAVY)
-        _text(s, body, x + 0.15, 3.16, 1.88, 0.30, size=7.4, color=MUTED)
-        if idx < len(nodes) - 1:
-            _text(s, "→", x + 2.23, 2.77, 0.34, 0.30, size=16, bold=True, color=BLUE, align=PP_ALIGN.CENTER)
-        x += 2.45
-    _callout(s, "Why this matters", "Every executive statement should be recoverable", "The deck is intentionally a summary layer. It should make the decision implication clear while preserving a deterministic path back to current-run detail, validation evidence and source lineage.", 0.72, 4.10, 5.50, 1.45, fill=WHITE, accent=BLUE_DARK)
-    _callout(s, "What it does not prove", "Traceability is not semantic correctness", "A consistent run identity or artifact hash cannot prove that a KPI definition is correct. That proof remains with the analytical-validation and scenario/reconciliation evidence.", 6.55, 4.10, 5.70, 1.45, fill=RED_SOFT, accent=RED)
-    _button(s, "Explore current-run evidence ›", 0.72, 5.82, 11.53, fill=NAVY, line=NAVY, color=WHITE, target_slide=prs.slides[6])
+    e = slide_data["explainability"]
+    _text(s, "Synthetic sources, one governed analytical truth", 0.72, 1.86, 11.53, 0.40, size=20, bold=True, color=NAVY)
+    for idx, source in enumerate(e["sources"]):
+        left = 0.72 + idx * 2.94
+        _rect(s, left, 2.47, 2.65, 1.48, fill=BLUE_SOFT, line=BLUE_SOFT, radius=True)
+        _text(s, source["format"] + " / " + source["id"].replace("_", " "), left + 0.14, 2.62, 2.37, 0.45, size=11, bold=True, color=NAVY)
+        _text(s, source["role"], left + 0.14, 3.14, 2.37, 0.55, size=10, color=INK)
+    _text(s, "PYTHON-DRIVEN FLOW", 0.72, 4.20, 3.5, 0.22, size=10, bold=True, color=MUTED)
+    _text(s, " → ".join(e["pipeline_stages"][:4]), 0.72, 4.58, 11.53, 0.36, size=13, bold=True, color=NAVY)
+    _text(s, " → ".join(e["pipeline_stages"][4:]), 0.72, 5.06, 11.53, 0.36, size=13, bold=True, color=NAVY)
+    _text(s, e["claim_to_evidence"], 0.72, 5.58, 11.53, 0.35, size=11, bold=True, color=NAVY)
+    _text(s, "Grain: one test per test ID / period; findings and actions retain their grains.", 0.72, 6.00, 11.53, 0.22, size=10, color=INK)
+    _text(s, e["traceability_limit"], 0.72, 6.25, 11.53, 0.23, size=9, color=MUTED)
+    _button(s, "Explore current-run evidence ›", 0.72, 6.52, 11.53, fill=NAVY, line=NAVY, color=WHITE, target_slide=prs.slides[6])
 
     # Slide 7 — Interactive Analytics
     s = slides[6]
@@ -683,6 +680,22 @@ def _build_deck(slide_data: dict[str, Any]) -> Presentation:
     _button(s, "Back to executive snapshot", 0.72, 5.72, 2.45, fill=NAVY, line=NAVY, color=WHITE, target_slide=prs.slides[0])
     _button(s, "Open interactive analytics", 3.44, 5.72, 2.55, fill=BLUE_SOFT, line=BLUE_SOFT, color=BLUE_DARK, target_slide=prs.slides[6])
 
+    # Notes expose the complete governed metric guide without crowding executive slides.
+    guide = slide_data["explainability"]
+    for slide in slides:
+        slide.notes_slide.notes_text_frame.text = (
+            "HOW TO READ THIS REPORT\n" + guide["disclaimer"] + "\n"
+            + "Reporting period: " + guide["reporting_period"] + "\n"
+            + "\n".join(
+                f"{item['label']}: {item['value']} {item['units']}. {item['grain']}. "
+                f"Numerator: {item['numerator']}. Denominator/context: {item['denominator']}. "
+                f"{item['limitation']}"
+                for item in guide["metrics"].values()
+            )
+            + "\nSTATE MEANINGS\n" + "\n".join(f"{key}: {value}" for key, value in guide["states"].items())
+            + "\nIMPLEMENTATION CHOICES\n" + "\n".join(f"{key}: {value}" for key, value in guide["implementation_choices"].items())
+        )
+    _text(slides[1], "How to read this: counts are tests; freshness overlaps sufficiency. Full definitions are in Notes and HTML Data & Metrics.", 0.72, 6.48, 11.53, 0.24, size=9, color=MUTED)
     for idx in range(len(slides)):
         _footer(prs, idx, slide_data)
     return prs

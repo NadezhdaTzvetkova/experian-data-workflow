@@ -1,5 +1,9 @@
 # Experian Assurance Analytics and Data Workflow
 
+## Reviewer Quick Start
+
+Open the [reviewer guide](review/README.md) for the PowerPoint, complete offline HTML, Tableau workbook and eight slide previews. The guide records the exact producer run and validation level. These curated copies live under `review/`; runtime output remains ignored.
+
 A reproducible assurance analytics/data workflow built for the Experian technical exercise. The repository includes the original corporate-expense workflow and a role-aligned enterprise-assurance extension. The assurance extension demonstrates governed evidence processing, population reconciliation, independent analytical validation, and publication to PowerPoint, HTML, and Tableau.
 
 All datasets, controls, methodology, and policy examples are synthetic and illustrative. They are not Experian internal data, controls, methodology, or policy. The observed results demonstrate workflow behaviour rather than conditions at Experian or any real organisation.
@@ -32,6 +36,7 @@ Renderers do not recreate KPI business logic. The PowerPoint reconciliation view
 | `docs/` | Design decisions and changed-requirement scenarios |
 | `ai/` | Intentional project review contracts and methodology documentation |
 | `sample_output/` | Versioned representative expense output for review without execution |
+| `review/` | Curated reviewer snapshot with explicit producer provenance |
 | `output/` | Ignored local runtime runs and submission packages |
 | `pyproject.toml`, `uv.lock` | Runtime specification and locked dependency resolution |
 
@@ -69,6 +74,7 @@ assurance_report.html
 publication/
   metrics.json
   metric_validation.json
+  explainability.json
   validation_summary.json
   tables/
   html/
@@ -114,6 +120,8 @@ The source-record population flow is **291 expected → 291 received → 281 map
 
 ## Validation model and testing
 
+`publication/explainability.json` binds source roles, metric definitions, state meanings and validation boundaries to the same-run published metric/table hashes. PowerPoint Notes, HTML Data & Metrics, and Tableau About / Data & Metrics consume this metadata without recalculating business rules.
+
 Metric acceptance compares Pandas, DuckDB, and an executable metric contract, then checks persisted publication readback. Independent scenario fixtures provide additional correctness checks. Reconciliation preserves explicit populations rather than silently dropping unmapped or non-evaluable cases.
 
 HTML/browser publication checks verify structure, report/chart generation, expected links, and current-run content. These are programmatic publication checks, not a claim of live browser interaction testing. Tableau checks validate Hyper data parity, workbook bindings, packaged extract identity, and worksheet/dashboard visual contracts. Tableau Desktop execution is not part of this validation model and was not executed for finalization.
@@ -129,15 +137,15 @@ git diff --check
 
 ## Submission review path
 
-The final locally assembled reviewer package is stored under `output/submission/Experian_Assurance_Analytics_Submission_FINAL/`, with the matching `Experian_Assurance_Analytics_Submission_FINAL.zip`. Submission assembly is a separate finalization step; the pipeline generates the run artifacts above.
+The published reviewer handoff lives under `review/`. Its guide records the clean producer run, source commit, and validation levels. The complete HTML subtree preserves relative links, and the eight slide previews come from the exact published deck. Local packages under ignored `output/submission/` are historical execution material; use `review/` for the current handoff.
 
-After extracting the ZIP:
+After downloading the repository, follow the [reviewer guide](review/README.md):
 
-1. Open `powerpoint/assurance_executive_report.pptx` first for the executive narrative and navigation.
-2. Open `html/assurance_dashboard.html` for interactive analysis.
-3. Open `tableau/assurance_dashboard.twbx` in compatible Tableau software for exploration.
+1. Open `review/presentation/assurance_executive_report.pptx` first for the executive narrative and navigation.
+2. Open `review/html/assurance_dashboard.html` for interactive analysis.
+3. Open `review/tableau/assurance_dashboard.twbx` in compatible Tableau software for exploration.
 
-Keep the `powerpoint`, `html`, and `tableau` directories together. PowerPoint links are relative to this package structure. The package includes its producer manifest and validation summary; use those files for the exact run and commit identity.
+Keep the `presentation`, `html`, and `tableau` directories together under `review/`. PowerPoint links are relative to this structure. The reviewer guide records the exact clean producer run and commit; the corresponding ignored run directory retains the terminal manifest and validation summary.
 
 ## Design principles and limitations
 

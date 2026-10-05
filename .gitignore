@@ -6,12 +6,22 @@ __pycache__/
 .ipynb_checkpoints/
 .idea/
 .vscode/
-output/runs/
 data/raw/
 data/quarantine/
 data/curated/
 data/marts/
-output/assurance_runs/
 ai/canonical/
 hyperd.log
-output/submission/
+hyperd_*.log
+
+# Runtime outputs stay local; curated reviewer snapshots live under review/.
+/output/
+
+# Private project controls belong outside the public repository.
+**/MASTER_SKILL.md
+**/*_SKILL.md
+**/REVIEWER_EXPLAINABILITY_CONTRACT.md
+**/TRIPLE_CHECK_AUDIT.md
+**/TRANSFORMATION_MANIFEST.json
+**/experian_skill_suite_*.zip
+/FILE_MAP.md

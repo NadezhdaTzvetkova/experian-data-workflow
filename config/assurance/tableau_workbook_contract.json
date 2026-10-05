@@ -372,7 +372,7 @@
                        },
                        {
                            "id":  "data_trust",
-                           "title":  "Data Trust",
+                           "title":  "About / Data & Metrics",
                            "worksheets":  [
                                               {
                                                   "id":  "lineage",
@@ -424,7 +424,12 @@
                                                                  "methodology_version",
                                                                  "publication_run_id",
                                                                  "publication_as_of_date",
-                                                                 "validation_status"
+                                                                 "validation_status",
+                                                                 "numerator",
+                                                                 "denominator",
+                                                                 "grain",
+                                                                 "how_to_read"
+
                                                              ],
                                                   "visual":  {
                                                                  "rows":  [
@@ -435,7 +440,12 @@
                                                                                "business_question",
                                                                                "limitation",
                                                                                "methodology_version",
-                                                                               "validation_status"
+                                                                               "validation_status",
+                                                                               "numerator",
+                                                                               "denominator",
+                                                                               "grain",
+                                                                               "how_to_read"
+
                                                                            ],
                                                                  "columns":  [
 

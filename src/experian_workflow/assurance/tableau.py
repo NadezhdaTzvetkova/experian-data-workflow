@@ -18,6 +18,7 @@ from tableauhyperapi import (
     Telemetry,
 )
 
+from experian_workflow.assurance.explainability import load_explainability
 from experian_workflow.assurance.publication import TABLE_CONTRACTS
 
 TABLEAU_SCHEMA = "Extract"
@@ -141,6 +142,17 @@ def _metric_rows(
             "Published metric keys do not match the governed metric contract"
         )
 
+    explanation = load_explainability(run_dir=metrics_path.parent.parent, expected_run_id=str(metrics_payload["run_id"]))
+    context = (
+        explanation["disclaimer"] + " Sources: "
+        + "; ".join(f"{item['format']} {item['id']}: {item['role']}" for item in explanation["sources"])
+        + ". Python flow: " + " -> ".join(explanation["pipeline_stages"])
+        + ". " + explanation["claim_to_evidence"] + ". " + explanation["traceability_limit"]
+        + ". " + explanation["grain_distinction"] + " "
+        + " ".join(f"{key}: {value}" for key, value in explanation["states"].items())
+        + " " + explanation["validation_levels"]["analytics"]
+        + " " + explanation["validation_levels"]["tableau"]
+    )
     rows: list[dict[str, Any]] = []
     for metric_id in sorted(published_metrics):
         contract = metric_contracts[metric_id]
@@ -152,6 +164,10 @@ def _metric_rows(
                 "unit": str(contract["units"]),
                 "business_question": str(contract["business_question"]),
                 "limitation": str(contract["limitation"]),
+                "numerator": explanation["metrics"][metric_id]["numerator"],
+                "denominator": explanation["metrics"][metric_id]["denominator"],
+                "grain": explanation["metrics"][metric_id]["grain"],
+                "how_to_read": context,
                 "methodology_version": str(
                     metrics_payload["methodology_version"]
                 ),
@@ -177,6 +193,10 @@ def _metric_definition() -> TableDefinition:
             TableDefinition.Column("unit", SqlType.text()),
             TableDefinition.Column("business_question", SqlType.text()),
             TableDefinition.Column("limitation", SqlType.text()),
+            TableDefinition.Column("numerator", SqlType.text()),
+            TableDefinition.Column("denominator", SqlType.text()),
+            TableDefinition.Column("grain", SqlType.text()),
+            TableDefinition.Column("how_to_read", SqlType.text()),
             TableDefinition.Column(
                 "methodology_version",
                 SqlType.text(),
@@ -259,6 +279,10 @@ def build_tableau_hyper(
             "unit",
             "business_question",
             "limitation",
+            "numerator",
+            "denominator",
+            "grain",
+            "how_to_read",
             "methodology_version",
             "publication_run_id",
             "publication_as_of_date",
@@ -407,7 +431,7 @@ def validate_tableau_hyper(
         )
         hyper_metrics = connection.execute_list_query(
             "SELECT metric_id, value, unit, methodology_version, "
-            "publication_run_id, validation_status "
+            "publication_run_id, validation_status, numerator, denominator, grain, how_to_read "
             f"FROM {metric_ref} ORDER BY metric_id"
         )
         expected_metrics = [
@@ -418,6 +442,10 @@ def validate_tableau_hyper(
                 row["methodology_version"],
                 row["publication_run_id"],
                 row["validation_status"],
+                row["numerator"],
+                row["denominator"],
+                row["grain"],
+                row["how_to_read"],
             ]
             for row in metric_rows
         ]

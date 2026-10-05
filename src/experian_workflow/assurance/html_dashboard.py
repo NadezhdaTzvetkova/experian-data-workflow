@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import json
+from html import escape
 from pathlib import Path
 
 import pandas as pd
 import plotly.express as px
 import plotly.io as pio
+
+from experian_workflow.assurance.explainability import load_explainability
 
 
 def build_assurance_report(
@@ -200,6 +203,32 @@ def build_assurance_report(
     mart_json = mart.to_json(orient="records", date_format="iso")
     priority_json = priority_view.to_json(orient="records", date_format="iso")
     risk_domain_json = risk_domain_view.to_json(orient="records", date_format="iso")
+
+    explanation = load_explainability(run_dir=run_dir, expected_run_id=str(manifest["run_id"]))
+    source_rows = "".join(
+        "<tr>" + "".join(f"<td>{escape(str(source[key]))}</td>" for key in ("path", "format", "role", "grain")) + "</tr>"
+        for source in explanation["sources"]
+    )
+    metric_rows = "".join(
+        "<tr>" + "".join(f"<td>{escape(str(item[key]))}</td>" for key in ("label", "value", "grain", "numerator", "denominator", "limitation")) + "</tr>"
+        for item in explanation["metrics"].values()
+    )
+    state_rows = "".join(f"<p><strong>{escape(key)}</strong>: {escape(value)}</p>" for key, value in explanation["states"].items())
+    validation_rows = "".join(f"<p><strong>{escape(key)}</strong>: {escape(value)}</p>" for key, value in explanation["validation_levels"].items())
+    rationale_rows = "".join(f"<p><strong>{escape(key)}</strong>: {escape(value)}</p>" for key, value in explanation["implementation_choices"].items())
+    explanation_html = (
+        '<details id="data-and-metrics" class="lineage-card" open><summary><strong>Methodology / Data &amp; Metrics</strong></summary>'
+        + '<p>' + escape(explanation["disclaimer"]) + '</p>'
+        + '<p>Reporting period: ' + escape(explanation["reporting_period"]) + '. As of: ' + escape(explanation["as_of_date"]) + '.</p>'
+        + '<h3>Sources and roles</h3><div style="overflow-x:auto"><table><thead><tr><th>Source</th><th>Format</th><th>Role</th><th>Grain</th></tr></thead><tbody>' + source_rows + '</tbody></table></div>'
+        + '<h3>Python-driven flow</h3><p>' + escape(' → '.join(explanation["pipeline_stages"])) + '</p>'
+        + '<h3>Claim-to-evidence traceability</h3><p>' + escape(explanation["claim_to_evidence"]) + '</p><p>' + escape(explanation["traceability_limit"]) + '</p>'
+        + '<p>' + escape(explanation["reconciliation_grain"]) + ' ' + escape(explanation["grain_distinction"]) + '</p>'
+        + '<h3>Headline metric definitions (validated default scope)</h3><p>Counts are not percentages. Denominators below describe context; use the correct test, finding or action population when interpreting a rate. Filters change scope; this table records the validated full-run values.</p>'
+        + '<div style="overflow-x:auto"><table><thead><tr><th>Metric</th><th>Count</th><th>Grain</th><th>Numerator</th><th>Denominator/context</th><th>Limitation</th></tr></thead><tbody>' + metric_rows + '</tbody></table></div>'
+        + '<h3>State meanings</h3>' + state_rows + '<h3>What validation proves</h3>' + validation_rows
+        + '<h3>Implementation choices</h3><p>' + escape(explanation["implementation_choice_scope"]) + '</p>' + rationale_rows + '</details>'
+    )
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -956,7 +985,7 @@ body {{
         onclick="setActiveDashboardTab('findings-actions')">Findings & actions</button>
     <a class="open-artifact-link" href="reports/findings_and_actions.html" target="_blank" rel="noopener" data-browser-path="reports/findings_and_actions.html" onclick="openBrowserArtifact(event, 'reports/findings_and_actions.html')">Open report ↗</a>
     <button class="tab-button" data-dashboard-tab="lineage"
-        onclick="setActiveDashboardTab('lineage')">Data &amp; lineage</button>
+        onclick="setActiveDashboardTab('lineage')">Data &amp; Metrics</button>
     <a class="open-artifact-link" href="reports/data_trust.html" target="_blank" rel="noopener" data-browser-path="reports/data_trust.html" onclick="openBrowserArtifact(event, 'reports/data_trust.html')">Open report ↗</a>
 </div>
 </nav>
@@ -1216,9 +1245,12 @@ body {{
 <div>
     <div class="section-kicker">Traceability and limitations</div>
     <h2>Data &amp; lineage</h2>
+    <p>How to read this report: sources, methods and metric definitions.</p>
     <p>Publication, reconciliation and methodology evidence supporting the dashboard.</p>
 </div>
 </div>
+
+{explanation_html}
 
 <div class="lineage-accordion">
     <button class="lineage-toggle" onclick="toggleLineageSection('lineage-sources')" type="button">
@@ -1264,6 +1296,7 @@ body {{
         <div class="lineage-row"><span>Mapped</span><span>{reconciliation["mapped_population"]}</span></div>
         <div class="lineage-row"><span>Unmapped</span><span>{reconciliation["unmapped_population"]}</span></div>
         <div class="lineage-row"><span>Evaluated</span><span>{reconciliation["evaluated_population"]}</span></div>
+        <div class="lineage-row"><span>Mapped but not tested</span><span>{reconciliation["not_tested_population"]}</span></div>
     </div>
 
     <div class="lineage-card">
