@@ -17,12 +17,14 @@ Detailed numerator, denominator, trusted population, filter scope, and limitatio
 
 ## Producer provenance and acceptance
 
-Clean producer run: `20261005T170737325190Z`. Producer source commit: `b8afddbe01d7b137c7819c3143761f609dc10fce`. Producer working tree: **clean (`git_dirty=false`)**. Reporting date: **2026-09-30**. The later reviewer-artifact commit publishes copies of these source-commit outputs; it does not change their producer identity.
+Clean producer run: `20261005T175406684735Z`. Producer source commit: `c8bcb089332e19f919d200a280a837ba3a53c103`. Producer working tree: **clean (`git_dirty=false`)**. Reporting date: **2026-09-30**. The later reviewer-artifact commit publishes copies of these source-commit outputs; it does not change their producer identity.
 
 All eight exact clean-run slides were rendered and visually inspected in Microsoft PowerPoint. PowerPoint slideshow navigation to slides 1–8 was executed; the 114 internal navigation targets and 17 external publication links passed structural validation. The eight previews were exported from that exact deck.
 
-HTML passed programmatic content, package, embedded-resource, current-run, and relative-link checks. Browser interactions remain **NOT_EXECUTED**: the repository has no browser/DOM harness, and browser security policy blocks the local-file route and alternate workarounds. No runtime browser pass is claimed.
+All 128 tests passed on the committed source. Ruff and git diff --check passed. All twelve metrics and seven publication tables match the preceding canonical run, excluding execution identity. The fail-closed presentation gate checks complete HTML records, embedded metric definitions, actual PowerPoint headlines and every slide's metric Notes.
+
+HTML passed programmatic content, package, embedded-resource, current-run, relative-link and accessibility-structure checks. JavaScript syntax and isolated counting checks passed; these do not establish browser rendering or assistive-technology conformance. Browser interactions remain **NOT_EXECUTED**: the repository has no browser/DOM harness, and browser security policy blocks the local-file route and alternate workarounds. No runtime browser pass is claimed.
 
 Tableau acceptance is **PROGRAMMATIC_TABLEAU PASS**: genuine Hyper data parity, TWB field/visual bindings and default scope, plus exact current TWB and Hyper bytes inside the TWBX. Tableau Desktop was **NOT_EXECUTED**.
 
-The complete HTML subtree and all presentation-linked destinations are included. No duplicate submission ZIP is included. Generated runs remain under ignored `output/`; this folder is the deliberately curated reviewer copy.
+The complete HTML subtree and all presentation-linked destinations are included. No duplicate submission ZIP is included. Generated runs remain under ignored `output/`; this folder is the deliberately curated reviewer copy. Standalone support CSVs, field dictionaries, metrics and machine-readable manifests are intentionally reproducible rather than duplicated here; the root README gives the exact locations and reproduction procedure at this producer source commit.

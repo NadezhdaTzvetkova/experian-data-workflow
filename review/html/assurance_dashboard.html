@@ -715,9 +715,22 @@ body {
     .kpi-grid { grid-template-columns: 1fr; }
     .observation-grid { grid-template-columns: 1fr; }
 }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible,
+summary:focus-visible, [tabindex]:focus-visible { outline: 3px solid #1e40af; outline-offset: 3px; }
+.skip-link { position: fixed; top: -80px; left: 12px; z-index: 1000; background: white; color: #102a43; padding: 12px; }
+.skip-link:focus { top: 12px; }
+.panel-title { margin: 0; }
+.dashboard-main, .panel, .content-grid > * { min-width: 0; }
+.badge { color: #102a43; }
+@media (max-width: 680px) {
+    .summary-chart-grid, .finding-filter-panel { grid-template-columns: 1fr; }
+    .detail-drawer { width: 100%; max-width: 100%; }
+    .nav-inner { flex-wrap: wrap; }
+}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to analysis</a>
 <div style="height:100%; width:100%;">                        <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
         <script>/**
 * plotly.js v4.1.1
@@ -4349,7 +4362,7 @@ return Plotly;
             <div class="eyebrow">Enterprise assurance - synthetic demonstration</div>
             <h1>Enterprise Assurance Analytics</h1>
             <div class="hero-meta">
-                Run 20261005T170737325190Z - As of 2026-09-30 -
+                Run 20261005T175406684735Z - As of 2026-09-30 -
                 Methodology 2026-09-v1
             </div>
         </div>
@@ -4363,22 +4376,22 @@ return Plotly;
 
 <nav class="nav-strip">
 <div class="nav-inner">
-    <button class="tab-button active" data-dashboard-tab="executive"
+    <button class="tab-button active" aria-pressed="true" data-dashboard-tab="executive"
         onclick="setActiveDashboardTab('executive')">Executive</button>
     <a class="open-artifact-link" href="reports/executive_assurance.html" target="_blank" rel="noopener" data-browser-path="reports/executive_assurance.html" onclick="openBrowserArtifact(event, 'reports/executive_assurance.html')">Open report ↗</a>
-    <button class="tab-button" data-dashboard-tab="risk-evidence"
+    <button class="tab-button" aria-pressed="false" data-dashboard-tab="risk-evidence"
         onclick="setActiveDashboardTab('risk-evidence')">Risk &amp; evidence</button>
     <a class="open-artifact-link" href="reports/risk_and_evidence.html" target="_blank" rel="noopener" data-browser-path="reports/risk_and_evidence.html" onclick="openBrowserArtifact(event, 'reports/risk_and_evidence.html')">Open report ↗</a>
-    <button class="tab-button" data-dashboard-tab="findings-actions"
+    <button class="tab-button" aria-pressed="false" data-dashboard-tab="findings-actions"
         onclick="setActiveDashboardTab('findings-actions')">Findings & actions</button>
     <a class="open-artifact-link" href="reports/findings_and_actions.html" target="_blank" rel="noopener" data-browser-path="reports/findings_and_actions.html" onclick="openBrowserArtifact(event, 'reports/findings_and_actions.html')">Open report ↗</a>
-    <button class="tab-button" data-dashboard-tab="lineage"
+    <button class="tab-button" aria-pressed="false" data-dashboard-tab="lineage"
         onclick="setActiveDashboardTab('lineage')">Data &amp; Metrics</button>
     <a class="open-artifact-link" href="reports/data_trust.html" target="_blank" rel="noopener" data-browser-path="reports/data_trust.html" onclick="openBrowserArtifact(event, 'reports/data_trust.html')">Open report ↗</a>
 </div>
 </nav>
 
-<main class="dashboard-main">
+<main id="main-content" class="dashboard-main" tabindex="-1">
 
 <section id="dashboard-filters" class="filter-panel">
 <div class="filter-header">
@@ -4474,7 +4487,7 @@ return Plotly;
 <div class="content-grid">
     <div class="panel">
         <div class="panel-head">
-            <div class="panel-title">Evidence position</div>
+            <h3 class="panel-title">Evidence position</h3>
             <div class="panel-subtitle">Composition of the selected assurance-test population</div>
             <a class="open-artifact-link" href="charts/evidence_sufficiency.html" target="_blank" rel="noopener" data-browser-path="charts/evidence_sufficiency.html" onclick="openBrowserArtifact(event, 'charts/evidence_sufficiency.html')">Open chart ↗</a>
         </div>
@@ -4482,7 +4495,7 @@ return Plotly;
     </div>
     <div class="panel">
         <div class="panel-head">
-            <div class="panel-title">Residual-risk visibility</div>
+            <h3 class="panel-title">Residual-risk visibility</h3>
             <div class="panel-subtitle">Risk conclusions supported by current evidence</div>
             <a class="open-artifact-link" href="charts/residual_risk.html" target="_blank" rel="noopener" data-browser-path="charts/residual_risk.html" onclick="openBrowserArtifact(event, 'charts/residual_risk.html')">Open chart ↗</a>
         </div>
@@ -4513,7 +4526,7 @@ return Plotly;
 
 <div class="panel" style="margin-bottom:18px">
     <div class="panel-head">
-        <div class="panel-title">Evidence sufficiency by risk domain</div>
+        <h3 class="panel-title">Evidence sufficiency by risk domain</h3>
         <div class="panel-subtitle">Sufficient evidence versus tests requiring stronger evidence</div>
         <a class="open-artifact-link" href="charts/risk_domain.html" target="_blank" rel="noopener" data-browser-path="charts/risk_domain.html" onclick="openBrowserArtifact(event, 'charts/risk_domain.html')">Open chart ↗</a>
     </div>
@@ -4522,7 +4535,7 @@ return Plotly;
 
 <div class="panel" style="margin-bottom:18px">
     <div class="panel-head">
-        <div class="panel-title">Evidence freshness</div>
+        <h3 class="panel-title">Evidence freshness</h3>
         <div class="panel-subtitle">Evidence age by assurance test; stale evidence is highlighted</div>
         <a class="open-artifact-link" href="charts/freshness.html" target="_blank" rel="noopener" data-browser-path="charts/freshness.html" onclick="openBrowserArtifact(event, 'charts/freshness.html')">Open chart ↗</a>
     </div>
@@ -4571,27 +4584,27 @@ return Plotly;
     </div>
     <div class="kpi-card good">
         <div class="kpi-label">Validated closure</div>
-        <div id="validated-closures" class="kpi-value">1</div>
+        <div id="validated-closures" class="kpi-value">2</div>
         <div class="kpi-sub">Closed actions with validated closure evidence</div>
     </div>
 </div>
 
 <div class="finding-filter-panel">
-    <select id="filter-finding-severity" onchange="applyFindingFilters()"></select>
-    <select id="filter-finding-status" onchange="applyFindingFilters()"></select>
-    <select id="filter-action-status" onchange="applyFindingFilters()"></select>
-    <select id="filter-overdue" onchange="applyFindingFilters()">
+    <select aria-label="Finding severity" id="filter-finding-severity" onchange="applyFindingFilters()"></select>
+    <select aria-label="Finding status" id="filter-finding-status" onchange="applyFindingFilters()"></select>
+    <select aria-label="Action status" id="filter-action-status" onchange="applyFindingFilters()"></select>
+    <select aria-label="Action schedule" id="filter-overdue" onchange="applyFindingFilters()">
         <option value="ALL">All schedules</option>
         <option value="true">Overdue</option>
         <option value="false">Not overdue</option>
     </select>
-    <select id="filter-repeat" onchange="applyFindingFilters()">
+    <select aria-label="Finding recurrence" id="filter-repeat" onchange="applyFindingFilters()">
         <option value="ALL">All recurrence</option>
         <option value="true">Repeat</option>
         <option value="false">Not repeat</option>
     </select>
     <input
-        id="finding-search"
+        aria-label="Search findings and actions" id="finding-search"
         type="search"
         placeholder="Search finding, theme, action or owner"
         oninput="applyFindingFilters()"
@@ -4601,15 +4614,15 @@ return Plotly;
 <div class="summary-chart-grid">
     <div class="panel">
         <div class="panel-head">
-            <div class="panel-title">Finding severity</div>
-            <div class="panel-subtitle">Current filtered finding/action population</div>
+            <h3 class="panel-title">Finding severity</h3>
+            <div class="panel-subtitle">Distinct findings in the selected relationship scope; each finding counts once</div>
             <a class="open-artifact-link" href="charts/findings.html" target="_blank" rel="noopener" data-browser-path="charts/findings.html" onclick="openBrowserArtifact(event, 'charts/findings.html')">Open chart ↗</a>
         </div>
         <div id="finding-summary-chart" class="chart"></div>
     </div>
     <div class="panel">
         <div class="panel-head">
-            <div class="panel-title">Action status</div>
+            <h3 class="panel-title">Action status</h3>
             <div class="panel-subtitle">Current filtered remediation population</div>
             <a class="open-artifact-link" href="charts/remediation_actions.html" target="_blank" rel="noopener" data-browser-path="charts/remediation_actions.html" onclick="openBrowserArtifact(event, 'charts/remediation_actions.html')">Open chart ↗</a>
         </div>
@@ -4619,7 +4632,7 @@ return Plotly;
 
 <div class="table-panel">
     <div class="panel-head">
-        <div class="panel-title">Finding and remediation priorities</div>
+        <h3 class="panel-title">Finding and remediation priorities</h3>
         <div class="panel-subtitle">Compact operational view; repeated finding rows represent separate management actions.</div>
     </div>
     <div id="priority-table" class="table-scroll"></div>
@@ -4638,10 +4651,10 @@ return Plotly;
 </div>
 </div>
 
-<details id="data-and-metrics" class="lineage-card" open><summary><strong>Methodology / Data &amp; Metrics</strong></summary><p>Illustrative synthetic enterprise-assurance data, controls, methodology and policy; not Experian internal data, controls, methodology or policy.</p><p>Reporting period: 2026-09. As of: 2026-09-30.</p><h3>Sources and roles</h3><div style="overflow-x:auto"><table><thead><tr><th>Source</th><th>Format</th><th>Role</th><th>Grain</th></tr></thead><tbody><tr><td>data/source/assurance/enterprise.db</td><td>SQLite</td><td>Enterprise identity, risk/control context and mapping references</td><td>Keyed reference tables</td></tr><tr><td>data/source/assurance/control_evidence.json</td><td>JSON</td><td>Control testing and evidence populations</td><td>One assurance test per reporting period</td></tr><tr><td>data/source/assurance/findings.csv</td><td>CSV</td><td>Finding status and recurrence history</td><td>One finding per finding ID</td></tr><tr><td>data/source/assurance/management_actions.csv</td><td>CSV</td><td>Remediation ownership, target dates and closure</td><td>One action per action ID</td></tr></tbody></table></div><h3>Python-driven flow</h3><p>Source ingestion → Structural validation → Identity normalization → Population reconciliation → Governed analytics → Independent metric validation → Shared publication → PowerPoint / HTML / Tableau</p><h3>Claim-to-evidence traceability</h3><p>Executive claim → published metric/table → independent validation → governed input → source/configuration</p><p>Run identity and hashes establish traceability; metric-contract and scenario checks establish analytical correctness.</p><p>Source-record population counts within assurance tests; assurance-test KPIs count test rows. 10 unmapped source records and 1 unmapped assurance test describe different grains in the current demonstration.</p><h3>Headline metric definitions (validated default scope)</h3><p>Counts are not percentages. Denominators below describe context; use the correct test, finding or action population when interpreting a rate. Filters change scope; this table records the validated full-run values.</p><div style="overflow-x:auto"><table><thead><tr><th>Metric</th><th>Count</th><th>Grain</th><th>Numerator</th><th>Denominator/context</th><th>Limitation</th></tr></thead><tbody><tr><td>Assurance tests</td><td>9</td><td>One assurance test per test ID and reporting period</td><td>all assurance test rows</td><td>not_applicable_count_metric</td><td>Count reflects only the trusted assurance population for the selected scope.</td></tr><tr><td>High or critical residual risk</td><td>2</td><td>One assurance test per test ID and reporting period</td><td>rows where residual_risk is HIGH or CRITICAL</td><td>all assurance test rows</td><td>Residual risk is illustrative and only evaluable where the configured evidence basis is sufficient.</td></tr><tr><td>Insufficient evidence</td><td>2</td><td>One assurance test per test ID and reporting period</td><td>rows where evidence_sufficiency = INSUFFICIENT</td><td>all assurance test rows</td><td>Insufficient evidence means the available basis is inadequate for the configured assurance conclusion.</td></tr><tr><td>Not evaluable evidence</td><td>1</td><td>One assurance test per test ID and reporting period</td><td>rows where evidence_sufficiency = NOT_EVALUABLE</td><td>all assurance test rows</td><td>NOT_EVALUABLE must remain distinct from failure and must not be interpreted as ineffective control performance.</td></tr><tr><td>Not evaluable residual risk</td><td>4</td><td>One assurance test per test ID and reporting period</td><td>rows where residual_risk = NOT_EVALUABLE</td><td>all assurance test rows</td><td>NOT_EVALUABLE represents insufficient decision basis and must not be converted into an assumed risk rating.</td></tr><tr><td>Open findings</td><td>4</td><td>One finding per finding ID</td><td>rows where status is OPEN or IN_PROGRESS</td><td>all trusted finding rows</td><td>This metric reflects finding workflow status only and does not measure severity or remediation effectiveness.</td></tr><tr><td>Overdue actions</td><td>1</td><td>One management action per action ID</td><td>rows where overdue = true</td><td>all trusted remediation action rows</td><td>Overdue status follows the configured as-of date, open-status vocabulary, and target-date rule.</td></tr><tr><td>Partial evidence</td><td>1</td><td>One assurance test per test ID and reporting period</td><td>rows where evidence_sufficiency = PARTIAL</td><td>all assurance test rows</td><td>Partial evidence reflects configured coverage and evidence rules, not a control-failure conclusion.</td></tr><tr><td>Repeat findings</td><td>1</td><td>One finding per finding ID</td><td>rows where repeat_finding = true</td><td>all trusted finding rows</td><td>Repeat classification uses the configured stable recurrence key and chronology requirements; fuzzy title matching is not used.</td></tr><tr><td>Stale evidence</td><td>2</td><td>One assurance test per test ID and reporting period</td><td>rows where freshness_state = STALE</td><td>all assurance test rows</td><td>Staleness is determined from the configured as-of date and evidence-freshness rule.</td></tr><tr><td>Sufficient evidence</td><td>5</td><td>One assurance test per test ID and reporting period</td><td>rows where evidence_sufficiency = SUFFICIENT</td><td>all assurance test rows</td><td>Sufficiency follows the configured synthetic assurance methodology and does not imply control effectiveness.</td></tr><tr><td>Unmapped tests</td><td>1</td><td>One assurance test per test ID and reporting period</td><td>rows where identity_status = UNMAPPED</td><td>all assurance test rows</td><td>Unmapped tests are retained explicitly and must not be assigned unsupported enterprise context.</td></tr></tbody></table></div><h3>State meanings</h3><p><strong>INSUFFICIENT</strong>: After reconciliation and mapping checks, stale evidence or zero tested population prevents a sufficient assurance basis.</p><p><strong>NOT_EVALUABLE</strong>: The relevant evaluation lacks a valid basis: failed reconciliation, unresolved identity, future evidence or missing expected population can prevent evidence evaluation; insufficient assurance basis or missing inherent risk prevents residual-risk evaluation.</p><p><strong>NOT_TESTED</strong>: Mapped source records were not evaluated; retain them in population reconciliation.</p><p><strong>PARTIAL</strong>: Reconciliation passes, identity is mapped and evidence is current, with nonzero testing below full expected coverage; this is not automatically a failed control.</p><p><strong>STALE</strong>: Evidence is older than 90 days old at the governed as-of date. Freshness overlaps evidence-sufficiency states; future evidence is NOT_EVALUABLE.</p><p><strong>SUFFICIENT</strong>: Reconciliation passes, identity is mapped, evidence is current and tested population meets configured full coverage; evidence adequacy does not imply control effectiveness.</p><p><strong>UNMAPPED</strong>: No resolved enterprise identity. Retain the test and its source records explicitly.</p><p><strong>residual_risk</strong>: A residual-risk conclusion requires SUFFICIENT evidence and the configured inherent-risk/control-effectiveness matrix.</p><h3>What validation proves</h3><p><strong>analytics</strong>: Pandas, independent DuckDB and the governed metric contract must agree; persisted tables are read back and reconciled.</p><p><strong>html</strong>: Programmatic structure/link checks. Browser interactions are separate executed evidence.</p><p><strong>powerpoint</strong>: Automated package, slide, identity and link checks. PowerPoint Desktop rendering/navigation is separate evidence; pipeline client_validation remains NOT_EXECUTED.</p><p><strong>tableau</strong>: Programmatic Hyper content, TWB field/visual binding and TWBX package checks; Tableau Desktop is not executed by the pipeline.</p><h3>Implementation choices</h3><p>Implementation choices for this demonstration, not recruiter-mandated technologies.</p><p><strong>DuckDB</strong>: Independent SQL checks against the governed Python results.</p><p><strong>HTML / Plotly</strong>: Portable interactive exploration with embedded chart code.</p><p><strong>PowerPoint</strong>: An executive narrative and navigation layer.</p><p><strong>Python / Pandas</strong>: Readable deterministic processing and typed analytical tables.</p><p><strong>Tableau</strong>: A packaged BI workbook over the same governed tables.</p></details>
+<details id="data-and-metrics" class="lineage-card" open><summary><strong>Methodology / Data &amp; Metrics</strong></summary><p>Illustrative synthetic enterprise-assurance data, controls, methodology and policy; not Experian internal data, controls, methodology or policy.</p><p>Reporting period: 2026-09. As of: 2026-09-30.</p><h3>Sources and roles</h3><div style="overflow-x:auto"><table><thead><tr><th>Source</th><th>Format</th><th>Role</th><th>Grain</th></tr></thead><tbody><tr><td>data/source/assurance/enterprise.db</td><td>SQLite</td><td>Enterprise identity, risk/control context and mapping references</td><td>Keyed reference tables</td></tr><tr><td>data/source/assurance/control_evidence.json</td><td>JSON</td><td>Control testing and evidence populations</td><td>One assurance test per reporting period</td></tr><tr><td>data/source/assurance/findings.csv</td><td>CSV</td><td>Finding status and recurrence history</td><td>One finding per finding ID</td></tr><tr><td>data/source/assurance/management_actions.csv</td><td>CSV</td><td>Remediation ownership, target dates and closure</td><td>One action per action ID</td></tr></tbody></table></div><h3>Python-driven flow</h3><p>Source ingestion → Structural validation → Identity normalization → Population reconciliation → Governed analytics → Independent metric validation → Shared publication → PowerPoint / HTML / Tableau</p><h3>Claim-to-evidence traceability</h3><p>Executive claim → published metric/table → independent validation → governed input → source/configuration</p><p>Run identity and hashes establish traceability; metric-contract and scenario checks establish analytical correctness.</p><p>Source-record population counts within assurance tests; assurance-test KPIs count test rows. 10 unmapped source records and 1 unmapped assurance test describe different grains in the current demonstration.</p><h3>Headline metric definitions (validated default scope)</h3><p>Counts are not percentages. Denominators below describe context; use the correct test, finding or action population when interpreting a rate. Filters change scope; this table records the validated full-run values.</p><div style="overflow-x:auto"><table><thead><tr><th>Metric</th><th>Count</th><th>Grain</th><th>Numerator</th><th>Denominator/context</th><th>Limitation</th></tr></thead><tbody><tr><td>Assurance tests</td><td>9</td><td>One assurance test per test ID and reporting period</td><td>all assurance test rows</td><td>not_applicable_count_metric</td><td>Count reflects only the trusted assurance population for the selected scope.</td></tr><tr><td>High or critical residual risk</td><td>2</td><td>One assurance test per test ID and reporting period</td><td>rows where residual_risk is HIGH or CRITICAL</td><td>all assurance test rows</td><td>Residual risk is illustrative and only evaluable where the configured evidence basis is sufficient.</td></tr><tr><td>Insufficient evidence</td><td>2</td><td>One assurance test per test ID and reporting period</td><td>rows where evidence_sufficiency = INSUFFICIENT</td><td>all assurance test rows</td><td>Insufficient evidence means the available basis is inadequate for the configured assurance conclusion.</td></tr><tr><td>Not evaluable evidence</td><td>1</td><td>One assurance test per test ID and reporting period</td><td>rows where evidence_sufficiency = NOT_EVALUABLE</td><td>all assurance test rows</td><td>NOT_EVALUABLE must remain distinct from failure and must not be interpreted as ineffective control performance.</td></tr><tr><td>Not evaluable residual risk</td><td>4</td><td>One assurance test per test ID and reporting period</td><td>rows where residual_risk = NOT_EVALUABLE</td><td>all assurance test rows</td><td>NOT_EVALUABLE represents insufficient decision basis and must not be converted into an assumed risk rating.</td></tr><tr><td>Open findings</td><td>4</td><td>One finding per finding ID</td><td>rows where status is OPEN or IN_PROGRESS</td><td>all trusted finding rows</td><td>This metric reflects finding workflow status only and does not measure severity or remediation effectiveness.</td></tr><tr><td>Overdue actions</td><td>1</td><td>One management action per action ID</td><td>rows where overdue = true</td><td>all trusted remediation action rows</td><td>Overdue status follows the configured as-of date, open-status vocabulary, and target-date rule.</td></tr><tr><td>Partial evidence</td><td>1</td><td>One assurance test per test ID and reporting period</td><td>rows where evidence_sufficiency = PARTIAL</td><td>all assurance test rows</td><td>Partial evidence reflects configured coverage and evidence rules, not a control-failure conclusion.</td></tr><tr><td>Repeat findings</td><td>1</td><td>One finding per finding ID</td><td>rows where repeat_finding = true</td><td>all trusted finding rows</td><td>Repeat classification uses the configured stable recurrence key and chronology requirements; fuzzy title matching is not used.</td></tr><tr><td>Stale evidence</td><td>2</td><td>One assurance test per test ID and reporting period</td><td>rows where freshness_state = STALE</td><td>all assurance test rows</td><td>Staleness is determined from the configured as-of date and evidence-freshness rule.</td></tr><tr><td>Sufficient evidence</td><td>5</td><td>One assurance test per test ID and reporting period</td><td>rows where evidence_sufficiency = SUFFICIENT</td><td>all assurance test rows</td><td>Sufficiency follows the configured synthetic assurance methodology and does not imply control effectiveness.</td></tr><tr><td>Unmapped tests</td><td>1</td><td>One assurance test per test ID and reporting period</td><td>rows where identity_status = UNMAPPED</td><td>all assurance test rows</td><td>Unmapped tests are retained explicitly and must not be assigned unsupported enterprise context.</td></tr></tbody></table></div><h3>State meanings</h3><p><strong>INSUFFICIENT</strong>: After reconciliation and mapping checks, stale evidence or zero tested population prevents a sufficient assurance basis.</p><p><strong>NOT_APPLICABLE</strong>: The relevant field does not apply; retain it distinctly from missing, untested or not-evaluable evidence.</p><p><strong>NOT_EVALUABLE</strong>: The relevant evaluation lacks a valid basis: failed reconciliation, unresolved identity, future evidence or missing expected population can prevent evidence evaluation; insufficient assurance basis or missing inherent risk prevents residual-risk evaluation.</p><p><strong>NOT_TESTED</strong>: Mapped source records were not evaluated; retain them in population reconciliation.</p><p><strong>PARTIAL</strong>: Reconciliation passes, identity is mapped and evidence is current, with nonzero testing below full expected coverage; this is not automatically a failed control.</p><p><strong>STALE</strong>: Evidence is older than 90 days old at the governed as-of date. Freshness overlaps evidence-sufficiency states; future evidence is NOT_EVALUABLE.</p><p><strong>SUFFICIENT</strong>: Reconciliation passes, identity is mapped, evidence is current and tested population meets configured full coverage; evidence adequacy does not imply control effectiveness.</p><p><strong>UNMAPPED</strong>: No resolved enterprise identity. Retain the test and its source records explicitly.</p><p><strong>partial_coverage</strong>: Partial coverage can coexist with an observed EFFECTIVE result. It does not establish full evidence sufficiency or permit a residual-risk conclusion under the configured prerequisites.</p><p><strong>residual_risk</strong>: A residual-risk conclusion requires SUFFICIENT evidence and the configured inherent-risk/control-effectiveness matrix.</p><h3>What validation proves</h3><p><strong>analytics</strong>: Pandas, independent DuckDB and the governed metric contract must agree; persisted tables are read back and reconciled.</p><p><strong>html</strong>: Programmatic structure/link checks. Browser interactions are separate executed evidence.</p><p><strong>powerpoint</strong>: Automated package, slide, identity and link checks. PowerPoint Desktop rendering/navigation is separate evidence; pipeline client_validation remains NOT_EXECUTED.</p><p><strong>tableau</strong>: Programmatic Hyper content, TWB field/visual binding and TWBX package checks; Tableau Desktop is not executed by the pipeline.</p><h3>Implementation choices</h3><p>Implementation choices for this demonstration, not recruiter-mandated technologies.</p><p><strong>DuckDB</strong>: Independent SQL checks against the governed Python results.</p><p><strong>HTML / Plotly</strong>: Portable interactive exploration with embedded chart code.</p><p><strong>PowerPoint</strong>: An executive narrative and navigation layer.</p><p><strong>Python / Pandas</strong>: Readable deterministic processing and typed analytical tables.</p><p><strong>Tableau</strong>: A packaged BI workbook over the same governed tables.</p></details>
 
 <div class="lineage-accordion">
-    <button class="lineage-toggle" onclick="toggleLineageSection('lineage-sources')" type="button">
+    <button class="lineage-toggle" aria-controls="lineage-sources" aria-expanded="false" onclick="toggleLineageSection('lineage-sources')" type="button">
         <span>Source lineage</span><span>+</span>
     </button>
     <div id="lineage-sources" class="lineage-content">
@@ -4653,7 +4666,7 @@ return Plotly;
 </div>
 
 <div class="lineage-accordion">
-    <button class="lineage-toggle" onclick="toggleLineageSection('lineage-config')" type="button">
+    <button class="lineage-toggle" aria-controls="lineage-config" aria-expanded="false" onclick="toggleLineageSection('lineage-config')" type="button">
         <span>Configuration lineage</span><span>+</span>
     </button>
     <div id="lineage-config" class="lineage-content">
@@ -4664,11 +4677,11 @@ return Plotly;
 </div>
 
 <div class="lineage-accordion">
-    <button class="lineage-toggle" onclick="toggleLineageSection('lineage-publication')" type="button">
+    <button class="lineage-toggle" aria-controls="lineage-publication" aria-expanded="false" onclick="toggleLineageSection('lineage-publication')" type="button">
         <span>Publication evidence</span><span>+</span>
     </button>
     <div id="lineage-publication" class="lineage-content">
-        <div class="lineage-row"><span>Run</span><span>20261005T170737325190Z</span></div>
+        <div class="lineage-row"><span>Run</span><span>20261005T175406684735Z</span></div>
         <div class="lineage-row"><span>Status</span><span>SUCCESS</span></div>
         <div class="lineage-row"><span>Metric validation</span><span>PASS</span></div>
         <div class="lineage-row"><span>Terminal manifest</span><span>Pending terminal publication</span></div>
@@ -4709,7 +4722,7 @@ Coverage, freshness, identity resolution and other configured evidence rules rem
 
 <div id="drawer-backdrop" class="drawer-backdrop" onclick="closeAllDrawers()"></div>
 
-<aside id="test-detail-drawer" class="detail-drawer" aria-label="Assurance test detail">
+<aside id="test-detail-drawer" class="detail-drawer" role="dialog" aria-modal="true" aria-hidden="true" inert aria-label="Assurance test detail">
     <div class="drawer-head">
         <div>
             <div class="section-kicker">Assurance test</div>
@@ -4720,7 +4733,7 @@ Coverage, freshness, identity resolution and other configured evidence rules rem
     <div id="test-detail-content"></div>
 </aside>
 
-<aside id="finding-detail-drawer" class="detail-drawer" aria-label="Finding detail">
+<aside id="finding-detail-drawer" class="detail-drawer" role="dialog" aria-modal="true" aria-hidden="true" inert aria-label="Finding detail">
     <div class="drawer-head">
         <div>
             <div class="section-kicker">Finding &amp; remediation</div>
@@ -4731,20 +4744,264 @@ Coverage, freshness, identity resolution and other configured evidence rules rem
     <div id="finding-detail-content"></div>
 </aside>
 
+<details class="panel" open><summary><strong>Assurance data table — selected scope</strong></summary>
+<p>Coverage, effectiveness, inherent risk and residual risk are distinct. Partial coverage may coexist with an observed EFFECTIVE result while preventing a full residual-risk conclusion. Source-record populations differ from test counts.</p>
+<div id="accessible-assurance-table" class="table-scroll" tabindex="0" aria-label="Assurance data table"><table class="dataframe dashboard-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th scope="col">Test id</th>
+      <th scope="col">System name</th>
+      <th scope="col">Entity name</th>
+      <th scope="col">Control name</th>
+      <th scope="col">Risk domain</th>
+      <th scope="col">Expected population</th>
+      <th scope="col">Received population</th>
+      <th scope="col">Structurally valid population</th>
+      <th scope="col">Mapped population</th>
+      <th scope="col">Testable population</th>
+      <th scope="col">Evaluated population</th>
+      <th scope="col">Not tested population</th>
+      <th scope="col">Coverage ratio</th>
+      <th scope="col">Evidence sufficiency</th>
+      <th scope="col">Freshness state</th>
+      <th scope="col">Evidence age days</th>
+      <th scope="col">Control effectiveness</th>
+      <th scope="col">Inherent risk</th>
+      <th scope="col">Residual risk</th>
+      <th scope="col">Identity status</th>
+      <th scope="col">Reporting period</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>TEST_COV_001</td>
+      <td>Payments Hub</td>
+      <td>Core Services UK</td>
+      <td>Periodic access review</td>
+      <td>Access Management</td>
+      <td>100</td>
+      <td>100</td>
+      <td>100</td>
+      <td>100</td>
+      <td>100</td>
+      <td>72</td>
+      <td>28</td>
+      <td>0.72</td>
+      <td>PARTIAL</td>
+      <td>CURRENT</td>
+      <td>15</td>
+      <td>EFFECTIVE</td>
+      <td>HIGH</td>
+      <td>NOT_EVALUABLE</td>
+      <td>MAPPED</td>
+      <td>2026-09</td>
+    </tr>
+    <tr>
+      <td>TEST_COV_002</td>
+      <td>Customer Insights</td>
+      <td>Analytics Services Bulgaria</td>
+      <td>Periodic access review</td>
+      <td>Access Management</td>
+      <td>100</td>
+      <td>100</td>
+      <td>100</td>
+      <td>100</td>
+      <td>100</td>
+      <td>100</td>
+      <td>0</td>
+      <td>1.00</td>
+      <td>SUFFICIENT</td>
+      <td>CURRENT</td>
+      <td>15</td>
+      <td>EFFECTIVE</td>
+      <td>MODERATE</td>
+      <td>LOW</td>
+      <td>MAPPED</td>
+      <td>2026-09</td>
+    </tr>
+    <tr>
+      <td>TEST_IAM_BOUNDARY</td>
+      <td>Identity Vault</td>
+      <td>Core Services UK</td>
+      <td>Privileged access review</td>
+      <td>Access Management</td>
+      <td>20</td>
+      <td>20</td>
+      <td>20</td>
+      <td>20</td>
+      <td>20</td>
+      <td>20</td>
+      <td>0</td>
+      <td>1.00</td>
+      <td>SUFFICIENT</td>
+      <td>CURRENT</td>
+      <td>90</td>
+      <td>EFFECTIVE</td>
+      <td>CRITICAL</td>
+      <td>HIGH</td>
+      <td>MAPPED</td>
+      <td>2026-09</td>
+    </tr>
+    <tr>
+      <td>TEST_IAM_FRESH</td>
+      <td>Identity Vault</td>
+      <td>Core Services UK</td>
+      <td>Privileged access review</td>
+      <td>Access Management</td>
+      <td>20</td>
+      <td>20</td>
+      <td>20</td>
+      <td>20</td>
+      <td>20</td>
+      <td>20</td>
+      <td>0</td>
+      <td>1.00</td>
+      <td>SUFFICIENT</td>
+      <td>CURRENT</td>
+      <td>89</td>
+      <td>EFFECTIVE</td>
+      <td>CRITICAL</td>
+      <td>HIGH</td>
+      <td>MAPPED</td>
+      <td>2026-09</td>
+    </tr>
+    <tr>
+      <td>TEST_IAM_NEGATIVE</td>
+      <td>Customer Insights</td>
+      <td>Analytics Services Bulgaria</td>
+      <td>Privileged access review</td>
+      <td>Access Management</td>
+      <td>10</td>
+      <td>10</td>
+      <td>10</td>
+      <td>10</td>
+      <td>10</td>
+      <td>10</td>
+      <td>0</td>
+      <td>1.00</td>
+      <td>SUFFICIENT</td>
+      <td>CURRENT</td>
+      <td>15</td>
+      <td>EFFECTIVE</td>
+      <td>MODERATE</td>
+      <td>LOW</td>
+      <td>MAPPED</td>
+      <td>2026-09</td>
+    </tr>
+    <tr>
+      <td>TEST_IAM_STALE</td>
+      <td>Identity Vault</td>
+      <td>Core Services UK</td>
+      <td>Privileged access review</td>
+      <td>Access Management</td>
+      <td>20</td>
+      <td>20</td>
+      <td>20</td>
+      <td>20</td>
+      <td>20</td>
+      <td>20</td>
+      <td>0</td>
+      <td>1.00</td>
+      <td>INSUFFICIENT</td>
+      <td>STALE</td>
+      <td>91</td>
+      <td>NOT_EVALUABLE</td>
+      <td>CRITICAL</td>
+      <td>NOT_EVALUABLE</td>
+      <td>MAPPED</td>
+      <td>2026-09</td>
+    </tr>
+    <tr>
+      <td>TEST_MAP_001</td>
+      <td>Not supplied</td>
+      <td>Not supplied</td>
+      <td>Integration control review</td>
+      <td>Change &amp; Integration</td>
+      <td>10</td>
+      <td>10</td>
+      <td>10</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.00</td>
+      <td>NOT_EVALUABLE</td>
+      <td>CURRENT</td>
+      <td>10</td>
+      <td>NOT_EVALUABLE</td>
+      <td>Not supplied</td>
+      <td>NOT_EVALUABLE</td>
+      <td>UNMAPPED</td>
+      <td>2026-09</td>
+    </tr>
+    <tr>
+      <td>TEST_MAP_002</td>
+      <td>Acquired Ledger</td>
+      <td>Acquired Services One</td>
+      <td>Integration control review</td>
+      <td>Change &amp; Integration</td>
+      <td>10</td>
+      <td>10</td>
+      <td>10</td>
+      <td>10</td>
+      <td>10</td>
+      <td>10</td>
+      <td>0</td>
+      <td>1.00</td>
+      <td>SUFFICIENT</td>
+      <td>CURRENT</td>
+      <td>10</td>
+      <td>EFFECTIVE</td>
+      <td>HIGH</td>
+      <td>MODERATE</td>
+      <td>MAPPED</td>
+      <td>2026-09</td>
+    </tr>
+    <tr>
+      <td>TEST_TP_001</td>
+      <td>Partner Gateway</td>
+      <td>Core Services UK</td>
+      <td>Third-party assurance review</td>
+      <td>Third Party</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1.00</td>
+      <td>INSUFFICIENT</td>
+      <td>STALE</td>
+      <td>107</td>
+      <td>NOT_EVALUABLE</td>
+      <td>HIGH</td>
+      <td>NOT_EVALUABLE</td>
+      <td>MAPPED</td>
+      <td>2026-09</td>
+    </tr>
+  </tbody>
+</table></div>
+</details>
+
 <div class="footer">
-Self-contained synthetic assurance dashboard - Run 20261005T170737325190Z - No external chart dependency
+Self-contained synthetic assurance dashboard - Run 20261005T175406684735Z - No external chart dependency
 </div>
 
 </main>
 </div>
 
-<script id="assurance-data" type="application/json">[{"test_id":"TEST_COV_001","scenario_id":"SCN_INCOMPLETE_COVERAGE","raw_system_id":"CORE_PAY_01","control_id":"CTRL_ACCESS_01","reporting_period":"2026-09","expected_population":100,"received_population":100,"mapped_population":100,"tested_population":72,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_COV_001","evidence_date":"2026-09-15","canonical_system_id":"SYS_CORE_01","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":100,"structurally_rejected_population":0,"testable_population":100,"not_testable_population":0,"evaluated_population":72,"not_received_population":0,"unmapped_population":0,"not_tested_population":28,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_ACCESS","inherent_risk":"HIGH","coverage_ratio":0.72,"coverage_state":"PARTIAL","coverage_reason_code":"INCOMPLETE_COVERAGE","evidence_age_days":15,"freshness_state":"CURRENT","freshness_reason_code":null,"evidence_sufficiency":"PARTIAL","evidence_sufficiency_reason_code":"INCOMPLETE_COVERAGE","control_effectiveness":"EFFECTIVE","control_effectiveness_reason_code":null,"residual_risk":"NOT_EVALUABLE","residual_risk_reason_code":"INSUFFICIENT_ASSURANCE_BASIS","system_id":"SYS_CORE_01","entity_id":"ENT_CORE_UK","system_name":"Payments Hub","system_owner":"Finance Technology","criticality":"HIGH","data_classification":"CONFIDENTIAL","contains_sensitive_data":1.0,"core_acquired_status":"CORE","acquisition_cohort":null,"third_party_dependency_flag":0.0,"entity_name":"Core Services UK","region":"EMEA","country":"United Kingdom","business_unit":"Core Platforms","acquired_status":"CORE","control_name":"Periodic access review","control_objective":"Verify that user access remains appropriate.","control_type":"DETECTIVE","expected_frequency":"QUARTERLY","risk_domain":"Access Management","risk_name":"Inappropriate access","risk_description":"Access may not be appropriately authorised or reviewed.","publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_COV_002","scenario_id":"SCN_INCOMPLETE_COVERAGE","raw_system_id":"CORE_INS_02","control_id":"CTRL_ACCESS_01","reporting_period":"2026-09","expected_population":100,"received_population":100,"mapped_population":100,"tested_population":100,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_COV_002","evidence_date":"2026-09-15","canonical_system_id":"SYS_CORE_02","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":100,"structurally_rejected_population":0,"testable_population":100,"not_testable_population":0,"evaluated_population":100,"not_received_population":0,"unmapped_population":0,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_ACCESS","inherent_risk":"MODERATE","coverage_ratio":1.0,"coverage_state":"SUFFICIENT","coverage_reason_code":null,"evidence_age_days":15,"freshness_state":"CURRENT","freshness_reason_code":null,"evidence_sufficiency":"SUFFICIENT","evidence_sufficiency_reason_code":null,"control_effectiveness":"EFFECTIVE","control_effectiveness_reason_code":null,"residual_risk":"LOW","residual_risk_reason_code":null,"system_id":"SYS_CORE_02","entity_id":"ENT_CORE_BG","system_name":"Customer Insights","system_owner":"Data Analytics","criticality":"MODERATE","data_classification":"CONFIDENTIAL","contains_sensitive_data":1.0,"core_acquired_status":"CORE","acquisition_cohort":null,"third_party_dependency_flag":0.0,"entity_name":"Analytics Services Bulgaria","region":"EMEA","country":"Bulgaria","business_unit":"Data & Analytics","acquired_status":"CORE","control_name":"Periodic access review","control_objective":"Verify that user access remains appropriate.","control_type":"DETECTIVE","expected_frequency":"QUARTERLY","risk_domain":"Access Management","risk_name":"Inappropriate access","risk_description":"Access may not be appropriately authorised or reviewed.","publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_IAM_BOUNDARY","scenario_id":"SCN_STALE_IAM_EVIDENCE","raw_system_id":"CORE_IAM_01","control_id":"CTRL_IAM_01","reporting_period":"2026-09","expected_population":20,"received_population":20,"mapped_population":20,"tested_population":20,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_IAM_BOUNDARY","evidence_date":"2026-07-02","canonical_system_id":"SYS_SEC_01","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":20,"structurally_rejected_population":0,"testable_population":20,"not_testable_population":0,"evaluated_population":20,"not_received_population":0,"unmapped_population":0,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_ACCESS","inherent_risk":"CRITICAL","coverage_ratio":1.0,"coverage_state":"SUFFICIENT","coverage_reason_code":null,"evidence_age_days":90,"freshness_state":"CURRENT","freshness_reason_code":null,"evidence_sufficiency":"SUFFICIENT","evidence_sufficiency_reason_code":null,"control_effectiveness":"EFFECTIVE","control_effectiveness_reason_code":null,"residual_risk":"HIGH","residual_risk_reason_code":null,"system_id":"SYS_SEC_01","entity_id":"ENT_CORE_UK","system_name":"Identity Vault","system_owner":"Identity Engineering","criticality":"CRITICAL","data_classification":"RESTRICTED","contains_sensitive_data":1.0,"core_acquired_status":"CORE","acquisition_cohort":null,"third_party_dependency_flag":0.0,"entity_name":"Core Services UK","region":"EMEA","country":"United Kingdom","business_unit":"Core Platforms","acquired_status":"CORE","control_name":"Privileged access review","control_objective":"Verify privileged access is authorised and periodically reviewed.","control_type":"DETECTIVE","expected_frequency":"QUARTERLY","risk_domain":"Access Management","risk_name":"Inappropriate access","risk_description":"Access may not be appropriately authorised or reviewed.","publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_IAM_FRESH","scenario_id":"SCN_STALE_IAM_EVIDENCE","raw_system_id":"CORE_IAM_01","control_id":"CTRL_IAM_01","reporting_period":"2026-09","expected_population":20,"received_population":20,"mapped_population":20,"tested_population":20,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_IAM_FRESH","evidence_date":"2026-07-03","canonical_system_id":"SYS_SEC_01","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":20,"structurally_rejected_population":0,"testable_population":20,"not_testable_population":0,"evaluated_population":20,"not_received_population":0,"unmapped_population":0,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_ACCESS","inherent_risk":"CRITICAL","coverage_ratio":1.0,"coverage_state":"SUFFICIENT","coverage_reason_code":null,"evidence_age_days":89,"freshness_state":"CURRENT","freshness_reason_code":null,"evidence_sufficiency":"SUFFICIENT","evidence_sufficiency_reason_code":null,"control_effectiveness":"EFFECTIVE","control_effectiveness_reason_code":null,"residual_risk":"HIGH","residual_risk_reason_code":null,"system_id":"SYS_SEC_01","entity_id":"ENT_CORE_UK","system_name":"Identity Vault","system_owner":"Identity Engineering","criticality":"CRITICAL","data_classification":"RESTRICTED","contains_sensitive_data":1.0,"core_acquired_status":"CORE","acquisition_cohort":null,"third_party_dependency_flag":0.0,"entity_name":"Core Services UK","region":"EMEA","country":"United Kingdom","business_unit":"Core Platforms","acquired_status":"CORE","control_name":"Privileged access review","control_objective":"Verify privileged access is authorised and periodically reviewed.","control_type":"DETECTIVE","expected_frequency":"QUARTERLY","risk_domain":"Access Management","risk_name":"Inappropriate access","risk_description":"Access may not be appropriately authorised or reviewed.","publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_IAM_NEGATIVE","scenario_id":"SCN_STALE_IAM_EVIDENCE","raw_system_id":"CORE_INS_02","control_id":"CTRL_IAM_01","reporting_period":"2026-09","expected_population":10,"received_population":10,"mapped_population":10,"tested_population":10,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_IAM_NEGATIVE","evidence_date":"2026-09-15","canonical_system_id":"SYS_CORE_02","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":10,"structurally_rejected_population":0,"testable_population":10,"not_testable_population":0,"evaluated_population":10,"not_received_population":0,"unmapped_population":0,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_ACCESS","inherent_risk":"MODERATE","coverage_ratio":1.0,"coverage_state":"SUFFICIENT","coverage_reason_code":null,"evidence_age_days":15,"freshness_state":"CURRENT","freshness_reason_code":null,"evidence_sufficiency":"SUFFICIENT","evidence_sufficiency_reason_code":null,"control_effectiveness":"EFFECTIVE","control_effectiveness_reason_code":null,"residual_risk":"LOW","residual_risk_reason_code":null,"system_id":"SYS_CORE_02","entity_id":"ENT_CORE_BG","system_name":"Customer Insights","system_owner":"Data Analytics","criticality":"MODERATE","data_classification":"CONFIDENTIAL","contains_sensitive_data":1.0,"core_acquired_status":"CORE","acquisition_cohort":null,"third_party_dependency_flag":0.0,"entity_name":"Analytics Services Bulgaria","region":"EMEA","country":"Bulgaria","business_unit":"Data & Analytics","acquired_status":"CORE","control_name":"Privileged access review","control_objective":"Verify privileged access is authorised and periodically reviewed.","control_type":"DETECTIVE","expected_frequency":"QUARTERLY","risk_domain":"Access Management","risk_name":"Inappropriate access","risk_description":"Access may not be appropriately authorised or reviewed.","publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_IAM_STALE","scenario_id":"SCN_STALE_IAM_EVIDENCE","raw_system_id":"CORE_IAM_01","control_id":"CTRL_IAM_01","reporting_period":"2026-09","expected_population":20,"received_population":20,"mapped_population":20,"tested_population":20,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_IAM_STALE","evidence_date":"2026-07-01","canonical_system_id":"SYS_SEC_01","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":20,"structurally_rejected_population":0,"testable_population":20,"not_testable_population":0,"evaluated_population":20,"not_received_population":0,"unmapped_population":0,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_ACCESS","inherent_risk":"CRITICAL","coverage_ratio":1.0,"coverage_state":"SUFFICIENT","coverage_reason_code":null,"evidence_age_days":91,"freshness_state":"STALE","freshness_reason_code":"STALE_EVIDENCE","evidence_sufficiency":"INSUFFICIENT","evidence_sufficiency_reason_code":"STALE_EVIDENCE","control_effectiveness":"NOT_EVALUABLE","control_effectiveness_reason_code":"STALE_EVIDENCE","residual_risk":"NOT_EVALUABLE","residual_risk_reason_code":"INSUFFICIENT_ASSURANCE_BASIS","system_id":"SYS_SEC_01","entity_id":"ENT_CORE_UK","system_name":"Identity Vault","system_owner":"Identity Engineering","criticality":"CRITICAL","data_classification":"RESTRICTED","contains_sensitive_data":1.0,"core_acquired_status":"CORE","acquisition_cohort":null,"third_party_dependency_flag":0.0,"entity_name":"Core Services UK","region":"EMEA","country":"United Kingdom","business_unit":"Core Platforms","acquired_status":"CORE","control_name":"Privileged access review","control_objective":"Verify privileged access is authorised and periodically reviewed.","control_type":"DETECTIVE","expected_frequency":"QUARTERLY","risk_domain":"Access Management","risk_name":"Inappropriate access","risk_description":"Access may not be appropriately authorised or reviewed.","publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_MAP_001","scenario_id":"SCN_ACQ_MAPPING_GAP","raw_system_id":"ACQ_SYS_LEGACY_77","control_id":"CTRL_CHANGE_01","reporting_period":"2026-09","expected_population":10,"received_population":10,"mapped_population":0,"tested_population":0,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_MAP_001","evidence_date":"2026-09-20","canonical_system_id":null,"mapping_status":"UNMAPPED","identity_status":"UNMAPPED","identity_reason_code":"UNRESOLVED_MAPPING","mapping_source_system":"enterprise_inventory","structurally_valid_population":10,"structurally_rejected_population":0,"testable_population":0,"not_testable_population":0,"evaluated_population":0,"not_received_population":0,"unmapped_population":10,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_CHANGE","inherent_risk":null,"coverage_ratio":0.0,"coverage_state":"INSUFFICIENT","coverage_reason_code":"NOT_TESTED","evidence_age_days":10,"freshness_state":"CURRENT","freshness_reason_code":null,"evidence_sufficiency":"NOT_EVALUABLE","evidence_sufficiency_reason_code":"UNRESOLVED_MAPPING","control_effectiveness":"NOT_EVALUABLE","control_effectiveness_reason_code":"UNRESOLVED_MAPPING","residual_risk":"NOT_EVALUABLE","residual_risk_reason_code":"INSUFFICIENT_ASSURANCE_BASIS","system_id":null,"entity_id":null,"system_name":null,"system_owner":null,"criticality":null,"data_classification":null,"contains_sensitive_data":null,"core_acquired_status":null,"acquisition_cohort":null,"third_party_dependency_flag":null,"entity_name":null,"region":null,"country":null,"business_unit":null,"acquired_status":null,"control_name":"Integration control review","control_objective":"Verify acquired-system integration controls and mappings are governed.","control_type":"PREVENTIVE","expected_frequency":"EVENT_DRIVEN","risk_domain":"Change & Integration","risk_name":"Integration change risk","risk_description":"Integration or acquisition change may create control or data-assurance gaps.","publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_MAP_002","scenario_id":"SCN_ACQ_MAPPING_GAP","raw_system_id":"ACQ_SYS_LEGACY_42","control_id":"CTRL_CHANGE_01","reporting_period":"2026-09","expected_population":10,"received_population":10,"mapped_population":10,"tested_population":10,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_MAP_002","evidence_date":"2026-09-20","canonical_system_id":"SYS_ACQ_01","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":10,"structurally_rejected_population":0,"testable_population":10,"not_testable_population":0,"evaluated_population":10,"not_received_population":0,"unmapped_population":0,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_CHANGE","inherent_risk":"HIGH","coverage_ratio":1.0,"coverage_state":"SUFFICIENT","coverage_reason_code":null,"evidence_age_days":10,"freshness_state":"CURRENT","freshness_reason_code":null,"evidence_sufficiency":"SUFFICIENT","evidence_sufficiency_reason_code":null,"control_effectiveness":"EFFECTIVE","control_effectiveness_reason_code":null,"residual_risk":"MODERATE","residual_risk_reason_code":null,"system_id":"SYS_ACQ_01","entity_id":"ENT_ACQ_01","system_name":"Acquired Ledger","system_owner":"Acquired Platforms","criticality":"HIGH","data_classification":"CONFIDENTIAL","contains_sensitive_data":1.0,"core_acquired_status":"ACQUIRED","acquisition_cohort":"2026-H1","third_party_dependency_flag":0.0,"entity_name":"Acquired Services One","region":"EMEA","country":"Germany","business_unit":"Acquired Platforms","acquired_status":"ACQUIRED","control_name":"Integration control review","control_objective":"Verify acquired-system integration controls and mappings are governed.","control_type":"PREVENTIVE","expected_frequency":"EVENT_DRIVEN","risk_domain":"Change & Integration","risk_name":"Integration change risk","risk_description":"Integration or acquisition change may create control or data-assurance gaps.","publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_TP_001","scenario_id":"SCN_THIRD_PARTY_OVERDUE","raw_system_id":"CORE_PGW_03","control_id":"CTRL_TP_01","reporting_period":"2026-09","expected_population":1,"received_population":1,"mapped_population":1,"tested_population":1,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_TP_001","evidence_date":"2026-06-15","canonical_system_id":"SYS_CORE_03","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":1,"structurally_rejected_population":0,"testable_population":1,"not_testable_population":0,"evaluated_population":1,"not_received_population":0,"unmapped_population":0,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_TP","inherent_risk":"HIGH","coverage_ratio":1.0,"coverage_state":"SUFFICIENT","coverage_reason_code":null,"evidence_age_days":107,"freshness_state":"STALE","freshness_reason_code":"STALE_EVIDENCE","evidence_sufficiency":"INSUFFICIENT","evidence_sufficiency_reason_code":"STALE_EVIDENCE","control_effectiveness":"NOT_EVALUABLE","control_effectiveness_reason_code":"STALE_EVIDENCE","residual_risk":"NOT_EVALUABLE","residual_risk_reason_code":"INSUFFICIENT_ASSURANCE_BASIS","system_id":"SYS_CORE_03","entity_id":"ENT_CORE_UK","system_name":"Partner Gateway","system_owner":"Integration Services","criticality":"HIGH","data_classification":"CONFIDENTIAL","contains_sensitive_data":1.0,"core_acquired_status":"CORE","acquisition_cohort":null,"third_party_dependency_flag":1.0,"entity_name":"Core Services UK","region":"EMEA","country":"United Kingdom","business_unit":"Core Platforms","acquired_status":"CORE","control_name":"Third-party assurance review","control_objective":"Verify material third-party assurance remains current.","control_type":"DETECTIVE","expected_frequency":"ANNUAL","risk_domain":"Third Party","risk_name":"Third-party dependency","risk_description":"Third-party dependencies may create assurance or remediation exposure.","publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"}]</script>
-<script id="priority-data" type="application/json">[{"finding_id":"FND_DATA_001","scenario_id":null,"system_id":"SYS_CORE_04","control_id":null,"recurrence_key":"DATA_GOVERNANCE","finding_theme":"Data governance documentation","severity":"LOW","identified_date":"2026-09-01","status":"OPEN","closed_date_x":null,"repeat_finding":false,"prior_finding_id":null,"action_id":"ACT_DATA_001","action_owner":"Data Governance","target_date":"2026-10-15","action_status":"OPEN","closed_date_y":null,"closure_validation_status":"NOT_APPLICABLE","overdue":false,"days_overdue":0.0,"publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"finding_id":"FND_IAM_006","scenario_id":"SCN_REPEAT_FINDING","system_id":"SYS_SEC_01","control_id":"CTRL_IAM_01","recurrence_key":"IAM_PRIVILEGED_ACCESS","finding_theme":"Privileged access review","severity":"HIGH","identified_date":"2026-08-15","status":"OPEN","closed_date_x":null,"repeat_finding":true,"prior_finding_id":"FND_IAM_001","action_id":null,"action_owner":null,"target_date":null,"action_status":null,"closed_date_y":null,"closure_validation_status":null,"overdue":null,"days_overdue":null,"publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"finding_id":"FND_IAM_007","scenario_id":"SCN_REPEAT_FINDING","system_id":"SYS_SEC_01","control_id":"CTRL_IAM_01","recurrence_key":"IAM_SERVICE_ACCOUNT","finding_theme":"Privileged access review - service accounts","severity":"MODERATE","identified_date":"2026-08-20","status":"OPEN","closed_date_x":null,"repeat_finding":false,"prior_finding_id":null,"action_id":null,"action_owner":null,"target_date":null,"action_status":null,"closed_date_y":null,"closure_validation_status":null,"overdue":null,"days_overdue":null,"publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"finding_id":"FND_TP_001","scenario_id":"SCN_THIRD_PARTY_OVERDUE","system_id":"SYS_CORE_03","control_id":"CTRL_TP_01","recurrence_key":"THIRD_PARTY_ASSURANCE","finding_theme":"Third-party assurance follow-up","severity":"HIGH","identified_date":"2026-07-10","status":"OPEN","closed_date_x":null,"repeat_finding":false,"prior_finding_id":null,"action_id":"ACT_TP_CLOSED","action_owner":"Third Party Management","target_date":"2026-09-20","action_status":"CLOSED","closed_date_y":"2026-09-19","closure_validation_status":"VALIDATED","overdue":false,"days_overdue":0.0,"publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"finding_id":"FND_TP_001","scenario_id":"SCN_THIRD_PARTY_OVERDUE","system_id":"SYS_CORE_03","control_id":"CTRL_TP_01","recurrence_key":"THIRD_PARTY_ASSURANCE","finding_theme":"Third-party assurance follow-up","severity":"HIGH","identified_date":"2026-07-10","status":"OPEN","closed_date_x":null,"repeat_finding":false,"prior_finding_id":null,"action_id":"ACT_TP_DUE_TODAY","action_owner":"Third Party Management","target_date":"2026-09-30","action_status":"OPEN","closed_date_y":null,"closure_validation_status":"NOT_APPLICABLE","overdue":false,"days_overdue":0.0,"publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"finding_id":"FND_TP_001","scenario_id":"SCN_THIRD_PARTY_OVERDUE","system_id":"SYS_CORE_03","control_id":"CTRL_TP_01","recurrence_key":"THIRD_PARTY_ASSURANCE","finding_theme":"Third-party assurance follow-up","severity":"HIGH","identified_date":"2026-07-10","status":"OPEN","closed_date_x":null,"repeat_finding":false,"prior_finding_id":null,"action_id":"ACT_TP_FUTURE","action_owner":"Integration Services","target_date":"2026-10-01","action_status":"IN_PROGRESS","closed_date_y":null,"closure_validation_status":"NOT_APPLICABLE","overdue":false,"days_overdue":0.0,"publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"finding_id":"FND_TP_001","scenario_id":"SCN_THIRD_PARTY_OVERDUE","system_id":"SYS_CORE_03","control_id":"CTRL_TP_01","recurrence_key":"THIRD_PARTY_ASSURANCE","finding_theme":"Third-party assurance follow-up","severity":"HIGH","identified_date":"2026-07-10","status":"OPEN","closed_date_x":null,"repeat_finding":false,"prior_finding_id":null,"action_id":"ACT_TP_OVERDUE","action_owner":"Third Party Management","target_date":"2026-09-29","action_status":"OPEN","closed_date_y":null,"closure_validation_status":"NOT_APPLICABLE","overdue":true,"days_overdue":1.0,"publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"}]</script>
-<script id="risk-domain-data" type="application/json">[{"risk_domain":"Access Management","assurance_tests":6,"sufficient_evidence":4,"weak_evidence":2,"stale_evidence":1,"high_or_critical_residual_risk":2,"not_evaluable_residual_risk":2,"publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"risk_domain":"Change & Integration","assurance_tests":2,"sufficient_evidence":1,"weak_evidence":1,"stale_evidence":0,"high_or_critical_residual_risk":0,"not_evaluable_residual_risk":1,"publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"},{"risk_domain":"Third Party","assurance_tests":1,"sufficient_evidence":0,"weak_evidence":1,"stale_evidence":1,"high_or_critical_residual_risk":0,"not_evaluable_residual_risk":1,"publication_run_id":"20261005T170737325190Z","publication_as_of_date":"2026-09-30"}]</script>
+<script id="canonical-metrics" type="application/json">{"assurance_tests": 9, "high_or_critical_residual_risk": 2, "insufficient_evidence": 2, "not_evaluable_evidence": 1, "not_evaluable_residual_risk": 4, "open_findings": 4, "overdue_actions": 1, "partial_evidence": 1, "repeat_findings": 1, "stale_evidence": 2, "sufficient_evidence": 5, "unmapped_tests": 1}</script>
+<script id="metric-definitions" type="application/json">{"assurance_tests": {"business_question": "How many assurance tests are in scope?", "calculation": {"aggregation": "count", "operator": "all", "population": "control_assurance"}, "denominator": "not_applicable_count_metric", "drill_target": "reports/data_trust.html#data-and-metrics", "filter_semantics": "filter-responsive within the governed assurance test population", "grain": "One assurance test per test ID and reporting period", "label": "Assurance tests", "limitation": "Count reflects only the trusted assurance population for the selected scope.", "numerator": "all assurance test rows", "publication_table": "publication/tables/assurance_tests.csv", "trusted_population": "control_assurance", "units": "count", "value": 9}, "high_or_critical_residual_risk": {"business_question": "How many assurance tests result in high or critical residual risk?", "calculation": {"aggregation": "count", "field": "residual_risk", "operator": "in", "population": "control_assurance", "values": ["HIGH", "CRITICAL"]}, "denominator": "all assurance test rows", "drill_target": "reports/data_trust.html#data-and-metrics", "filter_semantics": "filter-responsive within the governed assurance test population", "grain": "One assurance test per test ID and reporting period", "label": "High or critical residual risk", "limitation": "Residual risk is illustrative and only evaluable where the configured evidence basis is sufficient.", "numerator": "rows where residual_risk is HIGH or CRITICAL", "publication_table": "publication/tables/assurance_tests.csv", "trusted_population": "control_assurance", "units": "count", "value": 2}, "insufficient_evidence": {"business_question": "How many assurance tests have insufficient evidence?", "calculation": {"aggregation": "count", "field": "evidence_sufficiency", "operator": "eq", "population": "control_assurance", "value": "INSUFFICIENT"}, "denominator": "all assurance test rows", "drill_target": "reports/data_trust.html#data-and-metrics", "filter_semantics": "filter-responsive within the governed assurance test population", "grain": "One assurance test per test ID and reporting period", "label": "Insufficient evidence", "limitation": "Insufficient evidence means the available basis is inadequate for the configured assurance conclusion.", "numerator": "rows where evidence_sufficiency = INSUFFICIENT", "publication_table": "publication/tables/assurance_tests.csv", "trusted_population": "control_assurance", "units": "count", "value": 2}, "not_evaluable_evidence": {"business_question": "How many assurance tests cannot be evaluated for evidence sufficiency?", "calculation": {"aggregation": "count", "field": "evidence_sufficiency", "operator": "eq", "population": "control_assurance", "value": "NOT_EVALUABLE"}, "denominator": "all assurance test rows", "drill_target": "reports/data_trust.html#data-and-metrics", "filter_semantics": "filter-responsive within the governed assurance test population", "grain": "One assurance test per test ID and reporting period", "label": "Not evaluable evidence", "limitation": "NOT_EVALUABLE must remain distinct from failure and must not be interpreted as ineffective control performance.", "numerator": "rows where evidence_sufficiency = NOT_EVALUABLE", "publication_table": "publication/tables/assurance_tests.csv", "trusted_population": "control_assurance", "units": "count", "value": 1}, "not_evaluable_residual_risk": {"business_question": "How many assurance tests do not support a residual-risk conclusion?", "calculation": {"aggregation": "count", "field": "residual_risk", "operator": "eq", "population": "control_assurance", "value": "NOT_EVALUABLE"}, "denominator": "all assurance test rows", "drill_target": "reports/data_trust.html#data-and-metrics", "filter_semantics": "filter-responsive within the governed assurance test population", "grain": "One assurance test per test ID and reporting period", "label": "Not evaluable residual risk", "limitation": "NOT_EVALUABLE represents insufficient decision basis and must not be converted into an assumed risk rating.", "numerator": "rows where residual_risk = NOT_EVALUABLE", "publication_table": "publication/tables/assurance_tests.csv", "trusted_population": "control_assurance", "units": "count", "value": 4}, "open_findings": {"business_question": "How many findings remain open or in progress?", "calculation": {"aggregation": "count", "field": "status", "operator": "in", "population": "findings", "values": ["OPEN", "IN_PROGRESS"]}, "denominator": "all trusted finding rows", "drill_target": "reports/data_trust.html#data-and-metrics", "filter_semantics": "filter-responsive within the governed findings population", "grain": "One finding per finding ID", "label": "Open findings", "limitation": "This metric reflects finding workflow status only and does not measure severity or remediation effectiveness.", "numerator": "rows where status is OPEN or IN_PROGRESS", "publication_table": "publication/tables/findings_summary.csv", "trusted_population": "findings", "units": "count", "value": 4}, "overdue_actions": {"business_question": "How many remediation actions are overdue?", "calculation": {"aggregation": "count", "field": "overdue", "operator": "eq", "population": "remediation_actions", "value": true}, "denominator": "all trusted remediation action rows", "drill_target": "reports/data_trust.html#data-and-metrics", "filter_semantics": "filter-responsive within the governed remediation-action population", "grain": "One management action per action ID", "label": "Overdue actions", "limitation": "Overdue status follows the configured as-of date, open-status vocabulary, and target-date rule.", "numerator": "rows where overdue = true", "publication_table": "publication/tables/remediation_summary.csv", "trusted_population": "remediation_actions", "units": "count", "value": 1}, "partial_evidence": {"business_question": "How many assurance tests have only partial evidence?", "calculation": {"aggregation": "count", "field": "evidence_sufficiency", "operator": "eq", "population": "control_assurance", "value": "PARTIAL"}, "denominator": "all assurance test rows", "drill_target": "reports/data_trust.html#data-and-metrics", "filter_semantics": "filter-responsive within the governed assurance test population", "grain": "One assurance test per test ID and reporting period", "label": "Partial evidence", "limitation": "Partial evidence reflects configured coverage and evidence rules, not a control-failure conclusion.", "numerator": "rows where evidence_sufficiency = PARTIAL", "publication_table": "publication/tables/assurance_tests.csv", "trusted_population": "control_assurance", "units": "count", "value": 1}, "repeat_findings": {"business_question": "How many findings are confirmed repeats under the recurrence rule?", "calculation": {"aggregation": "count", "field": "repeat_finding", "operator": "eq", "population": "findings", "value": true}, "denominator": "all trusted finding rows", "drill_target": "reports/data_trust.html#data-and-metrics", "filter_semantics": "filter-responsive within the governed findings population", "grain": "One finding per finding ID", "label": "Repeat findings", "limitation": "Repeat classification uses the configured stable recurrence key and chronology requirements; fuzzy title matching is not used.", "numerator": "rows where repeat_finding = true", "publication_table": "publication/tables/findings_summary.csv", "trusted_population": "findings", "units": "count", "value": 1}, "stale_evidence": {"business_question": "How many assurance tests rely on stale evidence?", "calculation": {"aggregation": "count", "field": "freshness_state", "operator": "eq", "population": "control_assurance", "value": "STALE"}, "denominator": "all assurance test rows", "drill_target": "reports/data_trust.html#data-and-metrics", "filter_semantics": "filter-responsive within the governed assurance test population", "grain": "One assurance test per test ID and reporting period", "label": "Stale evidence", "limitation": "Staleness is determined from the configured as-of date and evidence-freshness rule.", "numerator": "rows where freshness_state = STALE", "publication_table": "publication/tables/assurance_tests.csv", "trusted_population": "control_assurance", "units": "count", "value": 2}, "sufficient_evidence": {"business_question": "How many assurance tests have sufficient evidence?", "calculation": {"aggregation": "count", "field": "evidence_sufficiency", "operator": "eq", "population": "control_assurance", "value": "SUFFICIENT"}, "denominator": "all assurance test rows", "drill_target": "reports/data_trust.html#data-and-metrics", "filter_semantics": "filter-responsive within the governed assurance test population", "grain": "One assurance test per test ID and reporting period", "label": "Sufficient evidence", "limitation": "Sufficiency follows the configured synthetic assurance methodology and does not imply control effectiveness.", "numerator": "rows where evidence_sufficiency = SUFFICIENT", "publication_table": "publication/tables/assurance_tests.csv", "trusted_population": "control_assurance", "units": "count", "value": 5}, "unmapped_tests": {"business_question": "How many assurance tests lack a resolved enterprise system identity?", "calculation": {"aggregation": "count", "field": "identity_status", "operator": "eq", "population": "control_assurance", "value": "UNMAPPED"}, "denominator": "all assurance test rows", "drill_target": "reports/data_trust.html#data-and-metrics", "filter_semantics": "filter-responsive within the governed assurance test population", "grain": "One assurance test per test ID and reporting period", "label": "Unmapped tests", "limitation": "Unmapped tests are retained explicitly and must not be assigned unsupported enterprise context.", "numerator": "rows where identity_status = UNMAPPED", "publication_table": "publication/tables/assurance_tests.csv", "trusted_population": "control_assurance", "units": "count", "value": 1}}</script>
+<script id="assurance-data" type="application/json">[{"test_id":"TEST_COV_001","scenario_id":"SCN_INCOMPLETE_COVERAGE","raw_system_id":"CORE_PAY_01","control_id":"CTRL_ACCESS_01","reporting_period":"2026-09","expected_population":100,"received_population":100,"mapped_population":100,"tested_population":72,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_COV_001","evidence_date":"2026-09-15","canonical_system_id":"SYS_CORE_01","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":100,"structurally_rejected_population":0,"testable_population":100,"not_testable_population":0,"evaluated_population":72,"not_received_population":0,"unmapped_population":0,"not_tested_population":28,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_ACCESS","inherent_risk":"HIGH","coverage_ratio":0.72,"coverage_state":"PARTIAL","coverage_reason_code":"INCOMPLETE_COVERAGE","evidence_age_days":15,"freshness_state":"CURRENT","freshness_reason_code":null,"evidence_sufficiency":"PARTIAL","evidence_sufficiency_reason_code":"INCOMPLETE_COVERAGE","control_effectiveness":"EFFECTIVE","control_effectiveness_reason_code":null,"residual_risk":"NOT_EVALUABLE","residual_risk_reason_code":"INSUFFICIENT_ASSURANCE_BASIS","system_id":"SYS_CORE_01","entity_id":"ENT_CORE_UK","system_name":"Payments Hub","system_owner":"Finance Technology","criticality":"HIGH","data_classification":"CONFIDENTIAL","contains_sensitive_data":1.0,"core_acquired_status":"CORE","acquisition_cohort":null,"third_party_dependency_flag":0.0,"entity_name":"Core Services UK","region":"EMEA","country":"United Kingdom","business_unit":"Core Platforms","acquired_status":"CORE","control_name":"Periodic access review","control_objective":"Verify that user access remains appropriate.","control_type":"DETECTIVE","expected_frequency":"QUARTERLY","risk_domain":"Access Management","risk_name":"Inappropriate access","risk_description":"Access may not be appropriately authorised or reviewed.","publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_COV_002","scenario_id":"SCN_INCOMPLETE_COVERAGE","raw_system_id":"CORE_INS_02","control_id":"CTRL_ACCESS_01","reporting_period":"2026-09","expected_population":100,"received_population":100,"mapped_population":100,"tested_population":100,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_COV_002","evidence_date":"2026-09-15","canonical_system_id":"SYS_CORE_02","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":100,"structurally_rejected_population":0,"testable_population":100,"not_testable_population":0,"evaluated_population":100,"not_received_population":0,"unmapped_population":0,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_ACCESS","inherent_risk":"MODERATE","coverage_ratio":1.0,"coverage_state":"SUFFICIENT","coverage_reason_code":null,"evidence_age_days":15,"freshness_state":"CURRENT","freshness_reason_code":null,"evidence_sufficiency":"SUFFICIENT","evidence_sufficiency_reason_code":null,"control_effectiveness":"EFFECTIVE","control_effectiveness_reason_code":null,"residual_risk":"LOW","residual_risk_reason_code":null,"system_id":"SYS_CORE_02","entity_id":"ENT_CORE_BG","system_name":"Customer Insights","system_owner":"Data Analytics","criticality":"MODERATE","data_classification":"CONFIDENTIAL","contains_sensitive_data":1.0,"core_acquired_status":"CORE","acquisition_cohort":null,"third_party_dependency_flag":0.0,"entity_name":"Analytics Services Bulgaria","region":"EMEA","country":"Bulgaria","business_unit":"Data & Analytics","acquired_status":"CORE","control_name":"Periodic access review","control_objective":"Verify that user access remains appropriate.","control_type":"DETECTIVE","expected_frequency":"QUARTERLY","risk_domain":"Access Management","risk_name":"Inappropriate access","risk_description":"Access may not be appropriately authorised or reviewed.","publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_IAM_BOUNDARY","scenario_id":"SCN_STALE_IAM_EVIDENCE","raw_system_id":"CORE_IAM_01","control_id":"CTRL_IAM_01","reporting_period":"2026-09","expected_population":20,"received_population":20,"mapped_population":20,"tested_population":20,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_IAM_BOUNDARY","evidence_date":"2026-07-02","canonical_system_id":"SYS_SEC_01","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":20,"structurally_rejected_population":0,"testable_population":20,"not_testable_population":0,"evaluated_population":20,"not_received_population":0,"unmapped_population":0,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_ACCESS","inherent_risk":"CRITICAL","coverage_ratio":1.0,"coverage_state":"SUFFICIENT","coverage_reason_code":null,"evidence_age_days":90,"freshness_state":"CURRENT","freshness_reason_code":null,"evidence_sufficiency":"SUFFICIENT","evidence_sufficiency_reason_code":null,"control_effectiveness":"EFFECTIVE","control_effectiveness_reason_code":null,"residual_risk":"HIGH","residual_risk_reason_code":null,"system_id":"SYS_SEC_01","entity_id":"ENT_CORE_UK","system_name":"Identity Vault","system_owner":"Identity Engineering","criticality":"CRITICAL","data_classification":"RESTRICTED","contains_sensitive_data":1.0,"core_acquired_status":"CORE","acquisition_cohort":null,"third_party_dependency_flag":0.0,"entity_name":"Core Services UK","region":"EMEA","country":"United Kingdom","business_unit":"Core Platforms","acquired_status":"CORE","control_name":"Privileged access review","control_objective":"Verify privileged access is authorised and periodically reviewed.","control_type":"DETECTIVE","expected_frequency":"QUARTERLY","risk_domain":"Access Management","risk_name":"Inappropriate access","risk_description":"Access may not be appropriately authorised or reviewed.","publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_IAM_FRESH","scenario_id":"SCN_STALE_IAM_EVIDENCE","raw_system_id":"CORE_IAM_01","control_id":"CTRL_IAM_01","reporting_period":"2026-09","expected_population":20,"received_population":20,"mapped_population":20,"tested_population":20,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_IAM_FRESH","evidence_date":"2026-07-03","canonical_system_id":"SYS_SEC_01","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":20,"structurally_rejected_population":0,"testable_population":20,"not_testable_population":0,"evaluated_population":20,"not_received_population":0,"unmapped_population":0,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_ACCESS","inherent_risk":"CRITICAL","coverage_ratio":1.0,"coverage_state":"SUFFICIENT","coverage_reason_code":null,"evidence_age_days":89,"freshness_state":"CURRENT","freshness_reason_code":null,"evidence_sufficiency":"SUFFICIENT","evidence_sufficiency_reason_code":null,"control_effectiveness":"EFFECTIVE","control_effectiveness_reason_code":null,"residual_risk":"HIGH","residual_risk_reason_code":null,"system_id":"SYS_SEC_01","entity_id":"ENT_CORE_UK","system_name":"Identity Vault","system_owner":"Identity Engineering","criticality":"CRITICAL","data_classification":"RESTRICTED","contains_sensitive_data":1.0,"core_acquired_status":"CORE","acquisition_cohort":null,"third_party_dependency_flag":0.0,"entity_name":"Core Services UK","region":"EMEA","country":"United Kingdom","business_unit":"Core Platforms","acquired_status":"CORE","control_name":"Privileged access review","control_objective":"Verify privileged access is authorised and periodically reviewed.","control_type":"DETECTIVE","expected_frequency":"QUARTERLY","risk_domain":"Access Management","risk_name":"Inappropriate access","risk_description":"Access may not be appropriately authorised or reviewed.","publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_IAM_NEGATIVE","scenario_id":"SCN_STALE_IAM_EVIDENCE","raw_system_id":"CORE_INS_02","control_id":"CTRL_IAM_01","reporting_period":"2026-09","expected_population":10,"received_population":10,"mapped_population":10,"tested_population":10,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_IAM_NEGATIVE","evidence_date":"2026-09-15","canonical_system_id":"SYS_CORE_02","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":10,"structurally_rejected_population":0,"testable_population":10,"not_testable_population":0,"evaluated_population":10,"not_received_population":0,"unmapped_population":0,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_ACCESS","inherent_risk":"MODERATE","coverage_ratio":1.0,"coverage_state":"SUFFICIENT","coverage_reason_code":null,"evidence_age_days":15,"freshness_state":"CURRENT","freshness_reason_code":null,"evidence_sufficiency":"SUFFICIENT","evidence_sufficiency_reason_code":null,"control_effectiveness":"EFFECTIVE","control_effectiveness_reason_code":null,"residual_risk":"LOW","residual_risk_reason_code":null,"system_id":"SYS_CORE_02","entity_id":"ENT_CORE_BG","system_name":"Customer Insights","system_owner":"Data Analytics","criticality":"MODERATE","data_classification":"CONFIDENTIAL","contains_sensitive_data":1.0,"core_acquired_status":"CORE","acquisition_cohort":null,"third_party_dependency_flag":0.0,"entity_name":"Analytics Services Bulgaria","region":"EMEA","country":"Bulgaria","business_unit":"Data & Analytics","acquired_status":"CORE","control_name":"Privileged access review","control_objective":"Verify privileged access is authorised and periodically reviewed.","control_type":"DETECTIVE","expected_frequency":"QUARTERLY","risk_domain":"Access Management","risk_name":"Inappropriate access","risk_description":"Access may not be appropriately authorised or reviewed.","publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_IAM_STALE","scenario_id":"SCN_STALE_IAM_EVIDENCE","raw_system_id":"CORE_IAM_01","control_id":"CTRL_IAM_01","reporting_period":"2026-09","expected_population":20,"received_population":20,"mapped_population":20,"tested_population":20,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_IAM_STALE","evidence_date":"2026-07-01","canonical_system_id":"SYS_SEC_01","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":20,"structurally_rejected_population":0,"testable_population":20,"not_testable_population":0,"evaluated_population":20,"not_received_population":0,"unmapped_population":0,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_ACCESS","inherent_risk":"CRITICAL","coverage_ratio":1.0,"coverage_state":"SUFFICIENT","coverage_reason_code":null,"evidence_age_days":91,"freshness_state":"STALE","freshness_reason_code":"STALE_EVIDENCE","evidence_sufficiency":"INSUFFICIENT","evidence_sufficiency_reason_code":"STALE_EVIDENCE","control_effectiveness":"NOT_EVALUABLE","control_effectiveness_reason_code":"STALE_EVIDENCE","residual_risk":"NOT_EVALUABLE","residual_risk_reason_code":"INSUFFICIENT_ASSURANCE_BASIS","system_id":"SYS_SEC_01","entity_id":"ENT_CORE_UK","system_name":"Identity Vault","system_owner":"Identity Engineering","criticality":"CRITICAL","data_classification":"RESTRICTED","contains_sensitive_data":1.0,"core_acquired_status":"CORE","acquisition_cohort":null,"third_party_dependency_flag":0.0,"entity_name":"Core Services UK","region":"EMEA","country":"United Kingdom","business_unit":"Core Platforms","acquired_status":"CORE","control_name":"Privileged access review","control_objective":"Verify privileged access is authorised and periodically reviewed.","control_type":"DETECTIVE","expected_frequency":"QUARTERLY","risk_domain":"Access Management","risk_name":"Inappropriate access","risk_description":"Access may not be appropriately authorised or reviewed.","publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_MAP_001","scenario_id":"SCN_ACQ_MAPPING_GAP","raw_system_id":"ACQ_SYS_LEGACY_77","control_id":"CTRL_CHANGE_01","reporting_period":"2026-09","expected_population":10,"received_population":10,"mapped_population":0,"tested_population":0,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_MAP_001","evidence_date":"2026-09-20","canonical_system_id":null,"mapping_status":"UNMAPPED","identity_status":"UNMAPPED","identity_reason_code":"UNRESOLVED_MAPPING","mapping_source_system":"enterprise_inventory","structurally_valid_population":10,"structurally_rejected_population":0,"testable_population":0,"not_testable_population":0,"evaluated_population":0,"not_received_population":0,"unmapped_population":10,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_CHANGE","inherent_risk":null,"coverage_ratio":0.0,"coverage_state":"INSUFFICIENT","coverage_reason_code":"NOT_TESTED","evidence_age_days":10,"freshness_state":"CURRENT","freshness_reason_code":null,"evidence_sufficiency":"NOT_EVALUABLE","evidence_sufficiency_reason_code":"UNRESOLVED_MAPPING","control_effectiveness":"NOT_EVALUABLE","control_effectiveness_reason_code":"UNRESOLVED_MAPPING","residual_risk":"NOT_EVALUABLE","residual_risk_reason_code":"INSUFFICIENT_ASSURANCE_BASIS","system_id":null,"entity_id":null,"system_name":null,"system_owner":null,"criticality":null,"data_classification":null,"contains_sensitive_data":null,"core_acquired_status":null,"acquisition_cohort":null,"third_party_dependency_flag":null,"entity_name":null,"region":null,"country":null,"business_unit":null,"acquired_status":null,"control_name":"Integration control review","control_objective":"Verify acquired-system integration controls and mappings are governed.","control_type":"PREVENTIVE","expected_frequency":"EVENT_DRIVEN","risk_domain":"Change & Integration","risk_name":"Integration change risk","risk_description":"Integration or acquisition change may create control or data-assurance gaps.","publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_MAP_002","scenario_id":"SCN_ACQ_MAPPING_GAP","raw_system_id":"ACQ_SYS_LEGACY_42","control_id":"CTRL_CHANGE_01","reporting_period":"2026-09","expected_population":10,"received_population":10,"mapped_population":10,"tested_population":10,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_MAP_002","evidence_date":"2026-09-20","canonical_system_id":"SYS_ACQ_01","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":10,"structurally_rejected_population":0,"testable_population":10,"not_testable_population":0,"evaluated_population":10,"not_received_population":0,"unmapped_population":0,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_CHANGE","inherent_risk":"HIGH","coverage_ratio":1.0,"coverage_state":"SUFFICIENT","coverage_reason_code":null,"evidence_age_days":10,"freshness_state":"CURRENT","freshness_reason_code":null,"evidence_sufficiency":"SUFFICIENT","evidence_sufficiency_reason_code":null,"control_effectiveness":"EFFECTIVE","control_effectiveness_reason_code":null,"residual_risk":"MODERATE","residual_risk_reason_code":null,"system_id":"SYS_ACQ_01","entity_id":"ENT_ACQ_01","system_name":"Acquired Ledger","system_owner":"Acquired Platforms","criticality":"HIGH","data_classification":"CONFIDENTIAL","contains_sensitive_data":1.0,"core_acquired_status":"ACQUIRED","acquisition_cohort":"2026-H1","third_party_dependency_flag":0.0,"entity_name":"Acquired Services One","region":"EMEA","country":"Germany","business_unit":"Acquired Platforms","acquired_status":"ACQUIRED","control_name":"Integration control review","control_objective":"Verify acquired-system integration controls and mappings are governed.","control_type":"PREVENTIVE","expected_frequency":"EVENT_DRIVEN","risk_domain":"Change & Integration","risk_name":"Integration change risk","risk_description":"Integration or acquisition change may create control or data-assurance gaps.","publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"test_id":"TEST_TP_001","scenario_id":"SCN_THIRD_PARTY_OVERDUE","raw_system_id":"CORE_PGW_03","control_id":"CTRL_TP_01","reporting_period":"2026-09","expected_population":1,"received_population":1,"mapped_population":1,"tested_population":1,"exception_count":0,"source_result":"PASS","evidence_id":"EVD_TP_001","evidence_date":"2026-06-15","canonical_system_id":"SYS_CORE_03","mapping_status":"MAPPED","identity_status":"MAPPED","identity_reason_code":null,"mapping_source_system":"enterprise_inventory","structurally_valid_population":1,"structurally_rejected_population":0,"testable_population":1,"not_testable_population":0,"evaluated_population":1,"not_received_population":0,"unmapped_population":0,"not_tested_population":0,"reconciliation_status":"PASS","reconciliation_reason_code":null,"risk_id":"RSK_TP","inherent_risk":"HIGH","coverage_ratio":1.0,"coverage_state":"SUFFICIENT","coverage_reason_code":null,"evidence_age_days":107,"freshness_state":"STALE","freshness_reason_code":"STALE_EVIDENCE","evidence_sufficiency":"INSUFFICIENT","evidence_sufficiency_reason_code":"STALE_EVIDENCE","control_effectiveness":"NOT_EVALUABLE","control_effectiveness_reason_code":"STALE_EVIDENCE","residual_risk":"NOT_EVALUABLE","residual_risk_reason_code":"INSUFFICIENT_ASSURANCE_BASIS","system_id":"SYS_CORE_03","entity_id":"ENT_CORE_UK","system_name":"Partner Gateway","system_owner":"Integration Services","criticality":"HIGH","data_classification":"CONFIDENTIAL","contains_sensitive_data":1.0,"core_acquired_status":"CORE","acquisition_cohort":null,"third_party_dependency_flag":1.0,"entity_name":"Core Services UK","region":"EMEA","country":"United Kingdom","business_unit":"Core Platforms","acquired_status":"CORE","control_name":"Third-party assurance review","control_objective":"Verify material third-party assurance remains current.","control_type":"DETECTIVE","expected_frequency":"ANNUAL","risk_domain":"Third Party","risk_name":"Third-party dependency","risk_description":"Third-party dependencies may create assurance or remediation exposure.","publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"}]</script>
+<script id="priority-data" type="application/json">[{"finding_id":"FND_DATA_001","scenario_id":null,"system_id":"SYS_CORE_04","control_id":null,"recurrence_key":"DATA_GOVERNANCE","finding_theme":"Data governance documentation","severity":"LOW","identified_date":"2026-09-01","status":"OPEN","closed_date_x":null,"repeat_finding":false,"prior_finding_id":null,"action_id":"ACT_DATA_001","action_owner":"Data Governance","target_date":"2026-10-15","action_status":"OPEN","closed_date_y":null,"closure_validation_status":"NOT_APPLICABLE","overdue":false,"days_overdue":0.0,"publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"finding_id":"FND_IAM_001","scenario_id":"SCN_REPEAT_FINDING","system_id":"SYS_SEC_01","control_id":"CTRL_IAM_01","recurrence_key":"IAM_PRIVILEGED_ACCESS","finding_theme":"Privileged access review","severity":"HIGH","identified_date":"2026-02-10","status":"CLOSED","closed_date_x":"2026-03-31","repeat_finding":false,"prior_finding_id":null,"action_id":"ACT_IAM_001","action_owner":"Identity Engineering","target_date":"2026-03-31","action_status":"CLOSED","closed_date_y":"2026-03-30","closure_validation_status":"VALIDATED","overdue":false,"days_overdue":0.0,"publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"finding_id":"FND_IAM_006","scenario_id":"SCN_REPEAT_FINDING","system_id":"SYS_SEC_01","control_id":"CTRL_IAM_01","recurrence_key":"IAM_PRIVILEGED_ACCESS","finding_theme":"Privileged access review","severity":"HIGH","identified_date":"2026-08-15","status":"OPEN","closed_date_x":null,"repeat_finding":true,"prior_finding_id":"FND_IAM_001","action_id":null,"action_owner":null,"target_date":null,"action_status":null,"closed_date_y":null,"closure_validation_status":null,"overdue":null,"days_overdue":null,"publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"finding_id":"FND_IAM_007","scenario_id":"SCN_REPEAT_FINDING","system_id":"SYS_SEC_01","control_id":"CTRL_IAM_01","recurrence_key":"IAM_SERVICE_ACCOUNT","finding_theme":"Privileged access review - service accounts","severity":"MODERATE","identified_date":"2026-08-20","status":"OPEN","closed_date_x":null,"repeat_finding":false,"prior_finding_id":null,"action_id":null,"action_owner":null,"target_date":null,"action_status":null,"closed_date_y":null,"closure_validation_status":null,"overdue":null,"days_overdue":null,"publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"finding_id":"FND_TP_001","scenario_id":"SCN_THIRD_PARTY_OVERDUE","system_id":"SYS_CORE_03","control_id":"CTRL_TP_01","recurrence_key":"THIRD_PARTY_ASSURANCE","finding_theme":"Third-party assurance follow-up","severity":"HIGH","identified_date":"2026-07-10","status":"OPEN","closed_date_x":null,"repeat_finding":false,"prior_finding_id":null,"action_id":"ACT_TP_CLOSED","action_owner":"Third Party Management","target_date":"2026-09-20","action_status":"CLOSED","closed_date_y":"2026-09-19","closure_validation_status":"VALIDATED","overdue":false,"days_overdue":0.0,"publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"finding_id":"FND_TP_001","scenario_id":"SCN_THIRD_PARTY_OVERDUE","system_id":"SYS_CORE_03","control_id":"CTRL_TP_01","recurrence_key":"THIRD_PARTY_ASSURANCE","finding_theme":"Third-party assurance follow-up","severity":"HIGH","identified_date":"2026-07-10","status":"OPEN","closed_date_x":null,"repeat_finding":false,"prior_finding_id":null,"action_id":"ACT_TP_DUE_TODAY","action_owner":"Third Party Management","target_date":"2026-09-30","action_status":"OPEN","closed_date_y":null,"closure_validation_status":"NOT_APPLICABLE","overdue":false,"days_overdue":0.0,"publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"finding_id":"FND_TP_001","scenario_id":"SCN_THIRD_PARTY_OVERDUE","system_id":"SYS_CORE_03","control_id":"CTRL_TP_01","recurrence_key":"THIRD_PARTY_ASSURANCE","finding_theme":"Third-party assurance follow-up","severity":"HIGH","identified_date":"2026-07-10","status":"OPEN","closed_date_x":null,"repeat_finding":false,"prior_finding_id":null,"action_id":"ACT_TP_FUTURE","action_owner":"Integration Services","target_date":"2026-10-01","action_status":"IN_PROGRESS","closed_date_y":null,"closure_validation_status":"NOT_APPLICABLE","overdue":false,"days_overdue":0.0,"publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"finding_id":"FND_TP_001","scenario_id":"SCN_THIRD_PARTY_OVERDUE","system_id":"SYS_CORE_03","control_id":"CTRL_TP_01","recurrence_key":"THIRD_PARTY_ASSURANCE","finding_theme":"Third-party assurance follow-up","severity":"HIGH","identified_date":"2026-07-10","status":"OPEN","closed_date_x":null,"repeat_finding":false,"prior_finding_id":null,"action_id":"ACT_TP_OVERDUE","action_owner":"Third Party Management","target_date":"2026-09-29","action_status":"OPEN","closed_date_y":null,"closure_validation_status":"NOT_APPLICABLE","overdue":true,"days_overdue":1.0,"publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"}]</script>
+<script id="risk-domain-data" type="application/json">[{"risk_domain":"Access Management","assurance_tests":6,"sufficient_evidence":4,"weak_evidence":2,"stale_evidence":1,"high_or_critical_residual_risk":2,"not_evaluable_residual_risk":2,"publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"risk_domain":"Change & Integration","assurance_tests":2,"sufficient_evidence":1,"weak_evidence":1,"stale_evidence":0,"high_or_critical_residual_risk":0,"not_evaluable_residual_risk":1,"publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"},{"risk_domain":"Third Party","assurance_tests":1,"sufficient_evidence":0,"weak_evidence":1,"stale_evidence":1,"high_or_critical_residual_risk":0,"not_evaluable_residual_risk":1,"publication_run_id":"20261005T175406684735Z","publication_as_of_date":"2026-09-30"}]</script>
 
 <script>
 const assuranceData = JSON.parse(document.getElementById("assurance-data").textContent);
 const priorityData = JSON.parse(document.getElementById("priority-data").textContent);
+const canonicalMetrics = JSON.parse(document.getElementById("canonical-metrics").textContent);
+const metricDefinitions = JSON.parse(document.getElementById("metric-definitions").textContent);
 
 let dashboardSelection = {
     risk_domain: null,
@@ -4835,32 +5092,41 @@ function filteredAssuranceData() {
     );
 }
 
-function countWhere(rows, field, expected) {
-    return rows.filter(row => cleanValue(row[field]) === expected).length;
-}
-
-function countOneOf(rows, field, values) {
-    return rows.filter(row => values.includes(cleanValue(row[field]))).length;
-}
-
 function percentage(value, total) {
     if (!total) return "0%";
     return `${Math.round((value / total) * 100)}%`;
 }
 
+function scopedMetrics(rows) {
+    if (rows.length === assuranceData.length) return canonicalMetrics;
+    const result = {};
+    Object.entries(metricDefinitions).forEach(([id, definition]) => {
+        if (definition.trusted_population !== "control_assurance") return;
+        const rule = definition.calculation;
+        result[id] = rows.filter(row => {
+            if (rule.operator === "all") return true;
+            if (rule.operator === "eq") return row[rule.field] === rule.value;
+            if (rule.operator === "in") return rule.values.includes(row[rule.field]);
+            throw new Error("Unsupported governed metric operator");
+        }).length;
+    });
+    return result;
+}
+
 function renderExecutiveKpis(rows) {
-    const total = rows.length;
-    const sufficient = countWhere(rows, "evidence_sufficiency", "SUFFICIENT");
-    const stale = countWhere(rows, "freshness_state", "STALE");
-    const unmapped = countWhere(rows, "identity_status", "UNMAPPED");
-    const highRisk = countOneOf(rows, "residual_risk", ["HIGH", "CRITICAL"]);
-    const notEvaluable = countWhere(rows, "residual_risk", "NOT_EVALUABLE");
+    const metrics = scopedMetrics(rows);
+    const total = metrics.assurance_tests;
+    const sufficient = metrics.sufficient_evidence;
+    const stale = metrics.stale_evidence;
+    const unmapped = metrics.unmapped_tests;
+    const highRisk = metrics.high_or_critical_residual_risk;
+    const notEvaluable = metrics.not_evaluable_residual_risk;
 
     const metricValue = value =>
         metricMode === "percentage" ? percentage(value, total) : value;
 
     document.getElementById("kpi-tests").textContent =
-        metricMode === "percentage" ? "100%" : total;
+        metricMode === "percentage" ? percentage(total, total) : total;
     document.getElementById("kpi-sufficient").textContent = metricValue(sufficient);
     document.getElementById("kpi-sufficient-sub").textContent =
         `${percentage(sufficient, total)} of selected assurance tests`;
@@ -5025,6 +5291,7 @@ function renderRiskDomainChart(rows) {
                 y: domains.map(humanize),
                 x: domains.map(domain => grouped[domain].sufficient),
                 marker: { color: palette.green },
+                text: domains.map(domain => grouped[domain].sufficient), textposition: "auto",
                 hovertemplate: "%{y}<br>Sufficient: %{x}<extra></extra>"
             },
             {
@@ -5034,6 +5301,7 @@ function renderRiskDomainChart(rows) {
                 y: domains.map(humanize),
                 x: domains.map(domain => grouped[domain].other),
                 marker: { color: palette.amber },
+                text: domains.map(domain => grouped[domain].other), textposition: "auto",
                 hovertemplate: "%{y}<br>Needs stronger evidence: %{x}<extra></extra>"
             }
         ],
@@ -5082,6 +5350,8 @@ function renderFreshnessChart(rows) {
                         : palette.blue
                 )
             },
+            text: sorted.map(row => `${row.evidence_age_days} days / ${humanize(row.freshness_state)}`),
+            textposition: "auto",
             customdata: sorted.map(row => [
                 cleanValue(row.system_name),
                 humanize(cleanValue(row.freshness_state))
@@ -5150,7 +5420,7 @@ function renderAttentionTable(rows) {
 
     const body = items.map(row => `
         <tr
-            class="clickable-row"
+            class="clickable-row" tabindex="0" onkeydown="activateDrillRow(event, this)"
             data-test-id="${escapeHtml(cleanValue(row.test_id))}"
             onclick="openTestDetail(this.dataset.testId)"
         >
@@ -5196,7 +5466,7 @@ function renderPriorityTable(rows = priorityData) {
 
         return `
             <tr
-                class="clickable-row"
+                class="clickable-row" tabindex="0" onkeydown="activateDrillRow(event, this)"
                 data-finding-id="${escapeHtml(cleanValue(row.finding_id))}"
                 onclick="openFindingDetail(this.dataset.findingId)"
             >
@@ -5209,7 +5479,7 @@ function renderPriorityTable(rows = priorityData) {
                 <td>${cleanValue(row.action_owner)}</td>
                 <td>${cleanValue(row.target_date)}</td>
                 <td>${badge(actionStatus, actionStatus === "CLOSED" ? "green" : actionStatus === "IN_PROGRESS" ? "blue" : "amber")}</td>
-                <td>${overdue ? badge("Overdue", "red") : badge("On track", "green")}</td>
+                <td>${!row.action_id ? badge("No action", "gray") : overdue ? badge("Overdue", "red") : badge("Not overdue", "green")}</td>
             </tr>
         `;
     }).join("");
@@ -5234,7 +5504,7 @@ function renderPriorityTable(rows = priorityData) {
         </table>
     `;
 
-    const validated = rows.filter(row =>
+    const validated = uniqueRecords(rows, "action_id").filter(row =>
         cleanValue(row.closure_validation_status) === "VALIDATED"
     ).length;
     document.getElementById("validated-closures").textContent = validated;
@@ -5296,12 +5566,13 @@ function toggleMetricMode() {
 }
 
 function renderDynamicObservations(rows) {
-    const total = rows.length;
-    const sufficient = countWhere(rows, "evidence_sufficiency", "SUFFICIENT");
-    const stale = countWhere(rows, "freshness_state", "STALE");
-    const unmapped = countWhere(rows, "identity_status", "UNMAPPED");
-    const highRisk = countOneOf(rows, "residual_risk", ["HIGH", "CRITICAL"]);
-    const notEvaluable = countWhere(rows, "residual_risk", "NOT_EVALUABLE");
+    const metrics = scopedMetrics(rows);
+    const total = metrics.assurance_tests;
+    const sufficient = metrics.sufficient_evidence;
+    const stale = metrics.stale_evidence;
+    const unmapped = metrics.unmapped_tests;
+    const highRisk = metrics.high_or_critical_residual_risk;
+    const notEvaluable = metrics.not_evaluable_residual_risk;
 
     const observations = [
         [
@@ -5330,6 +5601,34 @@ function renderDynamicObservations(rows) {
             </div>
         `).join("");
 }
+
+function activateDrillRow(event, row) {
+    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); row.click(); }
+}
+
+let drawerReturnFocus = null;
+function focusDrawer(id) {
+    drawerReturnFocus = document.activeElement;
+    const drawer = document.getElementById(id);
+    drawer.inert = false;
+    drawer.setAttribute("aria-hidden", "false");
+    drawer.querySelector("button").focus();
+}
+function restoreDrawerFocus() {
+    document.querySelectorAll(".detail-drawer").forEach(drawer => { drawer.setAttribute("aria-hidden", "true"); drawer.inert = true; });
+    drawerReturnFocus?.focus();
+}
+document.addEventListener("keydown", event => {
+    const drawer = document.querySelector(".detail-drawer.open");
+    if (!drawer) return;
+    if (event.key === "Escape") { closeAllDrawers(); event.preventDefault(); }
+    if (event.key === "Tab") {
+        const controls = [...drawer.querySelectorAll("button, a, input, select, [tabindex='0']")];
+        const first = controls[0], last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    }
+});
 
 function detailItem(label, value) {
     return `
@@ -5366,9 +5665,11 @@ function openTestDetail(testId) {
 
     document.getElementById("drawer-backdrop").classList.add("open");
     document.getElementById("test-detail-drawer").classList.add("open");
+    focusDrawer("test-detail-drawer");
 }
 
 function closeTestDetail() {
+    restoreDrawerFocus();
     document.getElementById("test-detail-drawer").classList.remove("open");
     if (!document.getElementById("finding-detail-drawer").classList.contains("open")) {
         document.getElementById("drawer-backdrop").classList.remove("open");
@@ -5425,8 +5726,19 @@ function filteredFindingData() {
     });
 }
 
+function uniqueRecords(rows, field) {
+    const seen = new Set();
+    return rows.filter(row => {
+        const id = row[field];
+        if (id === null || id === undefined || id === "" || seen.has(id)) return false;
+        seen.add(id);
+        return true;
+    });
+}
+
 function renderFindingSummary(rows) {
-    const severity = frequency(rows, "severity", ["CRITICAL", "HIGH", "MODERATE", "LOW"]);
+    const findings = uniqueRecords(rows, "finding_id");
+    const severity = frequency(findings, "severity", ["CRITICAL", "HIGH", "MODERATE", "LOW"]);
     Plotly.react(
         "finding-summary-chart",
         [{
@@ -5434,18 +5746,19 @@ function renderFindingSummary(rows) {
             x: severity.labels.map(humanize),
             y: severity.values,
             marker: { color: palette.amber },
-            hovertemplate: "%{x}: %{y} rows<extra></extra>"
+            text: severity.values, textposition: "auto",
+            hovertemplate: "%{x}: %{y} records<extra></extra>"
         }],
         {
             ...commonLayout("Finding severity"),
             xaxis: { title: "" },
-            yaxis: { title: "Rows", dtick: 1, rangemode: "tozero", gridcolor: palette.grid },
+            yaxis: { title: "Distinct records", dtick: 1, rangemode: "tozero", gridcolor: palette.grid },
             showlegend: false
         },
         plotConfig
     );
 
-    const actions = frequency(rows, "action_status", ["OPEN", "IN_PROGRESS", "CLOSED"]);
+    const actions = frequency(uniqueRecords(rows, "action_id"), "action_status", ["OPEN", "IN_PROGRESS", "CLOSED"]);
     Plotly.react(
         "action-summary-chart",
         [{
@@ -5453,12 +5766,13 @@ function renderFindingSummary(rows) {
             x: actions.labels.map(humanize),
             y: actions.values,
             marker: { color: palette.blue },
-            hovertemplate: "%{x}: %{y} rows<extra></extra>"
+            text: actions.values, textposition: "auto",
+            hovertemplate: "%{x}: %{y} records<extra></extra>"
         }],
         {
             ...commonLayout("Action status"),
             xaxis: { title: "" },
-            yaxis: { title: "Rows", dtick: 1, rangemode: "tozero", gridcolor: palette.grid },
+            yaxis: { title: "Distinct records", dtick: 1, rangemode: "tozero", gridcolor: palette.grid },
             showlegend: false
         },
         plotConfig
@@ -5505,9 +5819,11 @@ function openFindingDetail(findingId) {
 
     document.getElementById("drawer-backdrop").classList.add("open");
     document.getElementById("finding-detail-drawer").classList.add("open");
+    focusDrawer("finding-detail-drawer");
 }
 
 function closeFindingDetail() {
+    restoreDrawerFocus();
     document.getElementById("finding-detail-drawer").classList.remove("open");
     if (!document.getElementById("test-detail-drawer").classList.contains("open")) {
         document.getElementById("drawer-backdrop").classList.remove("open");
@@ -5515,6 +5831,7 @@ function closeFindingDetail() {
 }
 
 function closeAllDrawers() {
+    restoreDrawerFocus();
     document.getElementById("test-detail-drawer").classList.remove("open");
     document.getElementById("finding-detail-drawer").classList.remove("open");
     document.getElementById("drawer-backdrop").classList.remove("open");
@@ -5522,7 +5839,18 @@ function closeAllDrawers() {
 
 function toggleLineageSection(id) {
     const target = document.getElementById(id);
-    if (target) target.classList.toggle("open");
+    if (target) {
+        const open = target.classList.toggle("open");
+        document.querySelector(`[aria-controls="${id}"]`)?.setAttribute("aria-expanded", String(open));
+    }
+}
+
+function renderAccessibleAssuranceTable(rows) {
+    const fields = ["test_id", "system_name", "entity_name", "control_name", "risk_domain", "expected_population", "received_population", "structurally_valid_population", "mapped_population", "testable_population", "evaluated_population", "not_tested_population", "coverage_ratio", "evidence_sufficiency", "freshness_state", "evidence_age_days", "control_effectiveness", "inherent_risk", "residual_risk", "identity_status", "reporting_period"];
+    document.getElementById("accessible-assurance-table").innerHTML =
+        '<table class="dashboard-table"><caption>Selected assurance tests; population counts are source records, coverage is a ratio</caption><thead><tr>' +
+        fields.map(field => `<th scope="col">${humanize(field)}</th>`).join("") +
+        '</tr></thead><tbody>' + rows.map(row => '<tr>' + fields.map(field => `<td>${escapeHtml(cleanValue(row[field]))}</td>`).join("") + '</tr>').join("") + '</tbody></table>';
 }
 
 function applyDashboardFilters() {
@@ -5535,6 +5863,7 @@ function applyDashboardFilters() {
     renderAttentionTable(rows);
     renderDynamicObservations(rows);
     renderActiveFilterChips();
+    renderAccessibleAssuranceTable(rows);
 }
 
 function resetDashboardFilters() {
@@ -5556,8 +5885,8 @@ function resetDashboardFilters() {
 
 function openBrowserArtifact(event, relativePath) {
     event.preventDefault();
-    const canonical = window.location.href.includes("/publication/html/");
-    const targetPath = canonical ? relativePath : `publication/html/${relativePath}`;
+    const rootReport = window.location.pathname.endsWith("/assurance_report.html");
+    const targetPath = rootReport ? `publication/html/${relativePath}` : relativePath;
     window.open(targetPath, "_blank", "noopener");
 }
 
@@ -5571,6 +5900,7 @@ function setActiveDashboardTab(tabName) {
             "active",
             button.dataset.dashboardTab === tabName
         );
+        button.setAttribute("aria-pressed", String(button.dataset.dashboardTab === tabName));
     });
 
     setTimeout(() => {
