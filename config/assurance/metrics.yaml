@@ -17,6 +17,10 @@ metrics:
     limitation: Count reflects only the trusted assurance population for the selected scope.
     empty_scope_state: 0
     aggregation: count
+    calculation:
+      population: control_assurance
+      aggregation: count
+      operator: all
 
   sufficient_evidence:
     trusted_population: control_assurance
@@ -28,6 +32,12 @@ metrics:
     limitation: Sufficiency follows the configured synthetic assurance methodology and does not imply control effectiveness.
     empty_scope_state: 0
     aggregation: count
+    calculation:
+      population: control_assurance
+      aggregation: count
+      operator: eq
+      field: evidence_sufficiency
+      value: SUFFICIENT
 
   partial_evidence:
     trusted_population: control_assurance
@@ -39,6 +49,12 @@ metrics:
     limitation: Partial evidence reflects configured coverage and evidence rules, not a control-failure conclusion.
     empty_scope_state: 0
     aggregation: count
+    calculation:
+      population: control_assurance
+      aggregation: count
+      operator: eq
+      field: evidence_sufficiency
+      value: PARTIAL
 
   insufficient_evidence:
     trusted_population: control_assurance
@@ -50,6 +66,12 @@ metrics:
     limitation: Insufficient evidence means the available basis is inadequate for the configured assurance conclusion.
     empty_scope_state: 0
     aggregation: count
+    calculation:
+      population: control_assurance
+      aggregation: count
+      operator: eq
+      field: evidence_sufficiency
+      value: INSUFFICIENT
 
   not_evaluable_evidence:
     trusted_population: control_assurance
@@ -61,6 +83,12 @@ metrics:
     limitation: NOT_EVALUABLE must remain distinct from failure and must not be interpreted as ineffective control performance.
     empty_scope_state: 0
     aggregation: count
+    calculation:
+      population: control_assurance
+      aggregation: count
+      operator: eq
+      field: evidence_sufficiency
+      value: NOT_EVALUABLE
 
   stale_evidence:
     trusted_population: control_assurance
@@ -72,6 +100,12 @@ metrics:
     limitation: Staleness is determined from the configured as-of date and evidence-freshness rule.
     empty_scope_state: 0
     aggregation: count
+    calculation:
+      population: control_assurance
+      aggregation: count
+      operator: eq
+      field: freshness_state
+      value: STALE
 
   unmapped_tests:
     trusted_population: control_assurance
@@ -83,6 +117,12 @@ metrics:
     limitation: Unmapped tests are retained explicitly and must not be assigned unsupported enterprise context.
     empty_scope_state: 0
     aggregation: count
+    calculation:
+      population: control_assurance
+      aggregation: count
+      operator: eq
+      field: identity_status
+      value: UNMAPPED
 
   high_or_critical_residual_risk:
     trusted_population: control_assurance
@@ -94,6 +134,14 @@ metrics:
     limitation: Residual risk is illustrative and only evaluable where the configured evidence basis is sufficient.
     empty_scope_state: 0
     aggregation: count
+    calculation:
+      population: control_assurance
+      aggregation: count
+      operator: in
+      field: residual_risk
+      values:
+        - HIGH
+        - CRITICAL
 
   not_evaluable_residual_risk:
     trusted_population: control_assurance
@@ -105,6 +153,12 @@ metrics:
     limitation: NOT_EVALUABLE represents insufficient decision basis and must not be converted into an assumed risk rating.
     empty_scope_state: 0
     aggregation: count
+    calculation:
+      population: control_assurance
+      aggregation: count
+      operator: eq
+      field: residual_risk
+      value: NOT_EVALUABLE
 
   overdue_actions:
     trusted_population: remediation_actions
@@ -116,6 +170,12 @@ metrics:
     limitation: Overdue status follows the configured as-of date, open-status vocabulary, and target-date rule.
     empty_scope_state: 0
     aggregation: count
+    calculation:
+      population: remediation_actions
+      aggregation: count
+      operator: eq
+      field: overdue
+      value: true
 
   repeat_findings:
     trusted_population: findings
@@ -127,6 +187,12 @@ metrics:
     limitation: Repeat classification uses the configured stable recurrence key and chronology requirements; fuzzy title matching is not used.
     empty_scope_state: 0
     aggregation: count
+    calculation:
+      population: findings
+      aggregation: count
+      operator: eq
+      field: repeat_finding
+      value: true
 
   open_findings:
     trusted_population: findings
@@ -138,3 +204,11 @@ metrics:
     limitation: This metric reflects finding workflow status only and does not measure severity or remediation effectiveness.
     empty_scope_state: 0
     aggregation: count
+    calculation:
+      population: findings
+      aggregation: count
+      operator: in
+      field: status
+      values:
+        - OPEN
+        - IN_PROGRESS

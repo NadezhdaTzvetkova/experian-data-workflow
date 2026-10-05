@@ -1,14 +1,20 @@
+import shutil
+import sqlite3
 from pathlib import Path
 
 import pandas as pd
 import pytest
 
-from experian_workflow.assurance.ingestion import load_control_evidence
+from experian_workflow.assurance.ingestion import (
+    load_control_evidence,
+    load_enterprise_reference,
+)
 from experian_workflow.assurance.quality import (
     StructuralValidationError,
     assert_structurally_usable,
     validate_control_evidence_contract,
     validate_control_evidence_population,
+    validate_sqlite_contracts,
     validate_unique_key,
 )
 
@@ -93,3 +99,75 @@ def test_duplicate_key_fails_without_silent_deduplication() -> None:
     assert result.blocking is True
     assert result.reason_code == "DUPLICATE_KEY"
     assert result.affected_ids == ("0", "1")
+
+@pytest.mark.parametrize("value", ["", "   "])
+def test_blank_required_key_fails(value: str) -> None:
+    frame = pd.DataFrame(
+        {
+            "finding_id": pd.Series([value], dtype="string"),
+        }
+    )
+
+    result = validate_unique_key(
+        frame,
+        dataset="findings",
+        key_columns=["finding_id"],
+        control_id="DQ_FINDINGS_BUSINESS_KEY",
+    )
+
+    assert result.status == "FAIL"
+    assert result.blocking is True
+    assert result.reason_code == "NULL_REQUIRED_KEY"
+    assert result.affected_ids == ("0",)
+
+def test_missing_sqlite_table_is_reported_by_quality_layer(
+    tmp_path: Path,
+) -> None:
+    source = ASSURANCE_SOURCE / "enterprise.db"
+    broken = tmp_path / "enterprise_missing_table.db"
+    shutil.copy2(source, broken)
+
+    with sqlite3.connect(broken) as connection:
+        connection.execute("DROP TABLE third_parties")
+        connection.commit()
+
+    reference = load_enterprise_reference(broken)
+    results = validate_sqlite_contracts(reference)
+
+    result = next(
+        item
+        for item in results
+        if item.control_id == "DQ_SQLITE_THIRD_PARTIES_SCHEMA"
+    )
+
+    assert result.status == "FAIL"
+    assert result.blocking is True
+    assert result.reason_code == "MISSING_REQUIRED_TABLE"
+
+def test_missing_sqlite_column_is_reported_by_quality_layer(
+    tmp_path: Path,
+) -> None:
+    source = ASSURANCE_SOURCE / "enterprise.db"
+    broken = tmp_path / "enterprise_missing_column.db"
+    shutil.copy2(source, broken)
+
+    with sqlite3.connect(broken) as connection:
+        connection.execute(
+            "ALTER TABLE third_parties DROP COLUMN last_assurance_date"
+        )
+        connection.commit()
+
+    reference = load_enterprise_reference(broken)
+    results = validate_sqlite_contracts(reference)
+
+    result = next(
+        item
+        for item in results
+        if item.control_id == "DQ_SQLITE_THIRD_PARTIES_SCHEMA"
+    )
+
+    assert "third_parties" in reference
+    assert "last_assurance_date" not in reference["third_parties"].columns
+    assert result.status == "FAIL"
+    assert result.blocking is True
+    assert result.reason_code == "MISSING_REQUIRED_COLUMNS"

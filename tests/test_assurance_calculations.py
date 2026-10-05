@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+import yaml
 
 from experian_workflow.assurance.calculations import (
     AssuranceCalculationError,
@@ -308,3 +309,30 @@ def test_missing_recurrence_key_is_rejected():
     broken.loc[broken["finding_id"] == "FND_IAM_006", "recurrence_key"] = ""
     with pytest.raises(AssuranceCalculationError, match="Missing recurrence_key"):
         detect_repeat_findings(broken, rules)
+
+@pytest.mark.parametrize(
+    "missing_rule",
+    [
+        "remediation_overdue",
+        "repeat_finding",
+    ],
+)
+def test_rules_loader_rejects_missing_runtime_rule(
+    tmp_path: Path,
+    missing_rule: str,
+) -> None:
+    config = yaml.safe_load(RULES.read_text(encoding="utf-8"))
+    del config["rules"][missing_rule]
+
+    broken = tmp_path / f"rules_without_{missing_rule}.yaml"
+    broken.write_text(
+        yaml.safe_dump(config, sort_keys=False),
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    with pytest.raises(
+        AssuranceCalculationError,
+        match="Missing assurance rule definitions",
+    ):
+        load_assurance_rules(broken)

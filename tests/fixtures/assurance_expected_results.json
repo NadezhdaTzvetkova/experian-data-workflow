@@ -214,12 +214,12 @@
           "structural_status": "FAIL",
           "missing_required_field": "tested_population",
           "downstream_state": "NOT_EVALUABLE",
-          "candidate_publishable": false
+          "terminal_manifest_eligible": false
         },
         "CONTROL_EVIDENCE_ADDITIVE_V1": {
           "structural_status": "PASS",
           "added_optional_field": "review_note",
-          "candidate_publishable_if_other_gates_pass": true
+          "terminal_manifest_eligible_if_other_gates_pass": true
         }
       },
       "detector_truth": {
@@ -235,9 +235,9 @@
         }
       },
       "expected_publication_effect": {
-        "breaking_candidate_blocks_trusted_publication": true,
-        "last_known_good_must_remain_unchanged": true,
-        "default_trusted_run_contaminated": false
+        "breaking_run_manifest_written": false,
+        "failed_run_is_published": false,
+        "default_successful_run_contaminated": false
       }
     },
     "SCN_REPEAT_FINDING": {

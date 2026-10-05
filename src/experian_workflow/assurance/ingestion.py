@@ -146,9 +146,35 @@ def load_enterprise_reference(
     tables: dict[str, pd.DataFrame] = {}
 
     with closing(sqlite3.connect(path)) as connection:
+        existing_tables = {
+            row[0]
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            )
+        }
+
         for table, columns in SQLITE_TABLE_COLUMNS.items():
+            if table not in existing_tables:
+                continue
+
+            available_columns = {
+                row[1]
+                for row in connection.execute(
+                    f'PRAGMA table_info("{table}")'
+                )
+            }
+            selected_columns = [
+                column
+                for column in columns
+                if column in available_columns
+            ]
+
+            if not selected_columns:
+                tables[table] = pd.DataFrame()
+                continue
+
             tables[table] = pd.read_sql_query(
-                _ordered_select(table, columns),
+                _ordered_select(table, selected_columns),
                 connection,
             )
 

@@ -33,6 +33,8 @@ def load_assurance_rules(path: Path | str) -> dict[str, Any]:
         "evidence_sufficiency",
         "control_effectiveness",
         "residual_risk",
+        "remediation_overdue",
+        "repeat_finding",
     }
     missing = sorted(required_rules - set(rules))
     if missing:

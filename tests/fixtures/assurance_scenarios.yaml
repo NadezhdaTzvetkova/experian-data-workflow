@@ -209,20 +209,20 @@ scenarios:
       removed_required_field: tested_population
       expected_structural_status: FAIL
       downstream_state: NOT_EVALUABLE
-      candidate_publishable: false
+      terminal_manifest_eligible: false
     negative_control:
       fixture_id: CONTROL_EVIDENCE_ADDITIVE_V1
       schema_version: "1.0"
       added_optional_field: review_note
       expected_structural_status: PASS
-      candidate_publishable_if_other_gates_pass: true
+      terminal_manifest_eligible_if_other_gates_pass: true
     expected_stage_outcomes:
       breaking_change_silently_coerced: false
-      breaking_candidate_blocks_trusted_publication: true
-      last_known_good_must_remain_unchanged: true
+      breaking_run_manifest_written: false
+      failed_run_is_published: false
       additive_optional_field_causes_failure: false
     expected_analytical_effect:
-      default_trusted_run_contaminated: false
+      default_successful_run_contaminated: false
     expected_visual_story:
       - data-trust source health
       - schema-contract failure shown as unavailable assurance rather than adverse control result

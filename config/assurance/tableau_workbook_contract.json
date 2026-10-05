@@ -1,0 +1,458 @@
+{
+    "schema_version":  "1.0",
+    "workbook_id":  "assurance_dashboard",
+    "dashboards":  [
+                       {
+                           "id":  "executive_assurance",
+                           "title":  "Executive Assurance",
+                           "worksheets":  [
+                                              {
+                                                  "id":  "headline_kpis",
+                                                  "dataset":  "governed_metrics",
+                                                  "fields":  [
+                                                                 "metric_id",
+                                                                 "display_name",
+                                                                 "value",
+                                                                 "unit",
+                                                                 "validation_status",
+                                                                 "publication_run_id",
+                                                                 "publication_as_of_date"
+                                                             ],
+                                                  "visual":  {
+                                                                 "rows":  [
+                                                                              "metric_id"
+                                                                          ],
+                                                                 "label":  [
+                                                                               "display_name",
+                                                                               "value",
+                                                                               "unit"
+                                                                           ],
+                                                                 "columns":  [
+
+                                                                             ],
+                                                                 "filters":  [
+                                                                                 "publication_run_id",
+                                                                                 "publication_as_of_date"
+                                                                             ],
+                                                                 "color":  [
+                                                                               "validation_status"
+                                                                           ],
+                                                                 "view_type":  "kpi_text",
+                                                                 "mark":  "text"
+                                                             }
+                                              },
+                                              {
+                                                  "id":  "risk_domain_overview",
+                                                  "dataset":  "risk_domain_summary",
+                                                  "fields":  [
+                                                                 "risk_domain",
+                                                                 "assurance_tests",
+                                                                 "sufficient_evidence",
+                                                                 "weak_evidence",
+                                                                 "stale_evidence",
+                                                                 "high_or_critical_residual_risk",
+                                                                 "not_evaluable_residual_risk"
+                                                             ],
+                                                  "visual":  {
+                                                                 "rows":  [
+                                                                              "risk_domain"
+                                                                          ],
+                                                                 "label":  [
+                                                                               "assurance_tests"
+                                                                           ],
+                                                                 "columns":  [
+                                                                                 "assurance_tests"
+                                                                             ],
+                                                                 "filters":  [
+                                                                                 "publication_run_id",
+                                                                                 "publication_as_of_date"
+                                                                             ],
+                                                                 "color":  [
+                                                                               "high_or_critical_residual_risk"
+                                                                           ],
+                                                                 "view_type":  "bar",
+                                                                 "mark":  "bar"
+                                                             }
+                                              },
+                                              {
+                                                  "id":  "evidence_sufficiency",
+                                                  "dataset":  "assurance_tests",
+                                                  "fields":  [
+                                                                 "test_id",
+                                                                 "risk_domain",
+                                                                 "evidence_sufficiency",
+                                                                 "publication_run_id",
+                                                                 "publication_as_of_date"
+                                                             ],
+                                                  "visual":  {
+                                                                 "rows":  [
+                                                                              "evidence_sufficiency"
+                                                                          ],
+                                                                 "label":  [
+                                                                               "COUNT(test_id)"
+                                                                           ],
+                                                                 "columns":  [
+                                                                                 "COUNT(test_id)"
+                                                                             ],
+                                                                 "filters":  [
+                                                                                 "risk_domain",
+                                                                                 "publication_run_id",
+                                                                                 "publication_as_of_date"
+                                                                             ],
+                                                                 "color":  [
+                                                                               "evidence_sufficiency"
+                                                                           ],
+                                                                 "view_type":  "bar",
+                                                                 "mark":  "bar"
+                                                             }
+                                              },
+                                              {
+                                                  "id":  "residual_risk_profile",
+                                                  "dataset":  "assurance_tests",
+                                                  "fields":  [
+                                                                 "test_id",
+                                                                 "risk_domain",
+                                                                 "residual_risk",
+                                                                 "publication_run_id",
+                                                                 "publication_as_of_date"
+                                                             ],
+                                                  "visual":  {
+                                                                 "rows":  [
+                                                                              "residual_risk"
+                                                                          ],
+                                                                 "label":  [
+                                                                               "COUNT(test_id)"
+                                                                           ],
+                                                                 "columns":  [
+                                                                                 "COUNT(test_id)"
+                                                                             ],
+                                                                 "filters":  [
+                                                                                 "risk_domain",
+                                                                                 "publication_run_id",
+                                                                                 "publication_as_of_date"
+                                                                             ],
+                                                                 "color":  [
+                                                                               "residual_risk"
+                                                                           ],
+                                                                 "view_type":  "bar",
+                                                                 "mark":  "bar"
+                                                             }
+                                              }
+                                          ]
+                       },
+                       {
+                           "id":  "risk_and_evidence",
+                           "title":  "Risk \u0026 Evidence",
+                           "worksheets":  [
+                                              {
+                                                  "id":  "assurance_explorer",
+                                                  "dataset":  "assurance_tests",
+                                                  "fields":  [
+                                                                 "test_id",
+                                                                 "control_id",
+                                                                 "system_name",
+                                                                 "risk_domain",
+                                                                 "inherent_risk",
+                                                                 "coverage_ratio",
+                                                                 "coverage_state",
+                                                                 "freshness_state",
+                                                                 "evidence_sufficiency",
+                                                                 "control_effectiveness",
+                                                                 "residual_risk",
+                                                                 "publication_run_id",
+                                                                 "publication_as_of_date"
+                                                             ],
+                                                  "visual":  {
+                                                                 "rows":  [
+                                                                              "test_id"
+                                                                          ],
+                                                                 "label":  [
+                                                                               "control_id",
+                                                                               "system_name",
+                                                                               "risk_domain",
+                                                                               "coverage_state",
+                                                                               "freshness_state",
+                                                                               "evidence_sufficiency",
+                                                                               "control_effectiveness",
+                                                                               "residual_risk"
+                                                                           ],
+                                                                 "columns":  [
+
+                                                                             ],
+                                                                 "filters":  [
+                                                                                 "risk_domain",
+                                                                                 "evidence_sufficiency",
+                                                                                 "freshness_state",
+                                                                                 "residual_risk",
+                                                                                 "publication_run_id",
+                                                                                 "publication_as_of_date"
+                                                                             ],
+                                                                 "color":  [
+                                                                               "residual_risk"
+                                                                           ],
+                                                                 "view_type":  "table",
+                                                                 "mark":  "text"
+                                                             }
+                                              },
+                                              {
+                                                  "id":  "attention_drilldown",
+                                                  "dataset":  "attention_items",
+                                                  "fields":  [
+                                                                 "test_id",
+                                                                 "control_id",
+                                                                 "system_name",
+                                                                 "risk_domain",
+                                                                 "coverage_state",
+                                                                 "freshness_state",
+                                                                 "evidence_sufficiency",
+                                                                 "control_effectiveness",
+                                                                 "residual_risk",
+                                                                 "evidence_sufficiency_reason_code",
+                                                                 "residual_risk_reason_code"
+                                                             ],
+                                                  "visual":  {
+                                                                 "rows":  [
+                                                                              "test_id"
+                                                                          ],
+                                                                 "label":  [
+                                                                               "control_id",
+                                                                               "system_name",
+                                                                               "risk_domain",
+                                                                               "coverage_state",
+                                                                               "freshness_state",
+                                                                               "evidence_sufficiency",
+                                                                               "control_effectiveness",
+                                                                               "residual_risk",
+                                                                               "evidence_sufficiency_reason_code",
+                                                                               "residual_risk_reason_code"
+                                                                           ],
+                                                                 "columns":  [
+
+                                                                             ],
+                                                                 "filters":  [
+                                                                                 "risk_domain",
+                                                                                 "evidence_sufficiency",
+                                                                                 "freshness_state",
+                                                                                 "residual_risk"
+                                                                             ],
+                                                                 "color":  [
+                                                                               "residual_risk"
+                                                                           ],
+                                                                 "view_type":  "table",
+                                                                 "mark":  "text"
+                                                             }
+                                              }
+                                          ]
+                       },
+                       {
+                           "id":  "findings_and_actions",
+                           "title":  "Findings \u0026 Actions",
+                           "worksheets":  [
+                                              {
+                                                  "id":  "findings_overview",
+                                                  "dataset":  "findings_summary",
+                                                  "fields":  [
+                                                                 "finding_id",
+                                                                 "finding_theme",
+                                                                 "severity",
+                                                                 "status",
+                                                                 "repeat_finding",
+                                                                 "identified_date",
+                                                                 "closed_date"
+                                                             ],
+                                                  "visual":  {
+                                                                 "rows":  [
+                                                                              "severity"
+                                                                          ],
+                                                                 "label":  [
+                                                                               "COUNT(finding_id)"
+                                                                           ],
+                                                                 "columns":  [
+                                                                                 "COUNT(finding_id)"
+                                                                             ],
+                                                                 "filters":  [
+                                                                                 "severity",
+                                                                                 "status",
+                                                                                 "repeat_finding"
+                                                                             ],
+                                                                 "color":  [
+                                                                               "status"
+                                                                           ],
+                                                                 "view_type":  "bar",
+                                                                 "mark":  "bar"
+                                                             }
+                                              },
+                                              {
+                                                  "id":  "remediation_overview",
+                                                  "dataset":  "remediation_summary",
+                                                  "fields":  [
+                                                                 "action_id",
+                                                                 "finding_id",
+                                                                 "action_owner",
+                                                                 "target_date",
+                                                                 "status",
+                                                                 "closure_validation_status",
+                                                                 "overdue",
+                                                                 "days_overdue"
+                                                             ],
+                                                  "visual":  {
+                                                                 "rows":  [
+                                                                              "status"
+                                                                          ],
+                                                                 "label":  [
+                                                                               "COUNT(action_id)"
+                                                                           ],
+                                                                 "columns":  [
+                                                                                 "COUNT(action_id)"
+                                                                             ],
+                                                                 "filters":  [
+                                                                                 "status",
+                                                                                 "overdue",
+                                                                                 "closure_validation_status"
+                                                                             ],
+                                                                 "color":  [
+                                                                               "overdue"
+                                                                           ],
+                                                                 "view_type":  "bar",
+                                                                 "mark":  "bar"
+                                                             }
+                                              },
+                                              {
+                                                  "id":  "finding_action_drill",
+                                                  "dataset":  "findings_actions_detail",
+                                                  "fields":  [
+                                                                 "finding_id",
+                                                                 "finding_theme",
+                                                                 "severity",
+                                                                 "status",
+                                                                 "repeat_finding",
+                                                                 "action_id",
+                                                                 "action_owner",
+                                                                 "target_date",
+                                                                 "action_status",
+                                                                 "closure_validation_status",
+                                                                 "overdue",
+                                                                 "days_overdue"
+                                                             ],
+                                                  "visual":  {
+                                                                 "rows":  [
+                                                                              "finding_id"
+                                                                          ],
+                                                                 "label":  [
+                                                                               "finding_theme",
+                                                                               "severity",
+                                                                               "status",
+                                                                               "repeat_finding",
+                                                                               "action_id",
+                                                                               "action_owner",
+                                                                               "target_date",
+                                                                               "action_status",
+                                                                               "closure_validation_status",
+                                                                               "overdue",
+                                                                               "days_overdue"
+                                                                           ],
+                                                                 "columns":  [
+
+                                                                             ],
+                                                                 "filters":  [
+                                                                                 "severity",
+                                                                                 "status",
+                                                                                 "repeat_finding",
+                                                                                 "action_status",
+                                                                                 "overdue"
+                                                                             ],
+                                                                 "color":  [
+                                                                               "severity"
+                                                                           ],
+                                                                 "view_type":  "table",
+                                                                 "mark":  "text"
+                                                             }
+                                              }
+                                          ]
+                       },
+                       {
+                           "id":  "data_trust",
+                           "title":  "Data Trust",
+                           "worksheets":  [
+                                              {
+                                                  "id":  "lineage",
+                                                  "dataset":  "lineage_summary",
+                                                  "fields":  [
+                                                                 "lineage_type",
+                                                                 "item_id",
+                                                                 "path",
+                                                                 "sha256",
+                                                                 "row_count",
+                                                                 "publication_run_id",
+                                                                 "publication_as_of_date"
+                                                             ],
+                                                  "visual":  {
+                                                                 "rows":  [
+                                                                              "lineage_type",
+                                                                              "item_id"
+                                                                          ],
+                                                                 "label":  [
+                                                                               "path",
+                                                                               "sha256",
+                                                                               "row_count",
+                                                                               "publication_run_id",
+                                                                               "publication_as_of_date"
+                                                                           ],
+                                                                 "columns":  [
+
+                                                                             ],
+                                                                 "filters":  [
+                                                                                 "lineage_type",
+                                                                                 "publication_run_id",
+                                                                                 "publication_as_of_date"
+                                                                             ],
+                                                                 "color":  [
+
+                                                                           ],
+                                                                 "view_type":  "table",
+                                                                 "mark":  "text"
+                                                             }
+                                              },
+                                              {
+                                                  "id":  "methodology_and_validation",
+                                                  "dataset":  "governed_metrics",
+                                                  "fields":  [
+                                                                 "metric_id",
+                                                                 "display_name",
+                                                                 "business_question",
+                                                                 "limitation",
+                                                                 "methodology_version",
+                                                                 "publication_run_id",
+                                                                 "publication_as_of_date",
+                                                                 "validation_status"
+                                                             ],
+                                                  "visual":  {
+                                                                 "rows":  [
+                                                                              "metric_id"
+                                                                          ],
+                                                                 "label":  [
+                                                                               "display_name",
+                                                                               "business_question",
+                                                                               "limitation",
+                                                                               "methodology_version",
+                                                                               "validation_status"
+                                                                           ],
+                                                                 "columns":  [
+
+                                                                             ],
+                                                                 "filters":  [
+                                                                                 "methodology_version",
+                                                                                 "publication_run_id",
+                                                                                 "publication_as_of_date"
+                                                                             ],
+                                                                 "color":  [
+                                                                               "validation_status"
+                                                                           ],
+                                                                 "view_type":  "table",
+                                                                 "mark":  "text"
+                                                             }
+                                              }
+                                          ]
+                       }
+                   ]
+}
