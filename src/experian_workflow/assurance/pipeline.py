@@ -29,6 +29,9 @@ from experian_workflow.assurance.normalization import (
     normalize_control_evidence_identity,
 )
 from experian_workflow.assurance.powerpoint import build_powerpoint_publication
+from experian_workflow.assurance.presentation_validation import (
+    validate_presentation_consistency,
+)
 from experian_workflow.assurance.publication import (
     write_publication_package,
 )
@@ -621,6 +624,7 @@ def run_assurance_pipeline(root: Path | str = ".") -> dict[str, object]:
         },
     }
 
+    validation_summary["presentation_consistency"] = validate_presentation_consistency(run_dir=run_dir)
     validation_summary["artifacts"]["explainability"] = {
         "path": "publication/explainability.json",
         "sha256": sha256_file(publication_paths["explainability"]),

@@ -51,6 +51,7 @@ def build_explainability(
         definitions[metric_id] = {
             "label": metric_id.replace("_", " ").capitalize(),
             "value": metrics[metric_id], "grain": grain,
+            "calculation": contract["calculation"],
             "publication_table": f"publication/tables/{table}.csv",
             **{key: contract[key] for key in (
                 "trusted_population", "numerator", "denominator", "units",
@@ -69,6 +70,8 @@ def build_explainability(
         "STALE": f"Evidence is {age_comparison} {max_age} days old at the governed as-of date. Freshness overlaps evidence-sufficiency states; future evidence is NOT_EVALUABLE.",
         "UNMAPPED": "No resolved enterprise identity. Retain the test and its source records explicitly.",
         "NOT_TESTED": "Mapped source records were not evaluated; retain them in population reconciliation.",
+        "NOT_APPLICABLE": "The relevant field does not apply; retain it distinctly from missing, untested or not-evaluable evidence.",
+        "partial_coverage": "Partial coverage can coexist with an observed EFFECTIVE result. It does not establish full evidence sufficiency or permit a residual-risk conclusion under the configured prerequisites.",
         "residual_risk": "A residual-risk conclusion requires SUFFICIENT evidence and the configured inherent-risk/control-effectiveness matrix.",
     }
     sources = [

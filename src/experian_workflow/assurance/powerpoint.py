@@ -25,13 +25,13 @@ NAVY = RGBColor(20, 42, 74)
 BLUE = RGBColor(36, 99, 235)
 BLUE_DARK = RGBColor(30, 64, 175)
 BLUE_SOFT = RGBColor(232, 240, 255)
-CYAN = RGBColor(8, 145, 178)
+CYAN = RGBColor(14, 116, 144)
 CYAN_SOFT = RGBColor(225, 249, 253)
-GREEN = RGBColor(22, 163, 74)
+GREEN = RGBColor(21, 128, 61)
 GREEN_SOFT = RGBColor(229, 249, 237)
-AMBER = RGBColor(217, 119, 6)
+AMBER = RGBColor(180, 83, 9)
 AMBER_SOFT = RGBColor(255, 247, 220)
-RED = RGBColor(220, 38, 38)
+RED = RGBColor(185, 28, 28)
 RED_SOFT = RGBColor(255, 234, 234)
 PURPLE = RGBColor(126, 34, 206)
 PURPLE_SOFT = RGBColor(247, 236, 255)
@@ -190,6 +190,7 @@ def _text(
     run.font.size = Pt(size)
     run.font.bold = bold
     run.font.color.rgb = color
+    box._element.nvSpPr.cNvPr.set("descr", text)
     return box
 
 
@@ -330,9 +331,18 @@ def _kpi_card(
 ) -> Any:
     card = _rect(slide, left, top, width, 1.02, fill=fill, line=BORDER, radius=True)
     _rect(slide, left, top, 0.055, 1.02, fill=accent, line=accent, radius=True)
-    _text(slide, str(value), left + 0.18, top + 0.12, width - 0.32, 0.42, size=10.5 if len(str(value)) > 16 else 21, bold=True, color=NAVY)
-    _text(slide, label, left + 0.18, top + 0.60, width - 0.32, 0.23, size=8.5, color=MUTED)
-    _text(slide, "VIEW ›", left + width - 0.72, top + 0.75, 0.50, 0.17, size=6.5, bold=True, color=accent, align=PP_ALIGN.RIGHT)
+    value_shape = _text(slide, str(value), left + 0.18, top + 0.12, width - 0.32, 0.42, size=10.5 if len(str(value)) > 16 else 21, bold=True, color=NAVY)
+    _text(slide, label, left + 0.18, top + 0.60, width - 0.32, 0.34, size=10, color=MUTED)
+    metric_labels = {
+        "Assurance tests": "assurance_tests", "Sufficient evidence": "sufficient_evidence",
+        "Stale evidence": "stale_evidence", "High / critical risk": "high_or_critical_residual_risk",
+        "Open findings": "open_findings", "Overdue actions": "overdue_actions",
+        "Tests using stale evidence": "stale_evidence", "Evidence not evaluable": "not_evaluable_evidence",
+        "Repeat findings": "repeat_findings",
+    }
+    if label in metric_labels:
+        value_shape.name = "metric:" + metric_labels[label]
+        value_shape._element.nvSpPr.cNvPr.set("descr", f"{label}: {value}")
     if target_slide is not None:
         card.click_action.target_slide = target_slide
     return card
@@ -607,6 +617,7 @@ def _build_deck(slide_data: dict[str, Any]) -> Presentation:
     _text(s, f"{_safe_int(r['not_tested_population'])} not tested (mapped source records)", 6.80, 4.25, 5.25, 0.32, size=16, bold=True, color=NAVY)
     _text(s, "Mapped = evaluated + not tested", 6.80, 4.69, 5.25, 0.22, size=10, color=INK)
     _text(s, f"Separate assurance-test measure: {unmapped} unmapped assurance test. Source-record counts above use a different grain.", 0.72, 5.37, 11.53, 0.34, size=11, color=NAVY)
+    _text(s, f"Intermediate gates: {_safe_int(r['structurally_valid_population'])} structurally valid; {_safe_int(r['testable_population'])} testable. Rejected and not-testable populations are retained explicitly.", 0.72, 5.76, 11.53, 0.18, size=9, color=MUTED)
     _rect(s, 0.72, 5.96, 11.53, 0.67, fill=WHITE, line=BORDER, radius=True)
     _text(s, "Trust boundary", 0.92, 6.08, 1.65, 0.24, size=11, bold=True, color=NAVY)
     _text(s, "Run IDs, hashes and lineage establish identity. Independent validation and governed population checks establish analytical correctness.", 2.68, 6.08, 9.33, 0.36, size=10, color=MUTED)

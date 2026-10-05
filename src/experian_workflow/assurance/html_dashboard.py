@@ -72,25 +72,7 @@ def build_assurance_report(
     detail = pd.read_csv(
         publication_tables_dir / "findings_actions_detail.csv"
     )
-    repeat_mask = (
-        detail["repeat_finding"]
-        .fillna(False)
-        .astype(str)
-        .str.lower()
-        .eq("true")
-    )
-    overdue_mask = (
-        detail["overdue"]
-        .fillna(False)
-        .astype(str)
-        .str.lower()
-        .eq("true")
-    )
-    priority_view = detail.loc[
-        detail["status"].isin(["OPEN", "IN_PROGRESS"])
-        | repeat_mask
-        | overdue_mask
-    ].reset_index(drop=True)
+    priority_view = detail.reset_index(drop=True)
 
     evidence_view = (
         mart["evidence_sufficiency"]
@@ -216,6 +198,21 @@ def build_assurance_report(
     state_rows = "".join(f"<p><strong>{escape(key)}</strong>: {escape(value)}</p>" for key, value in explanation["states"].items())
     validation_rows = "".join(f"<p><strong>{escape(key)}</strong>: {escape(value)}</p>" for key, value in explanation["validation_levels"].items())
     rationale_rows = "".join(f"<p><strong>{escape(key)}</strong>: {escape(value)}</p>" for key, value in explanation["implementation_choices"].items())
+    canonical_metrics_json = json.dumps(kpis)
+    metric_definitions_json = json.dumps(explanation["metrics"])
+    accessible_columns = [
+        "test_id", "system_name", "entity_name", "control_name", "risk_domain",
+        "expected_population", "received_population", "structurally_valid_population",
+        "mapped_population", "testable_population", "evaluated_population",
+        "not_tested_population", "coverage_ratio", "evidence_sufficiency",
+        "freshness_state", "evidence_age_days", "control_effectiveness",
+        "inherent_risk", "residual_risk", "identity_status", "reporting_period",
+    ]
+    accessible_rows = mart[accessible_columns].fillna("Not supplied").rename(
+        columns=lambda name: name.replace("_", " ").capitalize(),
+    ).to_html(
+        index=False, classes="dashboard-table", border=0, escape=True,
+    ).replace("<th>", '<th scope="col">')
     explanation_html = (
         '<details id="data-and-metrics" class="lineage-card" open><summary><strong>Methodology / Data &amp; Metrics</strong></summary>'
         + '<p>' + escape(explanation["disclaimer"]) + '</p>'
@@ -947,9 +944,22 @@ body {{
     .kpi-grid {{ grid-template-columns: 1fr; }}
     .observation-grid {{ grid-template-columns: 1fr; }}
 }}
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible,
+summary:focus-visible, [tabindex]:focus-visible {{ outline: 3px solid #1e40af; outline-offset: 3px; }}
+.skip-link {{ position: fixed; top: -80px; left: 12px; z-index: 1000; background: white; color: #102a43; padding: 12px; }}
+.skip-link:focus {{ top: 12px; }}
+.panel-title {{ margin: 0; }}
+.dashboard-main, .panel, .content-grid > * {{ min-width: 0; }}
+.badge {{ color: #102a43; }}
+@media (max-width: 680px) {{
+    .summary-chart-grid, .finding-filter-panel {{ grid-template-columns: 1fr; }}
+    .detail-drawer {{ width: 100%; max-width: 100%; }}
+    .nav-inner {{ flex-wrap: wrap; }}
+}}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to analysis</a>
 {plotly_bootstrap}
 
 <div id="dashboard-shell">
@@ -975,22 +985,22 @@ body {{
 
 <nav class="nav-strip">
 <div class="nav-inner">
-    <button class="tab-button active" data-dashboard-tab="executive"
+    <button class="tab-button active" aria-pressed="true" data-dashboard-tab="executive"
         onclick="setActiveDashboardTab('executive')">Executive</button>
     <a class="open-artifact-link" href="reports/executive_assurance.html" target="_blank" rel="noopener" data-browser-path="reports/executive_assurance.html" onclick="openBrowserArtifact(event, 'reports/executive_assurance.html')">Open report ↗</a>
-    <button class="tab-button" data-dashboard-tab="risk-evidence"
+    <button class="tab-button" aria-pressed="false" data-dashboard-tab="risk-evidence"
         onclick="setActiveDashboardTab('risk-evidence')">Risk &amp; evidence</button>
     <a class="open-artifact-link" href="reports/risk_and_evidence.html" target="_blank" rel="noopener" data-browser-path="reports/risk_and_evidence.html" onclick="openBrowserArtifact(event, 'reports/risk_and_evidence.html')">Open report ↗</a>
-    <button class="tab-button" data-dashboard-tab="findings-actions"
+    <button class="tab-button" aria-pressed="false" data-dashboard-tab="findings-actions"
         onclick="setActiveDashboardTab('findings-actions')">Findings & actions</button>
     <a class="open-artifact-link" href="reports/findings_and_actions.html" target="_blank" rel="noopener" data-browser-path="reports/findings_and_actions.html" onclick="openBrowserArtifact(event, 'reports/findings_and_actions.html')">Open report ↗</a>
-    <button class="tab-button" data-dashboard-tab="lineage"
+    <button class="tab-button" aria-pressed="false" data-dashboard-tab="lineage"
         onclick="setActiveDashboardTab('lineage')">Data &amp; Metrics</button>
     <a class="open-artifact-link" href="reports/data_trust.html" target="_blank" rel="noopener" data-browser-path="reports/data_trust.html" onclick="openBrowserArtifact(event, 'reports/data_trust.html')">Open report ↗</a>
 </div>
 </nav>
 
-<main class="dashboard-main">
+<main id="main-content" class="dashboard-main" tabindex="-1">
 
 <section id="dashboard-filters" class="filter-panel">
 <div class="filter-header">
@@ -1086,7 +1096,7 @@ body {{
 <div class="content-grid">
     <div class="panel">
         <div class="panel-head">
-            <div class="panel-title">Evidence position</div>
+            <h3 class="panel-title">Evidence position</h3>
             <div class="panel-subtitle">Composition of the selected assurance-test population</div>
             <a class="open-artifact-link" href="charts/evidence_sufficiency.html" target="_blank" rel="noopener" data-browser-path="charts/evidence_sufficiency.html" onclick="openBrowserArtifact(event, 'charts/evidence_sufficiency.html')">Open chart ↗</a>
         </div>
@@ -1094,7 +1104,7 @@ body {{
     </div>
     <div class="panel">
         <div class="panel-head">
-            <div class="panel-title">Residual-risk visibility</div>
+            <h3 class="panel-title">Residual-risk visibility</h3>
             <div class="panel-subtitle">Risk conclusions supported by current evidence</div>
             <a class="open-artifact-link" href="charts/residual_risk.html" target="_blank" rel="noopener" data-browser-path="charts/residual_risk.html" onclick="openBrowserArtifact(event, 'charts/residual_risk.html')">Open chart ↗</a>
         </div>
@@ -1125,7 +1135,7 @@ body {{
 
 <div class="panel" style="margin-bottom:18px">
     <div class="panel-head">
-        <div class="panel-title">Evidence sufficiency by risk domain</div>
+        <h3 class="panel-title">Evidence sufficiency by risk domain</h3>
         <div class="panel-subtitle">Sufficient evidence versus tests requiring stronger evidence</div>
         <a class="open-artifact-link" href="charts/risk_domain.html" target="_blank" rel="noopener" data-browser-path="charts/risk_domain.html" onclick="openBrowserArtifact(event, 'charts/risk_domain.html')">Open chart ↗</a>
     </div>
@@ -1134,7 +1144,7 @@ body {{
 
 <div class="panel" style="margin-bottom:18px">
     <div class="panel-head">
-        <div class="panel-title">Evidence freshness</div>
+        <h3 class="panel-title">Evidence freshness</h3>
         <div class="panel-subtitle">Evidence age by assurance test; stale evidence is highlighted</div>
         <a class="open-artifact-link" href="charts/freshness.html" target="_blank" rel="noopener" data-browser-path="charts/freshness.html" onclick="openBrowserArtifact(event, 'charts/freshness.html')">Open chart ↗</a>
     </div>
@@ -1189,21 +1199,21 @@ body {{
 </div>
 
 <div class="finding-filter-panel">
-    <select id="filter-finding-severity" onchange="applyFindingFilters()"></select>
-    <select id="filter-finding-status" onchange="applyFindingFilters()"></select>
-    <select id="filter-action-status" onchange="applyFindingFilters()"></select>
-    <select id="filter-overdue" onchange="applyFindingFilters()">
+    <select aria-label="Finding severity" id="filter-finding-severity" onchange="applyFindingFilters()"></select>
+    <select aria-label="Finding status" id="filter-finding-status" onchange="applyFindingFilters()"></select>
+    <select aria-label="Action status" id="filter-action-status" onchange="applyFindingFilters()"></select>
+    <select aria-label="Action schedule" id="filter-overdue" onchange="applyFindingFilters()">
         <option value="ALL">All schedules</option>
         <option value="true">Overdue</option>
         <option value="false">Not overdue</option>
     </select>
-    <select id="filter-repeat" onchange="applyFindingFilters()">
+    <select aria-label="Finding recurrence" id="filter-repeat" onchange="applyFindingFilters()">
         <option value="ALL">All recurrence</option>
         <option value="true">Repeat</option>
         <option value="false">Not repeat</option>
     </select>
     <input
-        id="finding-search"
+        aria-label="Search findings and actions" id="finding-search"
         type="search"
         placeholder="Search finding, theme, action or owner"
         oninput="applyFindingFilters()"
@@ -1213,15 +1223,15 @@ body {{
 <div class="summary-chart-grid">
     <div class="panel">
         <div class="panel-head">
-            <div class="panel-title">Finding severity</div>
-            <div class="panel-subtitle">Current filtered finding/action population</div>
+            <h3 class="panel-title">Finding severity</h3>
+            <div class="panel-subtitle">Distinct findings in the selected relationship scope; each finding counts once</div>
             <a class="open-artifact-link" href="charts/findings.html" target="_blank" rel="noopener" data-browser-path="charts/findings.html" onclick="openBrowserArtifact(event, 'charts/findings.html')">Open chart ↗</a>
         </div>
         <div id="finding-summary-chart" class="chart"></div>
     </div>
     <div class="panel">
         <div class="panel-head">
-            <div class="panel-title">Action status</div>
+            <h3 class="panel-title">Action status</h3>
             <div class="panel-subtitle">Current filtered remediation population</div>
             <a class="open-artifact-link" href="charts/remediation_actions.html" target="_blank" rel="noopener" data-browser-path="charts/remediation_actions.html" onclick="openBrowserArtifact(event, 'charts/remediation_actions.html')">Open chart ↗</a>
         </div>
@@ -1231,7 +1241,7 @@ body {{
 
 <div class="table-panel">
     <div class="panel-head">
-        <div class="panel-title">Finding and remediation priorities</div>
+        <h3 class="panel-title">Finding and remediation priorities</h3>
         <div class="panel-subtitle">Compact operational view; repeated finding rows represent separate management actions.</div>
     </div>
     <div id="priority-table" class="table-scroll"></div>
@@ -1253,7 +1263,7 @@ body {{
 {explanation_html}
 
 <div class="lineage-accordion">
-    <button class="lineage-toggle" onclick="toggleLineageSection('lineage-sources')" type="button">
+    <button class="lineage-toggle" aria-controls="lineage-sources" aria-expanded="false" onclick="toggleLineageSection('lineage-sources')" type="button">
         <span>Source lineage</span><span>+</span>
     </button>
     <div id="lineage-sources" class="lineage-content">
@@ -1265,7 +1275,7 @@ body {{
 </div>
 
 <div class="lineage-accordion">
-    <button class="lineage-toggle" onclick="toggleLineageSection('lineage-config')" type="button">
+    <button class="lineage-toggle" aria-controls="lineage-config" aria-expanded="false" onclick="toggleLineageSection('lineage-config')" type="button">
         <span>Configuration lineage</span><span>+</span>
     </button>
     <div id="lineage-config" class="lineage-content">
@@ -1276,7 +1286,7 @@ body {{
 </div>
 
 <div class="lineage-accordion">
-    <button class="lineage-toggle" onclick="toggleLineageSection('lineage-publication')" type="button">
+    <button class="lineage-toggle" aria-controls="lineage-publication" aria-expanded="false" onclick="toggleLineageSection('lineage-publication')" type="button">
         <span>Publication evidence</span><span>+</span>
     </button>
     <div id="lineage-publication" class="lineage-content">
@@ -1321,7 +1331,7 @@ Coverage, freshness, identity resolution and other configured evidence rules rem
 
 <div id="drawer-backdrop" class="drawer-backdrop" onclick="closeAllDrawers()"></div>
 
-<aside id="test-detail-drawer" class="detail-drawer" aria-label="Assurance test detail">
+<aside id="test-detail-drawer" class="detail-drawer" role="dialog" aria-modal="true" aria-hidden="true" inert aria-label="Assurance test detail">
     <div class="drawer-head">
         <div>
             <div class="section-kicker">Assurance test</div>
@@ -1332,7 +1342,7 @@ Coverage, freshness, identity resolution and other configured evidence rules rem
     <div id="test-detail-content"></div>
 </aside>
 
-<aside id="finding-detail-drawer" class="detail-drawer" aria-label="Finding detail">
+<aside id="finding-detail-drawer" class="detail-drawer" role="dialog" aria-modal="true" aria-hidden="true" inert aria-label="Finding detail">
     <div class="drawer-head">
         <div>
             <div class="section-kicker">Finding &amp; remediation</div>
@@ -1343,6 +1353,11 @@ Coverage, freshness, identity resolution and other configured evidence rules rem
     <div id="finding-detail-content"></div>
 </aside>
 
+<details class="panel" open><summary><strong>Assurance data table — selected scope</strong></summary>
+<p>Coverage, effectiveness, inherent risk and residual risk are distinct. Partial coverage may coexist with an observed EFFECTIVE result while preventing a full residual-risk conclusion. Source-record populations differ from test counts.</p>
+<div id="accessible-assurance-table" class="table-scroll" tabindex="0" aria-label="Assurance data table">{accessible_rows}</div>
+</details>
+
 <div class="footer">
 Self-contained synthetic assurance dashboard - Run {manifest["run_id"]} - No external chart dependency
 </div>
@@ -1350,6 +1365,8 @@ Self-contained synthetic assurance dashboard - Run {manifest["run_id"]} - No ext
 </main>
 </div>
 
+<script id="canonical-metrics" type="application/json">{canonical_metrics_json}</script>
+<script id="metric-definitions" type="application/json">{metric_definitions_json}</script>
 <script id="assurance-data" type="application/json">{mart_json}</script>
 <script id="priority-data" type="application/json">{priority_json}</script>
 <script id="risk-domain-data" type="application/json">{risk_domain_json}</script>
@@ -1357,6 +1374,8 @@ Self-contained synthetic assurance dashboard - Run {manifest["run_id"]} - No ext
 <script>
 const assuranceData = JSON.parse(document.getElementById("assurance-data").textContent);
 const priorityData = JSON.parse(document.getElementById("priority-data").textContent);
+const canonicalMetrics = JSON.parse(document.getElementById("canonical-metrics").textContent);
+const metricDefinitions = JSON.parse(document.getElementById("metric-definitions").textContent);
 
 let dashboardSelection = {{
     risk_domain: null,
@@ -1447,32 +1466,41 @@ function filteredAssuranceData() {{
     );
 }}
 
-function countWhere(rows, field, expected) {{
-    return rows.filter(row => cleanValue(row[field]) === expected).length;
-}}
-
-function countOneOf(rows, field, values) {{
-    return rows.filter(row => values.includes(cleanValue(row[field]))).length;
-}}
-
 function percentage(value, total) {{
     if (!total) return "0%";
     return `${{Math.round((value / total) * 100)}}%`;
 }}
 
+function scopedMetrics(rows) {{
+    if (rows.length === assuranceData.length) return canonicalMetrics;
+    const result = {{}};
+    Object.entries(metricDefinitions).forEach(([id, definition]) => {{
+        if (definition.trusted_population !== "control_assurance") return;
+        const rule = definition.calculation;
+        result[id] = rows.filter(row => {{
+            if (rule.operator === "all") return true;
+            if (rule.operator === "eq") return row[rule.field] === rule.value;
+            if (rule.operator === "in") return rule.values.includes(row[rule.field]);
+            throw new Error("Unsupported governed metric operator");
+        }}).length;
+    }});
+    return result;
+}}
+
 function renderExecutiveKpis(rows) {{
-    const total = rows.length;
-    const sufficient = countWhere(rows, "evidence_sufficiency", "SUFFICIENT");
-    const stale = countWhere(rows, "freshness_state", "STALE");
-    const unmapped = countWhere(rows, "identity_status", "UNMAPPED");
-    const highRisk = countOneOf(rows, "residual_risk", ["HIGH", "CRITICAL"]);
-    const notEvaluable = countWhere(rows, "residual_risk", "NOT_EVALUABLE");
+    const metrics = scopedMetrics(rows);
+    const total = metrics.assurance_tests;
+    const sufficient = metrics.sufficient_evidence;
+    const stale = metrics.stale_evidence;
+    const unmapped = metrics.unmapped_tests;
+    const highRisk = metrics.high_or_critical_residual_risk;
+    const notEvaluable = metrics.not_evaluable_residual_risk;
 
     const metricValue = value =>
         metricMode === "percentage" ? percentage(value, total) : value;
 
     document.getElementById("kpi-tests").textContent =
-        metricMode === "percentage" ? "100%" : total;
+        metricMode === "percentage" ? percentage(total, total) : total;
     document.getElementById("kpi-sufficient").textContent = metricValue(sufficient);
     document.getElementById("kpi-sufficient-sub").textContent =
         `${{percentage(sufficient, total)}} of selected assurance tests`;
@@ -1637,6 +1665,7 @@ function renderRiskDomainChart(rows) {{
                 y: domains.map(humanize),
                 x: domains.map(domain => grouped[domain].sufficient),
                 marker: {{ color: palette.green }},
+                text: domains.map(domain => grouped[domain].sufficient), textposition: "auto",
                 hovertemplate: "%{{y}}<br>Sufficient: %{{x}}<extra></extra>"
             }},
             {{
@@ -1646,6 +1675,7 @@ function renderRiskDomainChart(rows) {{
                 y: domains.map(humanize),
                 x: domains.map(domain => grouped[domain].other),
                 marker: {{ color: palette.amber }},
+                text: domains.map(domain => grouped[domain].other), textposition: "auto",
                 hovertemplate: "%{{y}}<br>Needs stronger evidence: %{{x}}<extra></extra>"
             }}
         ],
@@ -1694,6 +1724,8 @@ function renderFreshnessChart(rows) {{
                         : palette.blue
                 )
             }},
+            text: sorted.map(row => `${{row.evidence_age_days}} days / ${{humanize(row.freshness_state)}}`),
+            textposition: "auto",
             customdata: sorted.map(row => [
                 cleanValue(row.system_name),
                 humanize(cleanValue(row.freshness_state))
@@ -1762,7 +1794,7 @@ function renderAttentionTable(rows) {{
 
     const body = items.map(row => `
         <tr
-            class="clickable-row"
+            class="clickable-row" tabindex="0" onkeydown="activateDrillRow(event, this)"
             data-test-id="${{escapeHtml(cleanValue(row.test_id))}}"
             onclick="openTestDetail(this.dataset.testId)"
         >
@@ -1808,7 +1840,7 @@ function renderPriorityTable(rows = priorityData) {{
 
         return `
             <tr
-                class="clickable-row"
+                class="clickable-row" tabindex="0" onkeydown="activateDrillRow(event, this)"
                 data-finding-id="${{escapeHtml(cleanValue(row.finding_id))}}"
                 onclick="openFindingDetail(this.dataset.findingId)"
             >
@@ -1821,7 +1853,7 @@ function renderPriorityTable(rows = priorityData) {{
                 <td>${{cleanValue(row.action_owner)}}</td>
                 <td>${{cleanValue(row.target_date)}}</td>
                 <td>${{badge(actionStatus, actionStatus === "CLOSED" ? "green" : actionStatus === "IN_PROGRESS" ? "blue" : "amber")}}</td>
-                <td>${{overdue ? badge("Overdue", "red") : badge("On track", "green")}}</td>
+                <td>${{!row.action_id ? badge("No action", "gray") : overdue ? badge("Overdue", "red") : badge("Not overdue", "green")}}</td>
             </tr>
         `;
     }}).join("");
@@ -1846,7 +1878,7 @@ function renderPriorityTable(rows = priorityData) {{
         </table>
     `;
 
-    const validated = rows.filter(row =>
+    const validated = uniqueRecords(rows, "action_id").filter(row =>
         cleanValue(row.closure_validation_status) === "VALIDATED"
     ).length;
     document.getElementById("validated-closures").textContent = validated;
@@ -1908,12 +1940,13 @@ function toggleMetricMode() {{
 }}
 
 function renderDynamicObservations(rows) {{
-    const total = rows.length;
-    const sufficient = countWhere(rows, "evidence_sufficiency", "SUFFICIENT");
-    const stale = countWhere(rows, "freshness_state", "STALE");
-    const unmapped = countWhere(rows, "identity_status", "UNMAPPED");
-    const highRisk = countOneOf(rows, "residual_risk", ["HIGH", "CRITICAL"]);
-    const notEvaluable = countWhere(rows, "residual_risk", "NOT_EVALUABLE");
+    const metrics = scopedMetrics(rows);
+    const total = metrics.assurance_tests;
+    const sufficient = metrics.sufficient_evidence;
+    const stale = metrics.stale_evidence;
+    const unmapped = metrics.unmapped_tests;
+    const highRisk = metrics.high_or_critical_residual_risk;
+    const notEvaluable = metrics.not_evaluable_residual_risk;
 
     const observations = [
         [
@@ -1942,6 +1975,34 @@ function renderDynamicObservations(rows) {{
             </div>
         `).join("");
 }}
+
+function activateDrillRow(event, row) {{
+    if (event.key === "Enter" || event.key === " ") {{ event.preventDefault(); row.click(); }}
+}}
+
+let drawerReturnFocus = null;
+function focusDrawer(id) {{
+    drawerReturnFocus = document.activeElement;
+    const drawer = document.getElementById(id);
+    drawer.inert = false;
+    drawer.setAttribute("aria-hidden", "false");
+    drawer.querySelector("button").focus();
+}}
+function restoreDrawerFocus() {{
+    document.querySelectorAll(".detail-drawer").forEach(drawer => {{ drawer.setAttribute("aria-hidden", "true"); drawer.inert = true; }});
+    drawerReturnFocus?.focus();
+}}
+document.addEventListener("keydown", event => {{
+    const drawer = document.querySelector(".detail-drawer.open");
+    if (!drawer) return;
+    if (event.key === "Escape") {{ closeAllDrawers(); event.preventDefault(); }}
+    if (event.key === "Tab") {{
+        const controls = [...drawer.querySelectorAll("button, a, input, select, [tabindex='0']")];
+        const first = controls[0], last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) {{ event.preventDefault(); last.focus(); }}
+        else if (!event.shiftKey && document.activeElement === last) {{ event.preventDefault(); first.focus(); }}
+    }}
+}});
 
 function detailItem(label, value) {{
     return `
@@ -1978,9 +2039,11 @@ function openTestDetail(testId) {{
 
     document.getElementById("drawer-backdrop").classList.add("open");
     document.getElementById("test-detail-drawer").classList.add("open");
+    focusDrawer("test-detail-drawer");
 }}
 
 function closeTestDetail() {{
+    restoreDrawerFocus();
     document.getElementById("test-detail-drawer").classList.remove("open");
     if (!document.getElementById("finding-detail-drawer").classList.contains("open")) {{
         document.getElementById("drawer-backdrop").classList.remove("open");
@@ -2037,8 +2100,19 @@ function filteredFindingData() {{
     }});
 }}
 
+function uniqueRecords(rows, field) {{
+    const seen = new Set();
+    return rows.filter(row => {{
+        const id = row[field];
+        if (id === null || id === undefined || id === "" || seen.has(id)) return false;
+        seen.add(id);
+        return true;
+    }});
+}}
+
 function renderFindingSummary(rows) {{
-    const severity = frequency(rows, "severity", ["CRITICAL", "HIGH", "MODERATE", "LOW"]);
+    const findings = uniqueRecords(rows, "finding_id");
+    const severity = frequency(findings, "severity", ["CRITICAL", "HIGH", "MODERATE", "LOW"]);
     Plotly.react(
         "finding-summary-chart",
         [{{
@@ -2046,18 +2120,19 @@ function renderFindingSummary(rows) {{
             x: severity.labels.map(humanize),
             y: severity.values,
             marker: {{ color: palette.amber }},
-            hovertemplate: "%{{x}}: %{{y}} rows<extra></extra>"
+            text: severity.values, textposition: "auto",
+            hovertemplate: "%{{x}}: %{{y}} records<extra></extra>"
         }}],
         {{
             ...commonLayout("Finding severity"),
             xaxis: {{ title: "" }},
-            yaxis: {{ title: "Rows", dtick: 1, rangemode: "tozero", gridcolor: palette.grid }},
+            yaxis: {{ title: "Distinct records", dtick: 1, rangemode: "tozero", gridcolor: palette.grid }},
             showlegend: false
         }},
         plotConfig
     );
 
-    const actions = frequency(rows, "action_status", ["OPEN", "IN_PROGRESS", "CLOSED"]);
+    const actions = frequency(uniqueRecords(rows, "action_id"), "action_status", ["OPEN", "IN_PROGRESS", "CLOSED"]);
     Plotly.react(
         "action-summary-chart",
         [{{
@@ -2065,12 +2140,13 @@ function renderFindingSummary(rows) {{
             x: actions.labels.map(humanize),
             y: actions.values,
             marker: {{ color: palette.blue }},
-            hovertemplate: "%{{x}}: %{{y}} rows<extra></extra>"
+            text: actions.values, textposition: "auto",
+            hovertemplate: "%{{x}}: %{{y}} records<extra></extra>"
         }}],
         {{
             ...commonLayout("Action status"),
             xaxis: {{ title: "" }},
-            yaxis: {{ title: "Rows", dtick: 1, rangemode: "tozero", gridcolor: palette.grid }},
+            yaxis: {{ title: "Distinct records", dtick: 1, rangemode: "tozero", gridcolor: palette.grid }},
             showlegend: false
         }},
         plotConfig
@@ -2117,9 +2193,11 @@ function openFindingDetail(findingId) {{
 
     document.getElementById("drawer-backdrop").classList.add("open");
     document.getElementById("finding-detail-drawer").classList.add("open");
+    focusDrawer("finding-detail-drawer");
 }}
 
 function closeFindingDetail() {{
+    restoreDrawerFocus();
     document.getElementById("finding-detail-drawer").classList.remove("open");
     if (!document.getElementById("test-detail-drawer").classList.contains("open")) {{
         document.getElementById("drawer-backdrop").classList.remove("open");
@@ -2127,6 +2205,7 @@ function closeFindingDetail() {{
 }}
 
 function closeAllDrawers() {{
+    restoreDrawerFocus();
     document.getElementById("test-detail-drawer").classList.remove("open");
     document.getElementById("finding-detail-drawer").classList.remove("open");
     document.getElementById("drawer-backdrop").classList.remove("open");
@@ -2134,7 +2213,18 @@ function closeAllDrawers() {{
 
 function toggleLineageSection(id) {{
     const target = document.getElementById(id);
-    if (target) target.classList.toggle("open");
+    if (target) {{
+        const open = target.classList.toggle("open");
+        document.querySelector(`[aria-controls="${{id}}"]`)?.setAttribute("aria-expanded", String(open));
+    }}
+}}
+
+function renderAccessibleAssuranceTable(rows) {{
+    const fields = {json.dumps(accessible_columns)};
+    document.getElementById("accessible-assurance-table").innerHTML =
+        '<table class="dashboard-table"><caption>Selected assurance tests; population counts are source records, coverage is a ratio</caption><thead><tr>' +
+        fields.map(field => `<th scope="col">${{humanize(field)}}</th>`).join("") +
+        '</tr></thead><tbody>' + rows.map(row => '<tr>' + fields.map(field => `<td>${{escapeHtml(cleanValue(row[field]))}}</td>`).join("") + '</tr>').join("") + '</tbody></table>';
 }}
 
 function applyDashboardFilters() {{
@@ -2147,6 +2237,7 @@ function applyDashboardFilters() {{
     renderAttentionTable(rows);
     renderDynamicObservations(rows);
     renderActiveFilterChips();
+    renderAccessibleAssuranceTable(rows);
 }}
 
 function resetDashboardFilters() {{
@@ -2168,8 +2259,8 @@ function resetDashboardFilters() {{
 
 function openBrowserArtifact(event, relativePath) {{
     event.preventDefault();
-    const canonical = window.location.href.includes("/publication/html/");
-    const targetPath = canonical ? relativePath : `publication/html/${{relativePath}}`;
+    const rootReport = window.location.pathname.endsWith("/assurance_report.html");
+    const targetPath = rootReport ? `publication/html/${{relativePath}}` : relativePath;
     window.open(targetPath, "_blank", "noopener");
 }}
 
@@ -2183,6 +2274,7 @@ function setActiveDashboardTab(tabName) {{
             "active",
             button.dataset.dashboardTab === tabName
         );
+        button.setAttribute("aria-pressed", String(button.dataset.dashboardTab === tabName));
     }});
 
     setTimeout(() => {{

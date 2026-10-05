@@ -128,6 +128,8 @@ HTML/browser publication checks verify structure, report/chart generation, expec
 
 PowerPoint automated checks validate eight slides, package structure, run identity, and the navigation/artifact-link contract. Content tests also verify the reconciliation narrative, priorities, disclaimer, and all six management-action IDs. PowerPoint Desktop rendering QA may be performed separately from the pipeline; the pipeline can therefore truthfully retain `client_validation = NOT_EXECUTED` even when separate desktop-render evidence exists.
 
+The presentation consistency gate compares all twelve embedded HTML metrics, complete assurance/finding/action/risk-domain records, actual bound PowerPoint headline values and every slide's metric Notes with the same-run publication. Material mismatches stop terminal publication. HTML accessibility checks cover structure and keyboard-control wiring; they do not establish browser rendering or assistive-technology conformance.
+
 ```powershell
 uv run pytest tests/test_assurance_powerpoint.py -q
 uv run pytest -q
@@ -146,6 +148,8 @@ After downloading the repository, follow the [reviewer guide](review/README.md):
 3. Open `review/tableau/assurance_dashboard.twbx` in compatible Tableau software for exploration.
 
 Keep the `presentation`, `html`, and `tableau` directories together under `review/`. PowerPoint links are relative to this structure. The reviewer guide records the exact clean producer run and commit; the corresponding ignored run directory retains the terminal manifest and validation summary.
+
+Standalone assurance CSVs, field dictionaries, metrics and machine-readable manifests are intentionally omitted from the curated snapshot to avoid duplicate analytical copies. The TWBX contains its validated data extract, and HTML includes the data and definitions needed for offline review. To inspect all supporting files, reproduce the reviewer guide's producer source commit in a separate checkout and run the assurance command above. Its new run directory contains `publication/tables/`, `publication/metrics.json`, `publication/explainability.json`, Tableau metadata under `publication/tableau/`, `publication/validation_summary.json` and `manifest.json`. A new execution has a new run identity; the guide's producer run remains the identity of the committed snapshot.
 
 ## Design principles and limitations
 
