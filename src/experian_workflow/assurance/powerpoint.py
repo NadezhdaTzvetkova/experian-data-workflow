@@ -87,6 +87,7 @@ def build_slide_data(*, run_dir: Path) -> dict[str, Any]:
     metrics = _read_json(publication_dir / "metrics.json")
     metric_validation = _read_json(publication_dir / "metric_validation.json")
     validation_summary = _read_json(publication_dir / "validation_summary.json")
+    evidence_summary = _read_json(run_dir / "evidence_summary.json")
 
     payload = {
         "run_id": str(metrics["run_id"]),
@@ -94,6 +95,7 @@ def build_slide_data(*, run_dir: Path) -> dict[str, Any]:
         "methodology_version": str(metrics["methodology_version"]),
         "validation_status": str(metrics["validation_status"]),
         "metrics": metrics["metrics"],
+        "reconciliation": evidence_summary["reconciliation"],
         "metric_validation_status": str(metric_validation["status"]),
         "publication_validation_status": str(validation_summary["status"]),
         "risk_domain_summary": _read_table(tables_dir / "risk_domain_summary.csv"),
@@ -530,6 +532,8 @@ def _build_deck(slide_data: dict[str, Any]) -> Presentation:
     for idx, (value, label, accent, target) in enumerate(cards):
         _kpi_card(s, value, label, 0.72 + idx * 1.96, 4.98, 1.78, accent=accent, target_slide=prs.slides[target])
 
+    _text(s, "Illustrative synthetic data and methodology; not Experian internal.", 0.72, 6.43, 11.53, 0.24, size=9, color=MUTED)
+
     # Slide 2 — Evidence Quality
     s = slides[1]
     _text(s, "EVIDENCE SUFFICIENCY", 0.72, 1.82, 2.5, 0.20, size=8, bold=True, color=MUTED)
@@ -579,22 +583,30 @@ def _build_deck(slide_data: dict[str, Any]) -> Presentation:
 
     # Slide 5 — Data Trust & Reconciliation
     s = slides[4]
-    _text(s, "TRUST LAYERS", 0.72, 1.82, 2.0, 0.20, size=8, bold=True, color=MUTED)
+    r = slide_data["reconciliation"]
+    _text(s, "Every source record is accounted for", 0.72, 1.88, 11.53, 0.40, size=21, bold=True, color=NAVY)
     stages = [
-        ("01", "Source contract", "Expected structure and current-run inputs", GREEN_SOFT, GREEN),
-        ("02", "Mapping & quality", f"Unmapped assurance population: {unmapped}", BLUE_SOFT, BLUE_DARK),
-        ("03", "Metric agreement", "Pandas + DuckDB + executable metric contract", PURPLE_SOFT, PURPLE),
-        ("04", "Publication parity", "HTML + Tableau + PowerPoint consume the same validated package", CYAN_SOFT, CYAN),
+        ("expected_population", "expected", BLUE_SOFT, BLUE_DARK),
+        ("received_population", "received", CYAN_SOFT, CYAN),
+        ("mapped_population", "mapped", PURPLE_SOFT, PURPLE),
+        ("evaluated_population", "evaluated", GREEN_SOFT, GREEN),
     ]
-    for idx, (num, heading, body, fill, accent) in enumerate(stages):
-        top = 2.16 + idx * 0.90
-        _pill(s, num, 0.72, top, 0.42, fill=accent, color=WHITE)
-        _rect(s, 1.30, top - 0.05, 5.28, 0.66, fill=fill, line=fill, radius=True)
-        _text(s, heading, 1.50, top + 0.05, 2.0, 0.20, size=9.5, bold=True, color=NAVY)
-        _text(s, body, 3.38, top + 0.05, 2.96, 0.34, size=7.6, color=INK)
-    _text(s, "CURRENT-RUN LINEAGE", 6.95, 1.82, 2.8, 0.20, size=8, bold=True, color=MUTED)
-    _table(s, slide_data["lineage_summary"], [("lineage_type", "Type"), ("item_id", "Item"), ("path", "Path")], 6.95, 2.16, 5.30, 3.00, max_rows=6, font_size=6.7)
-    _callout(s, "Trust boundary", "Identity is not correctness", "Run IDs, hashes and lineage establish artifact identity. Analytical correctness still depends on independent validation and governed population checks.", 6.95, 5.22, 5.30, 1.45, fill=WHITE, accent=BLUE_DARK)
+    for idx, (key, label, fill, accent) in enumerate(stages):
+        left = 0.72 + idx * 2.94
+        _rect(s, left, 2.56, 2.65, 1.24, fill=fill, line=fill, radius=True)
+        _text(s, f"{_safe_int(r[key])} {label}", left + 0.15, 2.90, 2.35, 0.47, size=20, bold=True, color=accent, align=PP_ALIGN.CENTER)
+        if idx < 3:
+            _text(s, "→", left + 2.66, 2.96, 0.28, 0.35, size=18, bold=True, color=BLUE, align=PP_ALIGN.CENTER)
+    _rect(s, 0.72, 4.10, 5.55, 1.02, fill=AMBER_SOFT, line=AMBER_SOFT, radius=True)
+    _text(s, f"{_safe_int(r['unmapped_population'])} unmapped source records", 0.92, 4.25, 5.15, 0.32, size=16, bold=True, color=NAVY)
+    _text(s, "Received = mapped + unmapped source records", 0.92, 4.69, 5.15, 0.22, size=10, color=INK)
+    _rect(s, 6.60, 4.10, 5.65, 1.02, fill=AMBER_SOFT, line=AMBER_SOFT, radius=True)
+    _text(s, f"{_safe_int(r['not_tested_population'])} not tested (mapped source records)", 6.80, 4.25, 5.25, 0.32, size=16, bold=True, color=NAVY)
+    _text(s, "Mapped = evaluated + not tested", 6.80, 4.69, 5.25, 0.22, size=10, color=INK)
+    _text(s, f"Separate assurance-test measure: {unmapped} unmapped assurance test. Source-record counts above use a different grain.", 0.72, 5.37, 11.53, 0.34, size=11, color=NAVY)
+    _rect(s, 0.72, 5.96, 11.53, 0.67, fill=WHITE, line=BORDER, radius=True)
+    _text(s, "Trust boundary", 0.92, 6.08, 1.65, 0.24, size=11, bold=True, color=NAVY)
+    _text(s, "Run IDs, hashes and lineage establish identity. Independent validation and governed population checks establish analytical correctness.", 2.68, 6.08, 9.33, 0.36, size=10, color=MUTED)
 
     # Slide 6 — Traceability
     s = slides[5]
@@ -656,9 +668,18 @@ def _build_deck(slide_data: dict[str, Any]) -> Presentation:
     ]
     for idx, (value, label, accent) in enumerate(detail_cards):
         _kpi_card(s, value, label, 0.72 + (idx % 2) * 2.72, 2.18 + (idx // 2) * 1.20, 2.45, accent=accent)
-    _callout(s, "Scope", "Executive summary, not a second analytical engine", "PowerPoint consumes governed current-run publication artifacts. It does not redefine KPI, evidence, mapping, overdue, recurrence or residual-risk logic.", 6.35, 2.18, 2.83, 1.56, fill=BLUE_SOFT, accent=BLUE_DARK)
-    _callout(s, "Limitation", "Navigation is interactive; filtering is not", "The deck provides native slide navigation and links to deeper analytical channels. Live cross-filtering belongs to the HTML/Tableau experiences, not PowerPoint.", 9.42, 2.18, 2.83, 1.56, fill=AMBER_SOFT, accent=AMBER)
-    _callout(s, "Next step", "Resolve the remaining evidence and remediation exceptions", "Refresh the 2 stale-evidence cases, resolve the 1 not-evaluable evidence case and 4 residual-risk conclusions that remain not evaluable, address the 1 overdue action, and retain explicit attention on the 1 unmapped assurance test.", 6.35, 4.03, 5.90, 1.60, fill=GREEN_SOFT, accent=GREEN)
+    priorities = [
+        ("Priority 1 — Restore decision confidence", f"Refresh the {stale} stale-evidence cases and resolve the {not_eval_evidence} evidence-not-evaluable case.", BLUE_SOFT),
+        ("Priority 2 — Close risk uncertainty", f"Resolve the {not_eval_risk} residual-risk conclusions that remain not evaluable, starting with areas already carrying high/critical risk.", RED_SOFT),
+        ("Priority 3 — Close operational exceptions", f"Address the {overdue_actions} overdue management action and monitor the {unmapped} unmapped assurance test explicitly.", AMBER_SOFT),
+    ]
+    for idx, (heading, body, fill) in enumerate(priorities):
+        top = 2.05 + idx * 1.13
+        _rect(s, 6.35, top, 5.90, 1.00, fill=fill, line=fill, radius=True)
+        _text(s, heading, 6.53, top + 0.12, 5.54, 0.29, size=12, bold=True, color=NAVY)
+        _text(s, body, 6.53, top + 0.48, 5.54, 0.40, size=10, color=INK)
+    _text(s, "Governed publication inputs preserve KPI definitions. Native slide navigation links to HTML/Tableau for interactive filtering.", 0.72, 4.74, 5.17, 0.60, size=10, color=MUTED)
+    _text(s, "Illustrative synthetic enterprise-assurance dataset and methodology; not Experian internal data or methodology.", 0.72, 6.34, 11.53, 0.34, size=11, color=MUTED)
     _button(s, "Back to executive snapshot", 0.72, 5.72, 2.45, fill=NAVY, line=NAVY, color=WHITE, target_slide=prs.slides[0])
     _button(s, "Open interactive analytics", 3.44, 5.72, 2.55, fill=BLUE_SOFT, line=BLUE_SOFT, color=BLUE_DARK, target_slide=prs.slides[6])
 

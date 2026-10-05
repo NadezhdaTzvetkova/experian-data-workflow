@@ -78,8 +78,14 @@ def test_powerpoint_publication_uses_governed_current_run_package():
             for shape in presentation.slides[4].shapes
             if hasattr(shape, "text")
         )
-        assert "Unmapped assurance population: 1" in slide5_text
-        assert "Unmapped assurance population: 0" not in slide5_text
+        for label in (
+            "291 expected", "291 received", "281 mapped", "253 evaluated",
+            "10 unmapped source records", "28 not tested (mapped source records)",
+            "1 unmapped assurance test", "different grain", "Trust boundary",
+        ):
+            assert label in slide5_text
+        assert "Unmapped assurance population" not in slide5_text
+        assert slide_data["reconciliation"] == manifest["controls"]["reconciliation"]
         slide4_table_text = " ".join(
             cell.text
             for shape in presentation.slides[3].shapes
@@ -95,7 +101,17 @@ def test_powerpoint_publication_uses_governed_current_run_package():
             for shape in presentation.slides[7].shapes
             if hasattr(shape, "text")
         )
-        assert "Resolve the remaining evidence and remediation exceptions" in slide8_text
+        for label in (
+            "Priority 1 — Restore decision confidence", "2 stale-evidence",
+            "1 evidence-not-evaluable", "Priority 2 — Close risk uncertainty",
+            "4 residual-risk conclusions that remain not evaluable",
+            "high/critical risk", "Priority 3 — Close operational exceptions",
+            "1 overdue management action", "1 unmapped assurance test",
+            "Illustrative synthetic enterprise-assurance dataset and methodology",
+            "not Experian internal data or methodology",
+        ):
+            assert label in slide8_text
+        assert "Resolve the remaining evidence and remediation exceptions" not in slide8_text
         assert "Close the remaining presentation acceptance gate" not in slide8_text
         assert slide_data["attention_items"]
         assert all("D:\\" not in link for link in result["external_publication_links"])

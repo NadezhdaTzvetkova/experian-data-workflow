@@ -1,241 +1,148 @@
-# Experian Data Workflow Technical Exercise
+# Experian Assurance Analytics and Data Workflow
 
-A small, reproducible data workflow demonstrating data ingestion, validation, trusted transformation, audit-oriented analytics, traceability, reconciliation, testing, and presentation.
+A reproducible assurance analytics/data workflow built for the Experian technical exercise. The repository includes the original corporate-expense workflow and a role-aligned enterprise-assurance extension. The assurance extension demonstrates governed evidence processing, population reconciliation, independent analytical validation, and publication to PowerPoint, HTML, and Tableau.
 
-The example domain is deterministic synthetic corporate-expense data. No real, confidential, proprietary, or personal data is used.
+All datasets, controls, methodology, and policy examples are synthetic and illustrative. They are not Experian internal data, controls, methodology, or policy. The observed results demonstrate workflow behaviour rather than conditions at Experian or any real organisation.
 
-## Core question
+## What the solution does
 
-> Can I prove that what came out is the correct, complete and consistent transformation of what went in, identify exactly where it stopped being true if it is not, and preserve enough evidence for another engineer or auditor to reproduce and verify the result?
+The expense workflow ingests CSV transactions, SQLite vendor reference data, and YAML policy. It validates structure and records, quarantines unusable rows, preserves valid audit exceptions, enriches trusted data, and reconciles DuckDB analytics against independent Pandas calculations.
 
-## Workflow
+The assurance workflow ingests enterprise reference data, control evidence, findings, and management actions. Governed configuration defines evidence freshness and sufficiency, residual-risk interpretation, overdue actions, and recurrence. Source populations are reconciled explicitly before analytical marts and publication artifacts are accepted.
 
-```text
-expenses.csv --------\
-                     \
-vendors.db -----------> ingest -> structural validation -> record validation
-                     /                                      |
-expense_policy.yaml -/                                       |
-                                                            +--> invalid rows -> quarantine
-                                                            |
-                                                            +--> trusted rows -> enrichment
-                                                                                   |
-                                                                                   +--> curated Parquet
-                                                                                   |
-                                                                                   +--> DuckDB audit summary
-                                                                                              |
-                                                                                              +--> independent Pandas KPI reconciliation
-                                                                                              |
-                                                                                              +--> audit-facing HTML report
-```
+Three presentation channels consume the same validated publication truth:
 
-Each successful run also writes a manifest containing source identity, hashes, row counts, code identity, control results, reconciliation evidence, analytical definition identity, and output paths.
+- **PowerPoint:** executive narrative, eight-slide navigation, and links to analytical detail.
+- **HTML:** interactive browser analytics with supporting reports and charts.
+- **Tableau:** packaged analytical workbook and genuine Hyper extract.
 
-## Design decisions
+Renderers do not recreate KPI business logic. The PowerPoint reconciliation view distinguishes unmapped source records from unmapped assurance tests, which use different grains.
 
-### Failure semantics
+## Repository structure
 
-The workflow deliberately distinguishes different kinds of problems:
+| Path | Purpose |
+| --- | --- |
+| `src/experian_workflow/` | Expense pipeline and shared implementation |
+| `src/experian_workflow/assurance/` | Governed assurance processing, validation, and publication |
+| `config/` | Expense policy and assurance rules, metrics, reconciliation, and Tableau contracts |
+| `data/source/` | Deterministic synthetic source files, including adversarial assurance examples |
+| `tests/` | Runtime tests and independent scenario/expected-result fixtures |
+| `scripts/` | Deterministic synthetic-source generators |
+| `sql/` | Expense audit aggregation SQL |
+| `docs/` | Design decisions and changed-requirement scenarios |
+| `ai/` | Intentional project review contracts and methodology documentation |
+| `sample_output/` | Versioned representative expense output for review without execution |
+| `output/` | Ignored local runtime runs and submission packages |
+| `pyproject.toml`, `uv.lock` | Runtime specification and locked dependency resolution |
 
-- **Structural failure:** the pipeline stops because the source contract is not safe to process.
-- **Invalid record:** the row is quarantined with a control identifier and reason.
-- **Valid audit exception:** the row remains in the trusted dataset and is flagged for analysis.
-- **Reconciliation failure:** the pipeline fails rather than publishing results that cannot be accounted for.
+The versioned expense sample is illustrative historical evidence with its own producer identity. It is separate from the final assurance submission. Generated assurance runs and submission packages remain local and are not version controlled.
 
-This prevents valid business-risk signals from being confused with unusable data.
+## Setup and execution
 
-### Data quality controls
-
-The current controls focus on material risks rather than maximising the number of checks:
-
-- required source columns and policy structure
-- missing transaction identifier
-- duplicate transaction identifier
-- non-positive or invalid amount
-- invalid or future transaction date
-- unresolved vendor reference
-- many-to-one vendor enrichment cardinality
-- source-to-quarantine-to-trusted row reconciliation
-- trusted-to-curated enrichment cardinality
-
-### Money and time
-
-Monetary values are stored as integer minor units to avoid floating-point ambiguity.
-
-The policy uses an explicit deterministic `as_of_date`. Transaction dates are treated separately from execution timestamps so business meaning remains reproducible even though run timestamps change.
-
-### Historical reference logic
-
-Vendor activity is evaluated against the transaction date. A vendor that later became inactive is not automatically treated as inactive for earlier transactions. This preserves historical interpretation rather than applying only the current reference state.
-
-## Analytics
-
-The curated dataset is the only analytical source. `sql/audit_summary.sql` produces category-level audit metrics in DuckDB. The same headline metrics are independently recomputed in Pandas. The run fails if the two implementations disagree.
-
-The analytical output includes:
-
-- transaction and spend totals by category
-- policy-limit exception counts
-- high-risk vendor counts
-- historically inactive vendor counts
-- overall audit-exception counts
-
-The report also surfaces vendor concentration and cost-centre exception exposure for audit prioritisation.
-
-## Traceability and reproducibility
-
-Every manifested run records:
-
-- source paths and SHA-256 hashes
-- source and trusted row counts
-- policy version and policy hash
-- Git commit and working-tree dirty state
-- structural and record-control results
-- row reconciliation results
-- analytical SQL path and SHA-256 hash
-- independent SQL/Pandas KPI reconciliation
-- persisted output paths
-
-A run is considered complete only when its `manifest.json` exists. Files produced before the manifest are intermediate execution artifacts.
-
-## Synthetic defects and audit examples
-
-The generator creates deterministic synthetic data and injects known examples for testing and review. The independent ground-truth file is used only by tests and review; production validation logic does not read it.
-
-Injected invalid-record examples cover:
-
-- duplicate transaction ID
-- missing transaction ID
-- invalid amount
-- future transaction date
-- unknown vendor
-
-Separate valid audit examples cover policy-limit breaches, high-risk vendors, and historically inactive vendors. Valid audit examples remain in the curated dataset rather than being quarantined.
-
-## Running the workflow
-
-Requirements: Python 3.12 and `uv`.
+Use Python **3.12** and `uv`. `pyproject.toml` supports `>=3.12,<3.13`; `uv.lock` resolves Python `3.12.*`. Run the following commands from the repository root:
 
 ```powershell
-cd experian-data-workflow
 uv sync
-uv run python scripts/generate_synthetic_data.py
-uv run python -m experian_workflow.pipeline
-```
-
-The pipeline writes each execution under:
-
-```text
-output/runs/<run_id>/
-```
-
-Typical outputs:
-
-```text
-manifest.json
-quarantine.csv
-curated_expenses.parquet
-audit_summary.csv
-audit_report.html
-```
-
-The pipeline also generates a self-contained audit-facing `audit_report.html` as part of the same manifested run. No separate report-generation step is required.
-
-## Role-aligned assurance extension
-
-Alongside the core expense workflow, the repository includes a compact synthetic control-assurance example aligned to the audit and data-assurance aspects of the role. It is a role-aligned extension of the same engineering principles, not an additional requirement of the exercise.
-
-Run it with:
-
-```powershell
-cd experian-data-workflow
 uv run python -m experian_workflow.assurance.pipeline
 ```
 
-Each successful assurance run is published under:
+The supplied synthetic sources are sufficient for normal execution. The original expense workflow runs with:
 
-```text
-output/assurance_runs/<run_id>/
+```powershell
+uv run python -m experian_workflow.pipeline
 ```
 
-Typical outputs are:
+The deterministic source generators are `scripts/generate_synthetic_data.py` and `scripts/generate_assurance_sources.py`. Regeneration is optional and rewrites synthetic source files; it is not needed to review the supplied example.
+
+## Run outputs and terminal publication
+
+Each assurance execution writes to `output/assurance_runs/<run_id>/`:
 
 ```text
 manifest.json
 control_assurance.parquet
 assurance_reporting_mart.parquet
-remediation_actions.csv
 findings.csv
+remediation_actions.csv
 evidence_summary.json
 assurance_report.html
+publication/
+  metrics.json
+  metric_validation.json
+  validation_summary.json
+  tables/
+  html/
+    assurance_dashboard.html
+    reports/
+    charts/
+  tableau/
+    assurance_dashboard.hyper
+    assurance_dashboard.twb
+    assurance_dashboard.twbx
+    tableau_data_dictionary.csv
+    tableau_validation.json
+  powerpoint/
+    assurance_executive_report.pptx
+    slide_data.json
+    powerpoint_validation.json
 ```
 
-The assurance example demonstrates governed metric definitions, evidence freshness and sufficiency, residual-risk interpretation, remediation tracking, repeat-finding detection, reconciliation, independent validation of published KPIs, and a self-contained stakeholder report.
+`manifest.json` is terminal publication evidence. It is written only after the required analytical and publication steps succeed. Earlier files are intermediate artifacts until that manifest exists. It records source/configuration hashes, population controls, reporting date, code commit, dirty state, and output paths. `publication/validation_summary.json` records the same-run validation evidence across channels.
 
-All assurance data is synthetic. The methodology is explicitly labelled as demonstration logic and is not presented as Experian internal methodology.
+The original expense pipeline uses `output/runs/<run_id>/` and produces quarantine, curated Parquet, audit summary, HTML report, and a terminal manifest.
 
-## Representative sample output
+## Current synthetic demonstration results
 
-A representative completed run is available in [`sample_output/`](sample_output/).
+These are the governed example results for the supplied assurance sources and **2026-09-30** reporting date. They are demonstration results, not universal constants.
 
-It contains:
+| Measure | Value |
+| --- | ---: |
+| Assurance tests | 9 |
+| Sufficient evidence | 5 |
+| Partial evidence | 1 |
+| Insufficient evidence | 2 |
+| Evidence not evaluable | 1 |
+| Stale evidence | 2 |
+| Unmapped assurance tests | 1 |
+| High/critical residual risk | 2 |
+| Residual risk not evaluable | 4 |
+| Overdue management actions | 1 |
+| Repeat findings | 1 |
+| Open findings | 4 |
 
-```text
-manifest.json
-quarantine.csv
-curated_expenses.parquet
-audit_summary.csv
-audit_report.html
-```
+The source-record population flow is **291 expected → 291 received → 281 mapped → 253 evaluated**. The remaining populations are **10 unmapped source records** and **28 mapped records not tested**: `291 = 281 + 10` and `281 = 253 + 28`. The example also retains all **6 management actions**, **5 findings**, **9 control-assurance rows**, and **9 reporting-mart rows**.
 
-The sample output is generated entirely from deterministic synthetic data and is included so the workflow result can be reviewed without requiring local execution.
+## Validation model and testing
 
-The representative sample is generated from a clean committed revision. Its manifest records the exact producer commit and `git_dirty=false`; the sample artifacts are committed separately so their provenance remains truthful.
+Metric acceptance compares Pandas, DuckDB, and an executable metric contract, then checks persisted publication readback. Independent scenario fixtures provide additional correctness checks. Reconciliation preserves explicit populations rather than silently dropping unmapped or non-evaluable cases.
 
-## Testing and code quality
+HTML/browser publication checks verify structure, report/chart generation, expected links, and current-run content. These are programmatic publication checks, not a claim of live browser interaction testing. Tableau checks validate Hyper data parity, workbook bindings, packaged extract identity, and worksheet/dashboard visual contracts. Tableau Desktop execution is not part of this validation model and was not executed for finalization.
+
+PowerPoint automated checks validate eight slides, package structure, run identity, and the navigation/artifact-link contract. Content tests also verify the reconciliation narrative, priorities, disclaimer, and all six management-action IDs. PowerPoint Desktop rendering QA may be performed separately from the pipeline; the pipeline can therefore truthfully retain `client_validation = NOT_EXECUTED` even when separate desktop-render evidence exists.
 
 ```powershell
-cd experian-data-workflow
-uv run ruff check .
+uv run pytest tests/test_assurance_powerpoint.py -q
 uv run pytest -q
+uv run ruff check .
+git diff --check
 ```
 
-The test suite covers structural contract failure, record quarantine semantics, valid audit exceptions, unsafe reference cardinality, persisted run evidence, analytical reconciliation including deliberate mismatch detection, and report generation.
+## Submission review path
 
-## Important interpretation notes
+The final locally assembled reviewer package is stored under `output/submission/Experian_Assurance_Analytics_Submission_FINAL/`, with the matching `Experian_Assurance_Analytics_Submission_FINAL.zip`. Submission assembly is a separate finalization step; the pipeline generates the run artifacts above.
 
-Audit flags are not mutually exclusive. A transaction may simultaneously breach policy and involve a high-risk or historically inactive vendor. Therefore the overall audit-exception count represents transactions with at least one flag and should not be calculated by summing individual flag counts.
+After extracting the ZIP:
 
-Categories without a configured policy limit are not treated as policy breaches solely because of transaction value.
+1. Open `powerpoint/assurance_executive_report.pptx` first for the executive narrative and navigation.
+2. Open `html/assurance_dashboard.html` for interactive analysis.
+3. Open `tableau/assurance_dashboard.twbx` in compatible Tableau software for exploration.
 
-The dataset is intentionally synthetic and seeded with examples. Observed exception prevalence and concentration are therefore demonstrations of workflow behaviour, not evidence about Experian or any real organisation.
+Keep the `powerpoint`, `html`, and `tableau` directories together. PowerPoint links are relative to this package structure. The package includes its producer manifest and validation summary; use those files for the exact run and commit identity.
 
-## Scaling and operationalisation
+## Design principles and limitations
 
-For a production-scale implementation I would preserve the same contracts while replacing local components according to volume and operational needs, for example object storage for immutable source evidence, scheduled orchestration, managed compute, catalogued curated datasets, central monitoring, alerting, retained manifests and control history, and role-based access. The exercise intentionally avoids building that infrastructure because it would add complexity without improving the evidence required for this task.
+One governed truth supplies every channel. Explicit `NOT_EVALUABLE` and unmapped states preserve uncertainty. Run-scoped provenance supports reproduction, while fail-closed terminal publication prevents a partially completed run from being represented as successful.
 
-## AI-assisted engineering
+The exercise is a small local synthetic demonstration. Tableau validation is programmatic rather than Tableau Desktop execution. Local/offline artifact links assume the package folder structure remains intact. PowerPoint supports navigation and drill links; filtering belongs to the HTML and Tableau channels. Hashes and run identity establish provenance, while analytical contracts and reconciliation establish correctness.
 
-AI was used as an engineering assistant and structured review layer throughout the exercise, not as an authority for correctness.
-
-The workflow used specialist review roles covering requirement fidelity, ingestion and modelling, data contracts and quality, audit lineage and reconciliation, analytics and presentation, engineering quality, operationalisation, AI oversight, and adversarial red-team review.
-
-The operating principle was:
-
-> **AI proposes and challenges; independent evidence validates; the human accepts or rejects.**
-
-AI-generated suggestions were evaluated against the original requirements and independently checked through deterministic tests, source-to-output reconciliation, schema and cardinality controls, SHA-256 provenance, DuckDB/Pandas analytical reconciliation, Ruff, pytest, Git review, and explicit human judgement.
-
-Several suggestions were changed or rejected after review. Examples include correcting ground-truth assumptions, replacing current-state vendor logic with historical effective-date reasoning, making reporting tests hermetic, fixing a misleading CDN test, and changing manifest publication order so a manifest represents a genuinely complete run.
-
-The public AI methodology is documented separately from the implementation:
-
-- [AI-assisted engineering overview](ai/README.md)
-- [Agentic orchestration model](ai/ORCHESTRATION.md)
-- [Public AI role catalog](ai/ROLE_CATALOG.md)
-- [Human oversight and challenged AI suggestions](ai/HUMAN_OVERSIGHT.md)
-- [Public specialist skill cards](ai/skills/)
-- [Design decisions and trade-offs](docs/DESIGN_DECISIONS.md)
-- [Changed-requirement scenarios](docs/CHANGE_SCENARIOS.md)
-
-The repository includes a concise reviewer-facing description of the AI-assisted engineering process, including orchestration, specialist review roles and concrete examples of human oversight. The richer internal working framework, raw conversation transcripts and unrelated personal context are intentionally excluded so the submission remains focused on the implemented solution and its evidence.
+Further implementation context is available in [design decisions](docs/DESIGN_DECISIONS.md) and [changed-requirement scenarios](docs/CHANGE_SCENARIOS.md).
