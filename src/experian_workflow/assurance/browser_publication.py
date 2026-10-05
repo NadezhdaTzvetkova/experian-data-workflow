@@ -92,8 +92,14 @@ def write_browser_publication(
 
     reports_dir = html_dir / "reports"
     charts_dir = html_dir / "charts"
-    reports_dir.mkdir(parents=True, exist_ok=True)
-    charts_dir.mkdir(parents=True, exist_ok=True)
+    existing_dirs = [path for path in (reports_dir, charts_dir) if path.exists()]
+    if existing_dirs:
+        raise RuntimeError(
+            "Browser publication directories already exist: "
+            + ", ".join(str(path) for path in existing_dirs)
+        )
+    reports_dir.mkdir(parents=False, exist_ok=False)
+    charts_dir.mkdir(parents=False, exist_ok=False)
 
     report_paths: dict[str, Path] = {}
     for filename, tab_name in REPORT_PAGES.items():

@@ -36,6 +36,10 @@ def write_tableau_data_dictionary(
     tableau_dir = publication_dir / "tableau"
     tableau_dir.mkdir(parents=True, exist_ok=True)
     output_path = tableau_dir / "tableau_data_dictionary.csv"
+    if output_path.exists():
+        raise RuntimeError(
+            f"Tableau data dictionary already exists: {output_path}"
+        )
 
     rows: list[dict[str, object]] = []
     for name, contract in TABLE_CONTRACTS.items():

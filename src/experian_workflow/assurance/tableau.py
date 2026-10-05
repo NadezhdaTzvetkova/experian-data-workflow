@@ -204,6 +204,8 @@ def build_tableau_hyper(
 
     if output_path is None:
         output_path = publication_dir / "tableau" / "assurance_dashboard.hyper"
+    if output_path.exists():
+        raise RuntimeError(f"Tableau Hyper output already exists: {output_path}")
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     tables: dict[str, pd.DataFrame] = {}

@@ -1,4 +1,4 @@
-﻿import pandas as pd
+import pandas as pd
 
 from experian_workflow.assurance.reporting import (
     build_finding_remediation_priority_view,

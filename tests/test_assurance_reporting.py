@@ -140,53 +140,17 @@ def test_cross_check_headline_kpis_matches_expected_counts():
 
 
 def test_build_assurance_report_generates_self_contained_html(tmp_path):
-    import json
+    import shutil
     from pathlib import Path
 
-    from experian_workflow.assurance.ingestion import load_enterprise_reference
-    from experian_workflow.assurance.pipeline import build_trusted_assurance_outputs
-    from experian_workflow.assurance.reporting import (
-        build_assurance_report,
-        build_assurance_reporting_mart,
-    )
+    from experian_workflow.assurance.pipeline import run_assurance_pipeline
+    from experian_workflow.assurance.reporting import build_assurance_report
 
     root = Path(__file__).resolve().parents[1]
-    assurance, remediation, findings, evidence = build_trusted_assurance_outputs(root)
+    manifest = run_assurance_pipeline(root)
+    run_dir = root / "output" / "assurance_runs" / str(manifest["run_id"])
 
-    run_dir = root / "output" / "assurance_runs" / "_pytest_report_fixture"
-    run_dir.mkdir(parents=True, exist_ok=True)
     try:
-        assurance.to_parquet(run_dir / "control_assurance.parquet", index=False)
-        remediation.to_csv(run_dir / "remediation_actions.csv", index=False, lineterminator="\n")
-        findings.to_csv(run_dir / "findings.csv", index=False, lineterminator="\n")
-
-        reference = load_enterprise_reference(
-            root / "data" / "source" / "assurance" / "enterprise.db"
-        )
-        mart = build_assurance_reporting_mart(
-            assurance,
-            reference["systems"],
-            reference["entities"],
-            reference["controls"],
-            reference["risk_taxonomy"],
-        )
-        mart.to_parquet(
-            run_dir / "assurance_reporting_mart.parquet", index=False
-        )
-
-        manifest = {
-            "run_id": "pytest-report",
-            "status": "SUCCESS",
-            "methodology": evidence["methodology"],
-            "reporting": evidence["reporting"],
-            "controls": {"reconciliation": evidence["reconciliation"]},
-        }
-        (run_dir / "manifest.json").write_text(
-            json.dumps(manifest, indent=2) + "\n",
-            encoding="utf-8",
-            newline="\n",
-        )
-
         output = tmp_path / "assurance_report.html"
         result = build_assurance_report(run_dir, output, manifest)
         html = result.read_text(encoding="utf-8")
@@ -196,11 +160,34 @@ def test_build_assurance_report_generates_self_contained_html(tmp_path):
         assert html.startswith("<!DOCTYPE html>")
         assert "Enterprise Assurance Analytics Report" in html
         assert "Independent KPI reconciliation" in html
-        assert "Synthetic demonstration methodology; not Experian internal methodology." in html
+        assert (
+            "Synthetic demonstration methodology; not Experian internal methodology."
+            in html
+        )
         assert "plotly.js" in html.lower()
         assert '<script src="https://cdn.plot.ly' not in html.lower()
         assert not result.read_bytes().startswith(b"\xef\xbb\xbf")
     finally:
-        import shutil
-
         shutil.rmtree(run_dir, ignore_errors=True)
+
+
+def test_build_assurance_report_requires_canonical_publication_package(
+    tmp_path,
+) -> None:
+    import pytest
+
+    from experian_workflow.assurance.reporting import build_assurance_report
+
+    run_dir = tmp_path / "run"
+    run_dir.mkdir()
+    manifest = {"run_id": "missing-publication"}
+
+    with pytest.raises(
+        RuntimeError,
+        match="Publication package is incomplete for HTML rendering",
+    ):
+        build_assurance_report(
+            run_dir,
+            tmp_path / "report.html",
+            manifest,
+        )

@@ -14,3 +14,4 @@ data/marts/
 output/assurance_runs/
 ai/canonical/
 hyperd.log
+output/submission/

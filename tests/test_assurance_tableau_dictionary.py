@@ -2,6 +2,7 @@ import shutil
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from experian_workflow.assurance import pipeline
 from experian_workflow.assurance.tableau_dictionary import (
@@ -20,12 +21,14 @@ def test_tableau_data_dictionary_is_generated_from_governed_contracts():
     )
 
     try:
-        result = write_tableau_data_dictionary(run_dir=run_dir)
-        path = Path(result["path"])
+        path = (
+            run_dir
+            / "publication"
+            / "tableau"
+            / "tableau_data_dictionary.csv"
+        )
         frame = pd.read_csv(path)
 
-        assert result["status"] == "PASS"
-        assert result["dataset_count"] == 8
         assert path.exists()
         assert set(frame["dataset_id"]) == {
             "assurance_tests",
@@ -61,5 +64,11 @@ def test_tableau_data_dictionary_is_generated_from_governed_contracts():
             ].item()
             is True
         )
+        with pytest.raises(
+            RuntimeError,
+            match="Tableau data dictionary already exists",
+        ):
+            write_tableau_data_dictionary(run_dir=run_dir)
+
     finally:
         shutil.rmtree(run_dir, ignore_errors=True)

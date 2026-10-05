@@ -11,21 +11,23 @@ def test_successful_run_publishes_machine_readable_metric_validation():
     run_dir = root / "output" / "assurance_runs" / str(manifest["run_id"])
 
     try:
-        assert "metrics" in manifest["outputs"]
-        assert "metric_validation" in manifest["outputs"]
+        publication = manifest["outputs"]["publication"]
+        assert "metrics" in publication
+        assert "metric_validation" in publication
 
-        metrics_path = root / str(manifest["outputs"]["metrics"])
-        validation_path = root / str(
-            manifest["outputs"]["metric_validation"]
-        )
+        metrics_path = root / str(publication["metrics"])
+        validation_path = root / str(publication["metric_validation"])
 
         assert metrics_path.exists()
         assert validation_path.exists()
+        assert not (run_dir / "metrics.json").exists()
+        assert not (run_dir / "metric_validation.json").exists()
 
-        metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+        metrics_payload = json.loads(metrics_path.read_text(encoding="utf-8"))
         validation = json.loads(
             validation_path.read_text(encoding="utf-8")
         )
+        metrics = metrics_payload["metrics"]
 
         assert metrics == {
             "assurance_tests": 9,
@@ -42,10 +44,12 @@ def test_successful_run_publishes_machine_readable_metric_validation():
             "open_findings": 4,
         }
 
+        assert metrics_payload["validation_status"] == "PASS"
         assert validation["status"] == "PASS"
         assert validation["pandas"] == metrics
         assert validation["duckdb"] == metrics
         assert validation["metric_contract"] == metrics
+        assert validation["published"] == metrics
         assert validation["all_match"] is True
     finally:
         shutil.rmtree(run_dir, ignore_errors=True)

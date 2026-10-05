@@ -573,7 +573,7 @@ def _build_deck(slide_data: dict[str, Any]) -> Presentation:
     _kpi_card(s, overdue_actions, "Overdue actions", 5.22, 1.91, 2.05, accent=RED)
     _callout(s, "Priority", "Persistence matters more than volume", "A repeat finding and an overdue action are escalation signals: they indicate persistence or delayed remediation rather than simply a larger inventory.", 7.56, 1.91, 4.69, 1.55, fill=AMBER_SOFT, accent=AMBER)
     _text(s, "CURRENT MANAGEMENT ACTIONS", 0.72, 3.36, 3.0, 0.20, size=8, bold=True, color=MUTED)
-    _table(s, slide_data["remediation_summary"], [("action_id", "Action"), ("finding_id", "Finding"), ("status", "Status"), ("overdue", "Overdue"), ("days_overdue", "Days")], 0.72, 3.70, 7.38, 2.18, max_rows=5, font_size=7.4)
+    _table(s, slide_data["remediation_summary"], [("action_id", "Action"), ("finding_id", "Finding"), ("status", "Status"), ("overdue", "Overdue"), ("days_overdue", "Days")], 0.72, 3.70, 7.38, 2.18, max_rows=6, font_size=7.4)
     _callout(s, "Control", "Closure is not just an administrative status", "Where available, closure-validation evidence should remain linked to action status so CLOSED does not become a substitute for evidence that remediation actually worked.", 8.43, 3.70, 3.82, 1.44, fill=WHITE, accent=BLUE_DARK)
     _button(s, "View finding detail ›", 8.43, 5.39, 3.82, fill=NAVY, line=NAVY, color=WHITE, target_slide=prs.slides[6])
 
@@ -658,7 +658,7 @@ def _build_deck(slide_data: dict[str, Any]) -> Presentation:
         _kpi_card(s, value, label, 0.72 + (idx % 2) * 2.72, 2.18 + (idx // 2) * 1.20, 2.45, accent=accent)
     _callout(s, "Scope", "Executive summary, not a second analytical engine", "PowerPoint consumes governed current-run publication artifacts. It does not redefine KPI, evidence, mapping, overdue, recurrence or residual-risk logic.", 6.35, 2.18, 2.83, 1.56, fill=BLUE_SOFT, accent=BLUE_DARK)
     _callout(s, "Limitation", "Navigation is interactive; filtering is not", "The deck provides native slide navigation and links to deeper analytical channels. Live cross-filtering belongs to the HTML/Tableau experiences, not PowerPoint.", 9.42, 2.18, 2.83, 1.56, fill=AMBER_SOFT, accent=AMBER)
-    _callout(s, "Next step", "Close the remaining presentation acceptance gate", "After generation, open the exact final deck in PowerPoint, test navigation and external links, and complete visual QA for clipping, font substitution, contrast and readability before recording client-level PASS.", 6.35, 4.03, 5.90, 1.60, fill=GREEN_SOFT, accent=GREEN)
+    _callout(s, "Next step", "Resolve the remaining evidence and remediation exceptions", "Refresh the 2 stale-evidence cases, resolve the 1 not-evaluable evidence case and 4 residual-risk conclusions that remain not evaluable, address the 1 overdue action, and retain explicit attention on the 1 unmapped assurance test.", 6.35, 4.03, 5.90, 1.60, fill=GREEN_SOFT, accent=GREEN)
     _button(s, "Back to executive snapshot", 0.72, 5.72, 2.45, fill=NAVY, line=NAVY, color=WHITE, target_slide=prs.slides[0])
     _button(s, "Open interactive analytics", 3.44, 5.72, 2.55, fill=BLUE_SOFT, line=BLUE_SOFT, color=BLUE_DARK, target_slide=prs.slides[6])
 
@@ -741,7 +741,11 @@ def validate_powerpoint_publication(
 def build_powerpoint_publication(*, run_dir: Path) -> dict[str, Any]:
     publication_dir = run_dir / "publication"
     powerpoint_dir = publication_dir / "powerpoint"
-    powerpoint_dir.mkdir(parents=True, exist_ok=True)
+    if powerpoint_dir.exists():
+        raise RuntimeError(
+            f"PowerPoint publication directory already exists: {powerpoint_dir}"
+        )
+    powerpoint_dir.mkdir(parents=False, exist_ok=False)
     slide_data_path = powerpoint_dir / "slide_data.json"
     pptx_path = powerpoint_dir / "assurance_executive_report.pptx"
 

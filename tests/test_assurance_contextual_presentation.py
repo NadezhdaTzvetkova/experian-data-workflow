@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 
 from experian_workflow.assurance.pipeline import run_assurance_pipeline
 

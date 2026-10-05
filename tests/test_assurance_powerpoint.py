@@ -2,8 +2,13 @@ import json
 import shutil
 from pathlib import Path
 
+import pytest
+
 from experian_workflow.assurance import pipeline
-from experian_workflow.assurance.powerpoint import build_powerpoint_publication
+from experian_workflow.assurance.powerpoint import (
+    build_powerpoint_publication,
+    validate_powerpoint_publication,
+)
 
 
 def test_powerpoint_publication_uses_governed_current_run_package():
@@ -28,16 +33,24 @@ def test_powerpoint_publication_uses_governed_current_run_package():
         assert summary["scope"] == (
             "publication_foundation_html_tableau_and_powerpoint"
         )
-        assert summary["powerpoint"]["status"] == "STRUCTURAL_PASS"
+        assert summary["powerpoint"]["status"] == "PASS"
         assert summary["powerpoint"]["slide_count"] == 8
         assert summary["powerpoint"]["internal_navigation_links"] == 114
         assert summary["powerpoint"]["run_identity_match"] is True
         assert summary["powerpoint"]["package_structure"] == "PASS"
-        assert summary["powerpoint"]["client_validation"] == "PENDING"
+        assert summary["powerpoint"]["client_validation"] == {
+            "status": "NOT_EXECUTED",
+            "validation_scope": "microsoft_powerpoint_desktop_client",
+            "required_for_pipeline_success": False,
+        }
 
-        result = build_powerpoint_publication(run_dir=run_dir)
-        pptx_path = Path(result["pptx_path"])
-        slide_data_path = Path(result["slide_data_path"])
+        pptx_path = root / publication_outputs["powerpoint_pptx"]
+        slide_data_path = root / publication_outputs["powerpoint_slide_data"]
+        result = validate_powerpoint_publication(
+            pptx_path=pptx_path,
+            slide_data_path=slide_data_path,
+            expected_run_id=str(manifest["run_id"]),
+        )
 
         assert result["status"] == "PASS"
         assert result["slide_count"] == 8
@@ -59,7 +72,7 @@ def test_powerpoint_publication_uses_governed_current_run_package():
         assert slide_data["methodology_version"] == metrics["methodology_version"]
         assert slide_data["metrics"] == metrics["metrics"]
         from pptx import Presentation
-        presentation = Presentation(result["pptx_path"])
+        presentation = Presentation(pptx_path)
         slide5_text = " ".join(
             shape.text
             for shape in presentation.slides[4].shapes
@@ -67,7 +80,30 @@ def test_powerpoint_publication_uses_governed_current_run_package():
         )
         assert "Unmapped assurance population: 1" in slide5_text
         assert "Unmapped assurance population: 0" not in slide5_text
+        slide4_table_text = " ".join(
+            cell.text
+            for shape in presentation.slides[3].shapes
+            if getattr(shape, "has_table", False)
+            for row in shape.table.rows
+            for cell in row.cells
+        )
+        assert len(slide_data["remediation_summary"]) == 6
+        for action in slide_data["remediation_summary"]:
+            assert action["action_id"] in slide4_table_text
+        slide8_text = " ".join(
+            shape.text
+            for shape in presentation.slides[7].shapes
+            if hasattr(shape, "text")
+        )
+        assert "Resolve the remaining evidence and remediation exceptions" in slide8_text
+        assert "Close the remaining presentation acceptance gate" not in slide8_text
         assert slide_data["attention_items"]
         assert all("D:\\" not in link for link in result["external_publication_links"])
+
+        with pytest.raises(
+            RuntimeError,
+            match="PowerPoint publication directory already exists",
+        ):
+            build_powerpoint_publication(run_dir=run_dir)
     finally:
         shutil.rmtree(run_dir, ignore_errors=True)

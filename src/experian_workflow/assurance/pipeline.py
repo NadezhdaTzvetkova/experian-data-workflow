@@ -13,6 +13,7 @@ from experian_workflow.assurance.calculations import (
     enrich_remediation_actions,
     load_assurance_rules,
 )
+from experian_workflow.assurance.html_dashboard import build_assurance_report
 from experian_workflow.assurance.ingestion import (
     load_control_evidence,
     load_enterprise_reference,
@@ -48,7 +49,6 @@ from experian_workflow.assurance.reconciliation import (
 )
 from experian_workflow.assurance.reporting import (
     build_assurance_kpis,
-    build_assurance_report,
     build_assurance_reporting_mart,
     cross_check_headline_kpis,
 )
@@ -248,8 +248,6 @@ def run_assurance_pipeline(root: Path | str = ".") -> dict[str, object]:
     remediation_path = run_dir / "remediation_actions.csv"
     findings_path = run_dir / "findings.csv"
     evidence_path = run_dir / "evidence_summary.json"
-    metrics_output_path = run_dir / "metrics.json"
-    metric_validation_path = run_dir / "metric_validation.json"
     report_path = run_dir / "assurance_report.html"
     manifest_path = run_dir / "manifest.json"
 
@@ -259,16 +257,6 @@ def run_assurance_pipeline(root: Path | str = ".") -> dict[str, object]:
     findings.to_csv(findings_path, index=False, lineterminator="\n")
     evidence_path.write_text(
         json.dumps(evidence_summary, indent=2) + "\n",
-        encoding="utf-8",
-        newline="\n",
-    )
-    metrics_output_path.write_text(
-        json.dumps(pandas_metrics, indent=2) + "\n",
-        encoding="utf-8",
-        newline="\n",
-    )
-    metric_validation_path.write_text(
-        json.dumps(metric_validation, indent=2) + "\n",
         encoding="utf-8",
         newline="\n",
     )
@@ -340,8 +328,6 @@ def run_assurance_pipeline(root: Path | str = ".") -> dict[str, object]:
             "remediation_actions": remediation_path.relative_to(root).as_posix(),
             "findings": findings_path.relative_to(root).as_posix(),
             "evidence_summary": evidence_path.relative_to(root).as_posix(),
-            "metrics": metrics_output_path.relative_to(root).as_posix(),
-            "metric_validation": metric_validation_path.relative_to(root).as_posix(),
             "assurance_report": report_path.relative_to(root).as_posix(),
             "manifest": manifest_path.relative_to(root).as_posix(),
         },
@@ -517,7 +503,7 @@ def run_assurance_pipeline(root: Path | str = ".") -> dict[str, object]:
 
     validation_summary["scope"] = "publication_foundation_html_and_tableau"
     validation_summary["tableau_extract"] = {
-        "status": "STRUCTURAL_PASS",
+        "status": "PASS",
         "validation_scope": (
             "hyper_extract_structural_and_data_parity"
         ),
@@ -567,6 +553,7 @@ def run_assurance_pipeline(root: Path | str = ".") -> dict[str, object]:
         "worksheet_count": tableau_workbook_result["worksheet_count"],
         "dataset_count": tableau_workbook_result["dataset_count"],
         "twb_structure": tableau_workbook_result["twb_structure"],
+        "visual_contract": tableau_workbook_result["visual_contract"],
         "twbx_package": tableau_workbook_result["twbx_package"],
         "hyper_identity_match": tableau_workbook_result["hyper_identity_match"],
         "package_members": tableau_workbook_result["package_members"],
@@ -601,7 +588,7 @@ def run_assurance_pipeline(root: Path | str = ".") -> dict[str, object]:
         "publication_foundation_html_tableau_and_powerpoint"
     )
     validation_summary["powerpoint"] = {
-        "status": "STRUCTURAL_PASS",
+        "status": "PASS",
         "validation_scope": "package_navigation_links_and_run_identity",
         "pptx_path": powerpoint_pptx_path.relative_to(run_dir).as_posix(),
         "pptx_sha256": sha256_file(powerpoint_pptx_path),
@@ -622,7 +609,11 @@ def run_assurance_pipeline(root: Path | str = ".") -> dict[str, object]:
         ),
         "run_identity_match": powerpoint_result["run_identity_match"],
         "package_structure": powerpoint_result["package_structure"],
-        "client_validation": "PENDING",
+        "client_validation": {
+            "status": "NOT_EXECUTED",
+            "validation_scope": "microsoft_powerpoint_desktop_client",
+            "required_for_pipeline_success": False,
+        },
     }
 
     validation_summary_path.write_text(

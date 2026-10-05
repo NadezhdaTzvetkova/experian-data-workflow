@@ -293,6 +293,141 @@ def _build_workbook_xml(
     )
 
 
+def _validate_worksheet_visual_contract(
+    *,
+    root: ET.Element,
+    contract: dict[str, Any],
+    dictionary: pd.DataFrame,
+) -> None:
+    dataset_fields: dict[str, dict[str, str]] = {
+        str(dataset_id): {
+            str(row.field_name): str(row.hyper_type)
+            for row in group.itertuples(index=False)
+        }
+        for dataset_id, group in dictionary.groupby("dataset_id", sort=False)
+    }
+
+    for dashboard in contract["dashboards"]:
+        for worksheet_spec in dashboard["worksheets"]:
+            worksheet_id = str(worksheet_spec["id"])
+            dataset_id = str(worksheet_spec["dataset"])
+            visual = worksheet_spec["visual"]
+
+            worksheet = root.find(
+                f'./worksheets/worksheet[@name="{worksheet_id}"]'
+            )
+            if worksheet is None:
+                raise RuntimeError(
+                    "Generated TWB worksheet missing during visual validation: "
+                    f"{worksheet_id}"
+                )
+
+            table = worksheet.find("./table")
+            if table is None:
+                raise RuntimeError(
+                    f"Worksheet has no table element: {worksheet_id}"
+                )
+
+            available = dataset_fields[dataset_id]
+            references = [
+                str(value)
+                for channel in ("rows", "columns", "label", "color", "filters")
+                for value in visual[channel]
+            ]
+            expected_instances = {
+                reference: _visual_instance(
+                    reference,
+                    dataset_id=dataset_id,
+                    available=available,
+                )[4]
+                for reference in dict.fromkeys(references)
+            }
+
+            marks = table.findall("./panes/pane/mark")
+            if len(marks) != 1:
+                raise RuntimeError(
+                    "Worksheet must contain exactly one governed mark: "
+                    f"{worksheet_id}"
+                )
+            expected_mark = "Bar" if visual["mark"] == "bar" else "Text"
+            actual_mark = marks[0].attrib.get("class")
+            if actual_mark != expected_mark:
+                raise RuntimeError(
+                    "Worksheet mark differs from contract for "
+                    f"{worksheet_id}: {actual_mark!r} != {expected_mark!r}"
+                )
+
+            rows = table.find("./rows")
+            cols = table.find("./cols")
+            actual_rows = (rows.text or "").strip() if rows is not None else ""
+            actual_cols = (cols.text or "").strip() if cols is not None else ""
+            expected_rows = " / ".join(
+                expected_instances[str(value)] for value in visual["rows"]
+            )
+            expected_cols = " / ".join(
+                expected_instances[str(value)] for value in visual["columns"]
+            )
+
+            if actual_rows != expected_rows:
+                raise RuntimeError(
+                    f"Worksheet rows shelf differs from contract for {worksheet_id}"
+                )
+            if actual_cols != expected_cols:
+                raise RuntimeError(
+                    "Worksheet columns shelf differs from contract for "
+                    f"{worksheet_id}"
+                )
+
+            view = table.find("./view")
+            if view is None:
+                raise RuntimeError(
+                    f"Worksheet has no governed view element: {worksheet_id}"
+                )
+
+            actual_filters = [
+                element.attrib.get("column", "")
+                for element in view.findall("./filter")
+            ]
+            expected_filters = [
+                expected_instances[str(value)] for value in visual["filters"]
+            ]
+            if actual_filters != expected_filters:
+                raise RuntimeError(
+                    f"Worksheet filters differ from contract for {worksheet_id}"
+                )
+
+            pane = table.find("./panes/pane")
+            if pane is None:
+                raise RuntimeError(
+                    f"Worksheet has no governed pane: {worksheet_id}"
+                )
+
+            actual_labels = [
+                element.attrib.get("column", "")
+                for element in pane.findall("./encodings/text")
+            ]
+            expected_labels = [
+                expected_instances[str(value)] for value in visual["label"]
+            ]
+            if actual_labels != expected_labels:
+                raise RuntimeError(
+                    "Worksheet label encodings differ from contract for "
+                    f"{worksheet_id}"
+                )
+
+            actual_colors = [
+                element.attrib.get("column", "")
+                for element in pane.findall("./encodings/color")
+            ]
+            expected_colors = [
+                expected_instances[str(value)] for value in visual["color"]
+            ]
+            if actual_colors != expected_colors:
+                raise RuntimeError(
+                    "Worksheet color encodings differ from contract for "
+                    f"{worksheet_id}"
+                )
+
 def validate_tableau_workbook_artifacts(
     *,
     twb_path: Path,
@@ -356,6 +491,12 @@ def validate_tableau_workbook_artifacts(
     if datasource_names != {f"ds_{name}" for name in expected_datasets}:
         raise RuntimeError("Generated TWB datasource set differs from dictionary")
 
+    _validate_worksheet_visual_contract(
+        root=root,
+        contract=contract,
+        dictionary=dictionary,
+    )
+
     expected_members = {
         "assurance_dashboard.twb",
         "Data/Extracts/assurance_dashboard.hyper",
@@ -383,6 +524,7 @@ def validate_tableau_workbook_artifacts(
         "worksheet_count": contract_result["worksheet_count"],
         "dataset_count": len(expected_datasets),
         "twb_structure": "PASS",
+        "visual_contract": "PASS",
         "twbx_package": "PASS",
         "hyper_identity_match": True,
         "package_members": sorted(expected_members),
@@ -400,6 +542,12 @@ def build_tableau_workbook(
     tableau_dir.mkdir(parents=True, exist_ok=True)
     twb_path = tableau_dir / "assurance_dashboard.twb"
     twbx_path = tableau_dir / "assurance_dashboard.twbx"
+    existing_outputs = [path for path in (twb_path, twbx_path) if path.exists()]
+    if existing_outputs:
+        raise RuntimeError(
+            "Tableau workbook output already exists: "
+            + ", ".join(str(path) for path in existing_outputs)
+        )
 
     contract = json.loads(contract_path.read_text(encoding="utf-8-sig"))
     dictionary = pd.read_csv(

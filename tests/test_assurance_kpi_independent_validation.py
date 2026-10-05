@@ -1,4 +1,4 @@
-﻿import pandas as pd
+import pandas as pd
 
 from experian_workflow.assurance.reporting import cross_check_headline_kpis
 

@@ -2,6 +2,7 @@ import shutil
 from pathlib import Path
 
 import pandas as pd
+import pytest
 from tableauhyperapi import Connection, CreateMode, HyperProcess, Telemetry
 
 from experian_workflow.assurance import pipeline
@@ -25,16 +26,28 @@ def test_tableau_hyper_matches_governed_publication_package():
     )
 
     try:
-        result = build_tableau_hyper(
-            run_dir=run_dir,
-            project_root=root,
-        )
-
         hyper_path = (
             run_dir
             / "publication"
             / "tableau"
             / "assurance_dashboard.hyper"
+        )
+        tables = {
+            name: pd.read_csv(
+                run_dir / "publication" / "tables" / f"{name}.csv",
+                dtype=str,
+                keep_default_na=False,
+            )
+            for name in TABLE_CONTRACTS
+        }
+        metric_rows = _metric_rows(
+            metrics_path=run_dir / "publication" / "metrics.json",
+            metrics_config_path=root / "config" / "assurance" / "metrics.yaml",
+        )
+        result = validate_tableau_hyper(
+            hyper_path=hyper_path,
+            source_tables=tables,
+            metric_rows=metric_rows,
         )
 
         assert hyper_path.exists()
@@ -59,6 +72,15 @@ def test_tableau_hyper_matches_governed_publication_package():
             assert result["tables"][name]["run_identity_match"] is True
 
         assert TABLEAU_METRICS_TABLE == "governed_metrics"
+
+        with pytest.raises(
+            RuntimeError,
+            match="Tableau Hyper output already exists",
+        ):
+            build_tableau_hyper(
+                run_dir=run_dir,
+                project_root=root,
+            )
     finally:
         shutil.rmtree(run_dir, ignore_errors=True)
 
