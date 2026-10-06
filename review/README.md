@@ -1,30 +1,35 @@
-# Reviewer quick start
+# Reviewer guide
 
-This is a synthetic enterprise assurance demonstration, as of **30 September 2026**. It is not Experian internal methodology.
+Start with the eight-slide PowerPoint, then explore HTML and Tableau before inspecting the implementation. This is a synthetic enterprise assurance demonstration as of **30 September 2026**, not Experian internal data or methodology.
 
-1. Open [the eight-slide executive presentation](presentation/assurance_executive_report.pptx). Slide 6 explains sources, the processing flow, and the claim-to-evidence traceability path; each slide's Notes contains metric definitions and caveats. Keep this folder structure intact so its HTML and Tableau links resolve.
-2. Download this repository folder and open [the offline HTML dashboard](html/assurance_dashboard.html). Select **Data & Metrics** for source formats, grains, numerator/denominator definitions, evidence states, validation boundaries, and design rationale. GitHub displays HTML source; it does not run this dashboard.
-3. Open [the Tableau packaged workbook](tableau/assurance_dashboard.twbx) in a compatible Tableau client. **About / Data & Metrics** contains governed definitions. This workbook passed programmatic package, data, field-binding, and default-scope validation. Tableau Desktop rendering was not executed.
-4. Browse [slide previews](visuals/slide-01.png), exported from the exact clean-run deck in Microsoft PowerPoint, or use the eight numbered images in `visuals/`.
+## Open the artifacts
 
-## How to read the analysis
+| Artifact | Exact path and purpose |
+| --- | --- |
+| Executive presentation | [presentation/assurance_executive_report.pptx](presentation/assurance_executive_report.pptx) — narrative, reconciliation, priorities and relative drill links. Slide 6 explains the processing flow; slide Notes provide definitions and caveats. |
+| Slide previews | [visuals/](visuals/) — `slide-01.png` through `slide-08.png`, exported from the exact committed deck in Microsoft PowerPoint. View these directly on GitHub without PowerPoint. |
+| HTML dashboard | [html/assurance_dashboard.html](html/assurance_dashboard.html) — offline analysis. **Data & Metrics** explains source formats, grains, definitions and validation boundaries. |
+| HTML detail | [html/reports/](html/reports/) contains four reports; [html/charts/](html/charts/) contains six charts, linked from the dashboard. |
+| Tableau | [tableau/assurance_dashboard.twbx](tableau/assurance_dashboard.twbx) — packaged TWB and genuine Hyper extract, with four dashboards, eleven worksheets and eight datasets. **About / Data & Metrics** provides governed definitions. |
 
-SQLite supplies enterprise reference records; JSON supplies control evidence; CSV files supply findings and management actions. Python validates, normalizes, reconciles, computes governed analytics, cross-checks Pandas and DuckDB results, and publishes one analytical truth to all three channels. The source data, calculation rules, metric contract, and reconciliation semantics are preserved by this change.
+**Download and extract the repository before opening HTML locally.** GitHub shows HTML source and does not execute the dashboard. Keep the complete `review/` folder structure intact for HTML and PowerPoint relative links. Open the TWBX in compatible Tableau software; Tableau Desktop execution has not been validated.
 
-Headline counts use assurance-test grain unless their definition specifies findings or actions. Nine assurance tests include five sufficient, one partial, two insufficient, and one not-evaluable evidence result. Stale evidence is an overlapping freshness flag, not another mutually exclusive sufficiency class. Ten unmapped source records reconcile to one unmapped assurance test; these are different grains. NOT_EVALUABLE means the required basis for evaluation is unavailable, and NOT_TESTED describes mapped source records that were not evaluated. Residual risk is the existing illustrative governed classification, not a claim of real enterprise risk.
+## Read the counts correctly
 
-Detailed numerator, denominator, trusted population, filter scope, and limitations come from upstream explanatory metadata bound to this run's validated metrics and publication tables. Renderers do not calculate independent KPI definitions.
+Headline counts use assurance-test grain unless defined for findings or actions. Stale evidence is an overlapping freshness flag, not another sufficiency category. Ten unmapped source records correspond to one unmapped assurance test. **NOT_EVALUABLE** means the required evaluation basis is unavailable; **NOT_TESTED** describes mapped source records that were not evaluated. Findings and management actions have separate grains.
 
-## Producer provenance and acceptance
+The root README contains the full governed results, architecture, setup and reproduction procedure. Implementation is under `src/experian_workflow/`, assurance contracts under `config/assurance/`, synthetic sources under `data/source/`, and tests with independent fixtures under `tests/`.
 
-Clean producer run: `20261006T015512364859Z`. Producer source commit: `bd354e4f887db3130bb62e60925f39328a5042df`. Producer working tree: **clean (`git_dirty=false`)**. Reporting date: **2026-09-30**. The later reviewer-artifact commit publishes copies of these source-commit outputs; it does not change their producer identity.
+## Provenance and validation
 
-All eight exact clean-run slides were rendered and visually inspected in Microsoft PowerPoint. PowerPoint slideshow navigation to slides 1–8 was executed; the 114 internal navigation targets and 17 external publication links passed structural validation. The eight previews were exported from that exact deck.
+Artifact producer run: `20261006T015512364859Z`. Producer source commit: `bd354e4f887db3130bb62e60925f39328a5042df`. Producer working tree: **clean (`git_dirty=false`)**. Reporting date: **2026-09-30**. Subsequent documentation and artifact-publication commits do not change this producer identity.
 
-All 128 tests passed on the committed source. Ruff and git diff --check passed. All twelve metrics and seven publication tables match the preceding canonical run, excluding execution identity. The fail-closed presentation gate checks complete HTML records, embedded metric definitions, actual PowerPoint headlines and every slide's metric Notes.
+- **128/128 tests**, Ruff and `git diff --check` passed on the producer source.
+- All **12 governed metrics** and **7 publication tables** matched the preceding canonical results, excluding execution identifiers. Cross-output checks compared complete HTML records, metric definitions, PowerPoint headlines and slide Notes with the same-run publication truth.
+- **PowerPoint:** eight slides rendered and visually inspected in Microsoft PowerPoint; slideshow navigation to slides 1–8 executed. All 114 internal navigation targets and 17 external publication links passed structural checks.
+- **HTML:** all eleven files passed content, embedded-resource, relative-link and accessibility-structure checks.
+- **Tableau:** programmatic Hyper data parity, TWB field/visual bindings, default scope and exact packaged TWB/Hyper byte identity passed.
 
-HTML passed programmatic content, package, embedded-resource, current-run, relative-link and accessibility-structure checks. JavaScript syntax and isolated counting checks passed; these do not establish browser rendering or assistive-technology conformance. Browser interactions remain **NOT_EXECUTED**: the repository has no browser/DOM harness, and browser security policy blocks the local-file route and alternate workarounds. No runtime browser pass is claimed.
+Browser-rendered HTML/live interactions: **NOT_EXECUTED**. Tableau Desktop: **NOT_EXECUTED**. HTML structural checks do not establish runtime behaviour or assistive-technology conformance.
 
-Tableau acceptance is **PROGRAMMATIC_TABLEAU PASS**: genuine Hyper data parity, TWB field/visual bindings and default scope, plus exact current TWB and Hyper bytes inside the TWBX. Tableau Desktop was **NOT_EXECUTED**.
-
-The complete HTML subtree and all presentation-linked destinations are included. No duplicate submission ZIP is included. Generated runs remain under ignored `output/`; this folder is the deliberately curated reviewer copy. Standalone support CSVs, field dictionaries, metrics and machine-readable manifests are intentionally reproducible rather than duplicated here; the root README gives the exact locations and reproduction procedure at this producer source commit.
+This folder contains exactly 22 reviewer files. Supporting tables, metric JSON, field dictionaries and manifests are available by reproducing the producer source commit; their generated locations are documented in the root README. They are omitted here to avoid duplicate analytical copies.

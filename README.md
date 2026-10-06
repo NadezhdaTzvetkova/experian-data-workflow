@@ -1,14 +1,27 @@
 # Experian Assurance Analytics and Data Workflow
 
-## Reviewer Quick Start
-
-Open the [reviewer guide](review/README.md) for the PowerPoint, complete offline HTML, Tableau workbook and eight slide previews. The guide records the exact producer run and validation level. These curated copies live under `review/`; runtime output remains ignored.
-
-A reproducible assurance analytics/data workflow built for the Experian technical exercise. The repository includes the original corporate-expense workflow and a role-aligned enterprise-assurance extension. The assurance extension demonstrates governed evidence processing, population reconciliation, independent analytical validation, and publication to PowerPoint, HTML, and Tableau.
+A reproducible analytics and data workflow for the Experian technical exercise, covering corporate expenses and enterprise assurance. It validates source records, reconciles populations, checks governed calculations independently, and publishes one validated analytical truth to PowerPoint, offline HTML and Tableau. The committed reviewer package lets you inspect the results without running the pipeline.
 
 All datasets, controls, methodology, and policy examples are synthetic and illustrative. They are not Experian internal data, controls, methodology, or policy. The observed results demonstrate workflow behaviour rather than conditions at Experian or any real organisation.
 
-## What the solution does
+## Start here
+
+Follow **PowerPoint → HTML → Tableau → implementation and tests**. The [reviewer guide](review/README.md) records the artifact producer, exact paths and executed validation levels.
+
+| Review item | Open | Purpose |
+| --- | --- | --- |
+| PowerPoint | [Eight-slide executive presentation](review/presentation/assurance_executive_report.pptx) | Narrative, reconciliation, priorities and drill links |
+| Slide previews | [Eight PNG previews](review/visuals/) | Inspect the deck directly on GitHub |
+| HTML dashboard | [Offline dashboard](review/html/assurance_dashboard.html) | Explore results and Data & Metrics definitions |
+| HTML detail | [Four reports](review/html/reports/) · [Six charts](review/html/charts/) | Supporting analysis linked from the dashboard |
+| Tableau | [Packaged workbook](review/tableau/assurance_dashboard.twbx) | Explore the governed extract in compatible Tableau software |
+| Implementation | [Python source](src/experian_workflow/) | Processing, calculation and publication logic |
+| Tests | [Tests and independent fixtures](tests/) | Analytical and publication acceptance evidence |
+| Configuration and contracts | [Assurance contracts](config/assurance/) · [Expense policy](config/expense_policy.yaml) | Governed rules, metrics and population semantics |
+
+**GitHub displays HTML source; it does not execute the dashboard.** Download and extract the repository, then open `review/html/assurance_dashboard.html` locally. Keep the complete `review/` folder together so HTML and PowerPoint relative links work. Tableau requires compatible software; the PNG previews can be viewed without PowerPoint.
+
+## Architecture
 
 The expense workflow ingests CSV transactions, SQLite vendor reference data, and YAML policy. It validates structure and records, quarantines unusable rows, preserves valid audit exceptions, enriches trusted data, and reconciles DuckDB analytics against independent Pandas calculations.
 
@@ -42,7 +55,7 @@ Renderers do not recreate KPI business logic. The PowerPoint reconciliation view
 
 The versioned expense sample is illustrative historical evidence with its own producer identity. It is separate from the final assurance submission. Generated assurance runs and submission packages remain local and are not version controlled.
 
-The historical expense sample retains the original producer identifiers recorded before the privacy history rewrite. Those retired commit IDs are historical evidence, not checkout targets. Use the current branch to reproduce the expense workflow; use the reviewer guide's current producer commit to reproduce the canonical assurance package.
+The expense sample's original producer identifiers describe that historical sample and are not reproduction checkout targets. Use the current branch to run the expense workflow; use the reviewer guide's producer source commit to reproduce the assurance snapshot.
 
 ## Setup and execution
 
@@ -139,17 +152,11 @@ uv run ruff check .
 git diff --check
 ```
 
-## Submission review path
+## Reproducibility and provenance
 
 The published reviewer handoff lives under `review/`. Its guide records the clean producer run, source commit, and validation levels. The complete HTML subtree preserves relative links, and the eight slide previews come from the exact published deck. Local packages under ignored `output/submission/` are historical execution material; use `review/` for the current handoff.
 
-After downloading the repository, follow the [reviewer guide](review/README.md):
-
-1. Open `review/presentation/assurance_executive_report.pptx` first for the executive narrative and navigation.
-2. Open `review/html/assurance_dashboard.html` for interactive analysis.
-3. Open `review/tableau/assurance_dashboard.twbx` in compatible Tableau software for exploration.
-
-Keep the `presentation`, `html`, and `tableau` directories together under `review/`. PowerPoint links are relative to this structure. The reviewer guide records the exact clean producer run and commit; the corresponding ignored run directory retains the terminal manifest and validation summary.
+The reviewer guide records the exact clean producer run and source commit; the corresponding ignored run directory retains the terminal manifest and validation summary. Later documentation commits do not change the producer identity of these artifacts.
 
 Standalone assurance CSVs, field dictionaries, metrics and machine-readable manifests are intentionally omitted from the curated snapshot to avoid duplicate analytical copies. The TWBX contains its validated data extract, and HTML includes the data and definitions needed for offline review. To inspect all supporting files, reproduce the reviewer guide's producer source commit in a separate checkout and run the assurance command above. Its new run directory contains `publication/tables/`, `publication/metrics.json`, `publication/explainability.json`, Tableau metadata under `publication/tableau/`, `publication/validation_summary.json` and `manifest.json`. A new execution has a new run identity; the guide's producer run remains the identity of the committed snapshot.
 
@@ -157,6 +164,6 @@ Standalone assurance CSVs, field dictionaries, metrics and machine-readable mani
 
 One governed truth supplies every channel. Explicit `NOT_EVALUABLE` and unmapped states preserve uncertainty. Run-scoped provenance supports reproduction, while fail-closed terminal publication prevents a partially completed run from being represented as successful.
 
-The exercise is a small local synthetic demonstration. Tableau validation is programmatic rather than Tableau Desktop execution. Local/offline artifact links assume the package folder structure remains intact. PowerPoint supports navigation and drill links; filtering belongs to the HTML and Tableau channels. Hashes and run identity establish provenance, while analytical contracts and reconciliation establish correctness.
+The exercise is a small local synthetic demonstration. Browser-rendered HTML and live interactions are **NOT_EXECUTED**; Tableau Desktop is **NOT_EXECUTED**. HTML structural and accessibility-wiring checks do not establish runtime or assistive-technology conformance. Local/offline artifact links assume the package folder structure remains intact. PowerPoint supports navigation and drill links; filtering belongs to the HTML and Tableau channels. Hashes and run identity establish provenance, while analytical contracts and reconciliation establish correctness.
 
 Further implementation context is available in [design decisions](docs/DESIGN_DECISIONS.md) and [changed-requirement scenarios](docs/CHANGE_SCENARIOS.md).
