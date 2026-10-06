@@ -17,7 +17,7 @@ Detailed numerator, denominator, trusted population, filter scope, and limitatio
 
 ## Producer provenance and acceptance
 
-Clean producer run: `20261005T175406684735Z`. Producer source commit: `c8bcb089332e19f919d200a280a837ba3a53c103`. Producer working tree: **clean (`git_dirty=false`)**. Reporting date: **2026-09-30**. The later reviewer-artifact commit publishes copies of these source-commit outputs; it does not change their producer identity.
+Clean producer run: `20261006T015512364859Z`. Producer source commit: `bd354e4f887db3130bb62e60925f39328a5042df`. Producer working tree: **clean (`git_dirty=false`)**. Reporting date: **2026-09-30**. The later reviewer-artifact commit publishes copies of these source-commit outputs; it does not change their producer identity.
 
 All eight exact clean-run slides were rendered and visually inspected in Microsoft PowerPoint. PowerPoint slideshow navigation to slides 1–8 was executed; the 114 internal navigation targets and 17 external publication links passed structural validation. The eight previews were exported from that exact deck.
 
