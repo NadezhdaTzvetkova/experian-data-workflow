@@ -42,6 +42,8 @@ Renderers do not recreate KPI business logic. The PowerPoint reconciliation view
 
 The versioned expense sample is illustrative historical evidence with its own producer identity. It is separate from the final assurance submission. Generated assurance runs and submission packages remain local and are not version controlled.
 
+The historical expense sample retains the original producer identifiers recorded before the privacy history rewrite. Those retired commit IDs are historical evidence, not checkout targets. Use the current branch to reproduce the expense workflow; use the reviewer guide's current producer commit to reproduce the canonical assurance package.
+
 ## Setup and execution
 
 Use Python **3.12** and `uv`. `pyproject.toml` supports `>=3.12,<3.13`; `uv.lock` resolves Python `3.12.*`. Run the following commands from the repository root:
